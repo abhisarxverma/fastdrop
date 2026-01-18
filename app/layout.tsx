@@ -37,7 +37,7 @@ export default function RootLayout({
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange>
-          <div className="w-full min-h-screen max-w-7xl mx-auto flex flex-col">
+          <div className="w-full min-h-screen flex flex-col">
             {children}
           </div>
         </ThemeProvider>

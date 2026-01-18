@@ -1,0 +1,26 @@
+import { codeLanguageInfo } from "./code-language-info";
+
+export const extensionToMonaco: Record<string, keyof typeof codeLanguageInfo> = {
+  py: "python",
+  js: "javascript",
+  ts: "typescript",
+  java: "java",
+  cpp: "cpp",
+  c: "c",
+  cs: "csharp",
+  php: "php",
+  rb: "ruby",
+  go: "go",
+  rs: "rust",
+  swift: "swift",
+  kt: "kotlin",
+  scala: "scala",
+  html: "html",
+  css: "css",
+  json: "json",
+  xml: "xml",
+  yml: "yaml",
+  sql: "sql",
+  md: "markdown",
+  sh: "shell",
+};

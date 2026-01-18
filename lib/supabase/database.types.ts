@@ -54,37 +54,37 @@ export type Database = {
         Row: {
           content_text: string | null
           created_at: string
+          file_name: string | null
           file_path: string | null
+          file_type: string | null
           id: string
           item_type: string
           language: string | null
-          mime_type: string | null
           share_id: string
-          size_bytes: number | null
           title: string | null
         }
         Insert: {
           content_text?: string | null
           created_at?: string
+          file_name?: string | null
           file_path?: string | null
+          file_type?: string | null
           id?: string
           item_type: string
           language?: string | null
-          mime_type?: string | null
           share_id: string
-          size_bytes?: number | null
           title?: string | null
         }
         Update: {
           content_text?: string | null
           created_at?: string
+          file_name?: string | null
           file_path?: string | null
+          file_type?: string | null
           id?: string
           item_type?: string
           language?: string | null
-          mime_type?: string | null
           share_id?: string
-          size_bytes?: number | null
           title?: string | null
         }
         Relationships: [
@@ -104,7 +104,7 @@ export type Database = {
           expires_at: string
           id: string
           location: unknown
-          room_id: string
+          room_id: string | null
           share_type: string
         }
         Insert: {
@@ -113,7 +113,7 @@ export type Database = {
           expires_at: string
           id?: string
           location?: unknown
-          room_id: string
+          room_id?: string | null
           share_type: string
         }
         Update: {
@@ -122,7 +122,7 @@ export type Database = {
           expires_at?: string
           id?: string
           location?: unknown
-          room_id?: string
+          room_id?: string | null
           share_type?: string
         }
         Relationships: [

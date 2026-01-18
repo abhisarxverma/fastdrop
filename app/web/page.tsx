@@ -3,9 +3,9 @@
 import PageHeading from "@/app/web/_components/page-heading";
 import PageShell from "@/app/web/_components/page-shell";
 import { Button } from "@/components/ui/button";
-import NoNearbyShares from "@/features/share/components/no-nearby-shares";
-import SearchInput from "@/features/share/components/search-input";
-import ShareTypeDropdownMenu from "@/features/share/components/share-type-dropdown-menu";
+import NoNearbyShares from "@/features/share/common/components/no-nearby-shares";
+import SearchInput from "@/features/share/common/components/search-input";
+import ShareTypeDropdownMenu from "@/features/share/common/components/share-type-dropdown-menu";
 import { FaPlus } from "react-icons/fa6";
 
 export default function WebappPage() {

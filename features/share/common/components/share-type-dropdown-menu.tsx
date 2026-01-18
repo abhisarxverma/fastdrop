@@ -13,7 +13,6 @@ import {
     HiOutlineLink,
     HiOutlineFolder
 } from "react-icons/hi2";
-import { SHARE_TYPE } from "@/types/index";
 import { ROUTES } from "@/config/routes";
 import Link from "next/link";
 

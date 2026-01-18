@@ -81,8 +81,6 @@ export function GeoProvider({ children }: { children: ReactNode }) {
     );
   }
 
-  console.log("Location in geo - ", location);
-
   return (
     <GeoContext.Provider value={{ location }}>
       {children}

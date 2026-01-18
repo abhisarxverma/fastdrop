@@ -10,7 +10,7 @@ export default function SearchInput() {
             
             <Input
                 placeholder="Search here...."
-                className="w-full h-full pl-10 text-md"
+                className="w-full h-full pl-10 text-md py-3"
             />
         </div>
     )
