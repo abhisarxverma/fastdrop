@@ -4,6 +4,7 @@ import { useEffect, useState, createContext, useContext } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import AuthLoading from "@/features/auth/components.tsx/loading";
+import { useRouter } from "next/navigation";
 
 type AuthContextType = {
   user: User | null;
@@ -15,6 +16,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter()
 
   useEffect(() => {
     const supabase = createClient();
@@ -22,6 +24,10 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     supabase.auth.getSession().then(({ data }) => {
       if (!data.session) {
         supabase.auth.signInAnonymously();
+        if (data.session) {
+          router.refresh(); // Forces Next.js to sync server-side cookies
+          console.log("Session : ", supabase.auth.getSession());
+        }
       } else {
         setUser(data.session.user);
       }
@@ -33,7 +39,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         setUser(session?.user ?? null);
       }
     );
-    
+
     return () => {
       subscription.subscription.unsubscribe();
     };
@@ -64,5 +70,5 @@ export const useStrictUser = () => {
   if (!loading && !user) {
     throw new Error("Authenticated user required.");
   }
-  return user as User; 
+  return user as User;
 };

@@ -14,34 +14,10 @@ export type Database = {
   }
   public: {
     Tables: {
-      profiles: {
-        Row: {
-          created_at: string | null
-          display_name: string
-          id: string
-          password_hash: string
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          display_name: string
-          id?: string
-          password_hash: string
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          display_name?: string
-          id?: string
-          password_hash?: string
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       rooms: {
         Row: {
           created_at: string
-          created_by: string
+          created_by: string | null
           expires_at: string | null
           id: string
           join_code: string | null
@@ -52,7 +28,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          created_by: string
+          created_by?: string | null
           expires_at?: string | null
           id?: string
           join_code?: string | null
@@ -63,7 +39,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          created_by?: string
+          created_by?: string | null
           expires_at?: string | null
           id?: string
           join_code?: string | null
@@ -72,15 +48,7 @@ export type Database = {
           radius_meters?: number
           scope?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "rooms_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       share_items: {
         Row: {
@@ -132,7 +100,7 @@ export type Database = {
       shares: {
         Row: {
           created_at: string
-          created_by: string | null
+          created_by: string
           expires_at: string
           id: string
           location: unknown
@@ -141,7 +109,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          created_by?: string | null
+          created_by: string
           expires_at: string
           id?: string
           location?: unknown
@@ -150,7 +118,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          created_by?: string | null
+          created_by?: string
           expires_at?: string
           id?: string
           location?: unknown
@@ -158,13 +126,6 @@ export type Database = {
           share_type?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "shares_created_by_fkey"
-            columns: ["created_by"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "shares_room_id_fkey"
             columns: ["room_id"]

@@ -1,14 +1,22 @@
 
-
 export const storage = {
   get: <T>(key: string): T | null => {
     if (typeof window === "undefined") return null;
     const item = window.localStorage.getItem(key);
-    return item ? (JSON.parse(item) as T) : null;
+    if (!item) return null;
+    try {
+      return JSON.parse(item) as T;
+    } catch (e) {
+      console.error(`Error parsing storage key "${key}":`, e);
+      return null;
+    }
   },
-  set: (key: string, value: string) => {
+  
+  // Accept any type (T), not just string
+  set: <T>(key: string, value: T) => {
     if (typeof window !== "undefined") {
-      window.localStorage.setItem(key, JSON.stringify(value));
+      const stringifiedValue = typeof value === "string" ? value : JSON.stringify(value);
+      window.localStorage.setItem(key, stringifiedValue);
     }
   },
 };

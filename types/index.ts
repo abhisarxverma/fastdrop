@@ -8,6 +8,5 @@ export type Enums<T extends keyof Database['public']['Enums']> = Database['publi
 export type Room = Tables<"rooms">
 export type Share = Tables<"shares">
 export type ShareItem = Tables<"share_items">
-export type Profile = Tables<"profiles">
 
 export type SHARE_TYPE = "file" | "text" | "code" | "link" | "folder"

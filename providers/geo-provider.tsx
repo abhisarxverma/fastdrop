@@ -40,7 +40,7 @@ export function GeoProvider({ children }: { children: ReactNode }) {
           lat: pos.coords.latitude,
           lng: pos.coords.longitude,
         };
-        storage.set("fastdrop_location", JSON.stringify(loc));
+        storage.set("fastdrop_location", loc);
         setLocation(loc);
       },
       () => {
@@ -80,6 +80,8 @@ export function GeoProvider({ children }: { children: ReactNode }) {
       </div>
     );
   }
+
+  console.log("Location in geo - ", location);
 
   return (
     <GeoContext.Provider value={{ location }}>

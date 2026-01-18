@@ -89,7 +89,7 @@
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.21 0.006 285.885);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.70 0.15 162);
+  --primary: oklch(69.938% 0.14792 162.898);
   --primary-foreground: oklch(0.26 0.05 173);
   --secondary: oklch(0.274 0.006 286.033);
   --secondary-foreground: oklch(0.985 0 0);
@@ -125,6 +125,7 @@
   }
 }
 
+
 @layer components {
   .webapp {
     .page-heading {
@@ -139,4 +140,101 @@
       @apply flex flex-col gap-1 my-5 bg-transparent;
     }
   }
+}
+
+/* Tiptap editor */
+
+/* Tiptap Specific Styling - Enhanced for 2026 OKLCH Theme */
+
+.tiptap {
+  /* Ensure the editor area feels like a cohesive document */
+  line-height: 1.6;
+  color: var(--foreground);
+}
+
+/* Headings: Using Primary and Foreground with tight tracking */
+.tiptap h1, .tiptap h2, .tiptap h3 {
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  letter-spacing: -0.02em;
+}
+
+.tiptap h1 {
+  @apply text-4xl font-extrabold mt-8 mb-4 border-b border-border pb-2;
+}
+
+.tiptap h2 {
+  @apply text-2xl font-bold mt-6 mb-3;
+}
+
+.tiptap h3 {
+  @apply text-xl font-semibold mt-4 mb-2;
+}
+
+/* Paragraphs */
+.tiptap p {
+  @apply mb-4 leading-relaxed;
+}
+
+/* Links: Using your Primary color */
+.tiptap a {
+  @apply text-primary underline underline-offset-4 font-medium transition-colors hover:opacity-80;
+}
+
+/* Lists: Clean indentation and markers */
+.tiptap ul, .tiptap ol {
+  @apply my-4 ml-6 space-y-2;
+}
+
+.tiptap ul { list-style-type: disc; }
+.tiptap ol { list-style-type: decimal; }
+
+.tiptap li p {
+  @apply m-0; /* Remove extra paragraph margin inside lists */
+}
+
+/* Blockquotes: Subtle accent left border */
+.tiptap blockquote {
+  @apply border-l-4 border-primary bg-muted/30 px-4 py-2 italic my-6 rounded-r-md;
+}
+
+/* Code Blocks & Inline Code */
+.tiptap code {
+  @apply bg-muted text-primary px-1.5 py-0.5 rounded-md text-[0.9em] font-mono border border-border/50;
+}
+
+.tiptap pre {
+  @apply bg-zinc-950 text-zinc-50 p-4 rounded-lg my-6 overflow-x-auto border border-border font-mono leading-normal;
+}
+
+.tiptap pre code {
+  @apply bg-transparent p-0 text-inherit border-none text-sm;
+}
+
+/* Marks & Highlights: Use your Primary color with low opacity for highlight */
+.tiptap mark {
+  @apply bg-primary/20 text-foreground px-1 rounded-sm;
+  /* If you want a solid bold highlight: */
+  /* background-color: var(--primary); color: var(--primary-foreground); */
+}
+
+/* Horizontal Rule */
+.tiptap hr {
+  @apply border-t-2 border-border my-8;
+}
+
+/* Selected Text / Bubble Menu context */
+.tiptap ::selection {
+  /* background-color: var(--primary); */
+  color: var(--primary-foreground);
+}
+
+/* Placeholder (if using Tiptap Placeholder extension) */
+.tiptap p.is-editor-empty:first-child::before {
+  @apply text-muted-foreground float-left h-0 pointer-events-none;
+  content: attr(data-placeholder);
+}
+
+.toolbar [data-state="on"] { 
+  @apply bg-input font-semibold; 
 }
