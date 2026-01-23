@@ -9,6 +9,7 @@ import ShareTypeDropdownMenu from "@/features/share/common/components/share-type
 import { FaPlus } from "react-icons/fa6";
 import { useState } from "react"
 import LinkShareModal from "@/features/share/link/components/link-share-modal";
+import SharesGrid from "@/features/nearby-shares/shares-grid";
 
 export default function WebappPage() {
 
@@ -30,7 +31,7 @@ export default function WebappPage() {
                 </ShareTypeDropdownMenu>
                 <LinkShareModal open={linkShareModalOpen} setOpen={(val: boolean) => setLinkShareModalOpen(val)} />
             </div>
-            <NoNearbyShares />
+            <SharesGrid />
         </PageShell>
     )
 }
