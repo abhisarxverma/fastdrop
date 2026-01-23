@@ -12,16 +12,15 @@ import {
   FaDatabase,
   FaFileCode,
 } from "react-icons/fa";
-import { BiSolidFileBlank } from "react-icons/bi";
 import { IconType } from 'react-icons'
 
-type FileTypeInfo = {
+export type FileTypeInfo = {
     name: string,
     icon: IconType
 }
 
 export const fileTypes: {
-  [key: string]: { name: string; icon: IconType };
+  [key: string]: FileTypeInfo;
 } = {
   doc: { name: "Word Document", icon: FaFileWord },
   docx: { name: "Word Document", icon: FaFileWord },
@@ -64,9 +63,3 @@ export const fileTypes: {
   json: { name: "JSON File", icon: FaFileCode },
 };
 
-const getFileInfo = (extension: string): FileTypeInfo => {
-  const ext = extension.toLowerCase().replace('.', '');
-  return fileTypes[ext] || { name: 'File', icon: BiSolidFileBlank };
-};
-
-export default getFileInfo;

@@ -16,7 +16,7 @@ import { FileDropzone } from "./file-dropzone";
 import { FileShareFormSchema } from "../validations";
 import { fileShareAction } from "../actions";
 import { useGeo } from "@/providers/geo-provider";
-import { getExtension } from "../utils";
+import { getExtension, removeExtension } from "../utils";
 import { UploadedFileCard } from "./uploaded-file-card";
 import FormLayout from "../../common/components/form-layout";
 
@@ -111,7 +111,7 @@ export default function FileShareForm() {
             <FieldLabel>
               Uploaded file
             </FieldLabel>
-            <UploadedFileCard file={form.getValues("file")} fileName={field.value} fileType={form.getValues("file_type")} onPreview={() => { }}
+            <UploadedFileCard file={form.getValues("file")} fileName={removeExtension(field.value)} fileType={form.getValues("file_type")} onPreview={() => { }}
               onRemove={() => {
                 form.setValue("file", null as unknown as File);
                 form.setValue("file_type", "");
@@ -143,8 +143,8 @@ export default function FileShareForm() {
         )}
       />
       <FormShareButton
+        isDisabled={false}
         isSubmitting={isPending}
-        addClasses="mt-5"
         text="Share File"
       />
     </FormLayout>

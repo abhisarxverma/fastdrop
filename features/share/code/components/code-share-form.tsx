@@ -6,7 +6,7 @@ import { ExpirySelector } from "../../common/components/expiry-input";
 import { getDefaultExpiry } from "@/lib/utils/formatters";
 import FormShareButton from "../../common/components/form-share-button";
 import { codeShareAction } from "../actions";
-import { Controller, useForm } from "react-hook-form"
+import { Controller, useForm, useWatch } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { CodeShareFormSchema } from "../validation";
 import { z } from "zod";
@@ -18,6 +18,9 @@ import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import FormLayout from "../../common/components/form-layout";
 import { LanguageSelector } from "./language-selector";
+import FileNameInput from "../../common/components/filename-input";
+import { getExtensionFromLanguage, getLanguageIcon } from "../../common/utils";
+import { IconType } from "react-icons";
 
 export default function ShareTextForm() {
 
@@ -33,9 +36,13 @@ export default function ShareTextForm() {
             title: "",
             content: "",
             expires_at: getDefaultExpiry(),
-            language: "java"
+            language: "java",
+            file_name: ""
         }
     });
+
+    const selectedLanguage = useWatch({ control: form.control, name: "language", });
+    
 
     function onSubmit(data: z.infer<typeof CodeShareFormSchema>) {
         const payload = {
@@ -84,19 +91,34 @@ export default function ShareTextForm() {
                     )} />
 
                 </div>
-                <Controller name="content" control={form.control} render={({ field, fieldState }) => (
-                    <Field>
-                        <FieldLabel>Code</FieldLabel>
-                        <CodeEditor
-                            value={field.value}
-                            onChange={field.onChange}
-                            language={form.getValues("language")}
-                        />
-                        {fieldState.invalid && (
-                            <FieldError errors={[fieldState.error]} />
-                        )}
-                    </Field>
-                )} />
+                <Field>
+                    <Controller name="file_name" control={form.control} render={({ field, fieldState }) => (
+                        <Field>
+                            <FieldLabel>Code</FieldLabel>
+                            <FileNameInput
+                                value={field.value}
+                                onChange={field.onChange}
+                                Icon={getLanguageIcon(selectedLanguage) as IconType}
+                                extension={getExtensionFromLanguage(selectedLanguage)}
+                            />
+                            {fieldState.invalid && (
+                                <FieldError errors={[fieldState.error]} />
+                            )}
+                        </Field>
+                    )} />
+                    <Controller name="content" control={form.control} render={({ field, fieldState }) => (
+                        <Field>
+                            <CodeEditor
+                                value={field.value}
+                                onChange={field.onChange}
+                                language={selectedLanguage}
+                            />
+                            {fieldState.invalid && (
+                                <FieldError errors={[fieldState.error]} />
+                            )}
+                        </Field>
+                    )} />
+                </Field>
                 <Controller name="expires_at" control={form.control} render={({ field, fieldState }) => (
                     <Field>
                         <FieldLabel>Expiry</FieldLabel>
@@ -106,8 +128,8 @@ export default function ShareTextForm() {
                         )}
                     </Field>
                 )} />
+                <FormShareButton isDisabled={false} isSubmitting={isPending} addClasses="mt-5" text="Share" />
             </FormLayout>
-            <FormShareButton isSubmitting={isPending} addClasses="mt-5" text="Share" />
         </>
 
     )

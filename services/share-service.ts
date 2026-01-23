@@ -12,7 +12,7 @@ export async function textShareService(
   supabase: SupabaseClient,
   input: TextShareServiceInput
 ): Promise<Share> {
-  const { title, content } = input;
+  const { title, content, file_name } = input;
 
   const baseShare = await createBaseShare(supabase, input, "single")
 
@@ -21,6 +21,7 @@ export async function textShareService(
     .insert({
       share_id: baseShare.id,
       title,
+      file_name,
       content_text: content,
       item_type: "text"
     });
@@ -71,7 +72,7 @@ export async function codeShareService(
   supabase: SupabaseClient,
   input: CodeShareServiceInput
 ): Promise<Share> {
-  const { title, content, language } = input;
+  const { title, content, language, file_name } = input;
 
   const baseShare = await createBaseShare(supabase, input, "single")
 
@@ -80,6 +81,7 @@ export async function codeShareService(
     .insert({
       share_id: baseShare.id,
       title,
+      file_name,
       content_text: content,
       item_type: "code",
       language

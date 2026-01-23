@@ -17,6 +17,7 @@ import { ROUTES } from "@/config/routes";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import FormLayout from "../../common/components/form-layout";
+import FileNameInput from "../../common/components/filename-input";
 
 export default function ShareTextForm() {
 
@@ -28,10 +29,11 @@ export default function ShareTextForm() {
 
     const form = useForm({
         resolver: zodResolver(TextShareFormSchema),
-        values: {
+        defaultValues: {
             title: "",
             content: "",
-            expires_at: getDefaultExpiry()
+            expires_at: getDefaultExpiry(),
+            file_name: ""
         }
     });
 
@@ -70,18 +72,33 @@ export default function ShareTextForm() {
                     )}
                 </Field>
             )} />
-            <Controller name="content" control={form.control} render={({ field, fieldState }) => (
-                <Field>
-                    <FieldLabel>Content</FieldLabel>
-                    <RichTextEditor
-                        value={field.value}
-                        onChange={field.onChange}
-                    />
-                    {fieldState.invalid && (
-                        <FieldError errors={[fieldState.error]} />
-                    )}
-                </Field>
-            )} />
+            <Field>
+                <Controller name="file_name" control={form.control} render={({ field, fieldState }) => (
+                    <Field>
+                        <FieldLabel>File</FieldLabel>
+                        <FileNameInput 
+                            value={field.value}
+                            onChange={field.onChange}
+                            extension="txt"
+                        />
+                        {fieldState.invalid && (
+                            <FieldError errors={[fieldState.error]} />
+                        )}
+                    </Field>
+                )} />
+                <Controller name="content" control={form.control} render={({ field, fieldState }) => (
+                    <Field>
+                        {/* <FieldLabel>Content</FieldLabel> */}
+                        <RichTextEditor
+                            value={field.value}
+                            onChange={field.onChange}
+                        />
+                        {fieldState.invalid && (
+                            <FieldError errors={[fieldState.error]} />
+                        )}
+                    </Field>
+                )} />
+            </Field>
             <Controller name="expires_at" control={form.control} render={({ field, fieldState }) => (
                 <Field>
                     <FieldLabel>Expiry</FieldLabel>
@@ -91,7 +108,7 @@ export default function ShareTextForm() {
                     )}
                 </Field>
             )} />
-            <FormShareButton isSubmitting={isPending} addClasses="mt-5" text="Share" />
+            <FormShareButton isDisabled={false} isSubmitting={isPending} addClasses="mt-5" text="Share" />
         </FormLayout>
 
     )

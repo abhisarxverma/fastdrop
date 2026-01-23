@@ -7,11 +7,12 @@ interface FormShareButton {
     text: string;
     addClasses?: string;
     isSubmitting?: boolean;
+    isDisabled: boolean
 }
 
-export default function FormShareButton({ text, addClasses, isSubmitting }: FormShareButton) {
+export default function FormShareButton({ text, addClasses, isSubmitting, isDisabled }: FormShareButton) {
     return (
-        <Button disabled={isSubmitting} type="submit" size="lg" className={clsx("flex w-full items-center gap-2", addClasses)}>
+        <Button disabled={isSubmitting || isDisabled} type="submit" size="lg" className={clsx("flex w-full items-center gap-2", addClasses)}>
             {text} {isSubmitting ? <LuLoader className="animate-spin" /> : <IoSend/>}
         </Button>
     )

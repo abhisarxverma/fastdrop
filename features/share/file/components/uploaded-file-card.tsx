@@ -1,9 +1,10 @@
 "use client";
 
-import getFileInfo from "../../common/file-type-info";
 import { Button } from "@/components/ui/button";
 import { IconCancel } from "@tabler/icons-react";
 import { Field, FieldLabel } from "@/components/ui/field";
+import { getFileInfo } from "../../common/utils";
+import FileNameInput from "../../common/components/filename-input";
 
 type UploadedFileCardProps = {
     file: File;
@@ -24,23 +25,22 @@ export function UploadedFileCard({
 }: UploadedFileCardProps) {
 
     const meta = getFileInfo(fileType);
-    const sizeKB = (file.size / 1024).toFixed(1);
+    const sizeKB = (file.size / 1024 / 1024).toFixed(1);
 
     return (
         <div className="bg-input/50 border p-4 flex items-center gap-4">
-            <div className="text-3xl md:text-5xl w-20 md:w-30 text-secondary-foreground/50 aspect-square flex flex-col md:flex-row items-center justify-center"><meta.icon /></div>
+            <div className="text-3xl md:text-5xl w-20 md:w-30 text-primary/50 aspect-square flex flex-col md:flex-row items-center justify-center"><meta.icon /></div>
             <Field>
                 <FieldLabel>Filename</FieldLabel>
-                <input
-                    type="text"
+                <FileNameInput
                     value={fileName}
-                    onChange={(e) => {
-                        onRename(e.target.value);
+                    onChange={(name) => {
+                        onRename(name);
                     }}
-                    className="w-full border px-2 py-1 text-md bg-transparent hover:border-secondary-foreground/50"
+                extension={fileType}
                 />
                 <p className="text-sm text-secondary-foreground/50">
-                    {meta.name} • {sizeKB} KB
+                    {meta.name} • {sizeKB} MB
                 </p>
             </Field>
             <div className="flex gap-2">

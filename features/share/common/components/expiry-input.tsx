@@ -24,7 +24,7 @@ export function ExpirySelector({ value, onChange }: ExpirySelectorProps) {
             max={maxFormatted}
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="w-full max-w-sm transition-all sm:text-sm"
+            className="w-full transition-all sm:text-sm"
         />
     );
 }

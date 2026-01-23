@@ -21,3 +21,5 @@ export const BaseShareSchema = z.object({
 });
 
 
+export const contentValidator =  z.string().min(MIN_CONTENT_LENGTH, { error: LENGTH_MIN_ERROR(MIN_CONTENT_LENGTH) }).max(MAX_CONTENT_LENGTH, { error: LENGTH_MAX_ERROR(MAX_CONTENT_LENGTH) });
+export const fileNameValidator = z.string().min(4, { error: "Min 4 characters" }).max(50, { error: "Maximum 50 characters" });
