@@ -2,11 +2,11 @@
 import ogs from 'open-graph-scraper'
 import { shareAction } from '../common/actions'
 import { LinkShareActionSchema } from './validation'
-import { linkShareService } from '@/services/share-service'
+import { createLinkShare } from '../common/services'
 import { containsProfanity } from './utils'
 import { MetadataResponse } from './types'
 
-export const linkShareAction = shareAction(LinkShareActionSchema, linkShareService)
+export const linkShareAction = shareAction(LinkShareActionSchema, createLinkShare)
 
 const GOOGLE_SAFE_BROWSING_API = `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${process.env.GOOGLE_API_KEY}`
 

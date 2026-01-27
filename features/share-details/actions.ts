@@ -1,14 +1,14 @@
 'use server';
 
 import { authActionClient } from "@/lib/actions/middleware";
-import { NearbySharesActionSchema } from "./validation";
-import { getNearbyShares } from "./services";
+import { GetShareByIdActionSchema } from "./validation";
+import { getShareById } from "./services";
 
-export const nearbySharesAction = authActionClient
-  .inputSchema(NearbySharesActionSchema)
+export const getShareByIdAction = authActionClient
+  .inputSchema(GetShareByIdActionSchema)
   .action(async ({ parsedInput, ctx: { supabase } }) => {
     try {
-      const result = await getNearbyShares(supabase, {
+      const result = await getShareById(supabase, {
         ...parsedInput,
       });
 

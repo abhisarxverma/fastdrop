@@ -3,7 +3,7 @@
 import { useEffect, useState, createContext, useContext } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
-import AuthLoading from "@/features/auth/components.tsx/loading";
+import AuthLoading from "@/features/auth/components/loading";
 import { useRouter } from "next/navigation";
 
 type AuthContextType = {

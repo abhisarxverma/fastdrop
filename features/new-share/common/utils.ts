@@ -4,7 +4,7 @@ import { codeLanguageInfo, LanguageInfoType, languageToExtension } from "./const
 import { VscVscode } from "react-icons/vsc";
 
 export const getFileInfo = (extension: string): FileTypeInfo => {
-  const ext = extension.toLowerCase().replace('.', '');
+  const ext = extension.toLowerCase().replace('.', '') as keyof typeof fileTypes;
   return fileTypes[ext] || { name: 'File', icon: BiSolidFileBlank };
 };
 

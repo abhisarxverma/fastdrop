@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { nearbySharesAction } from "./actions";
-import type { NearbyShares } from "@/types";
+import { nearbySharesAction } from "../../../features/nearby-shares/actions";
+import type { NearbyShares } from "../../../features/nearby-shares/types";
 import { useGeo } from "@/providers/geo-provider";
 import { toast } from "sonner";
-import SingleShareCard from "./single-share-card";
+import SingleShareCard from "../../../features/nearby-shares/components/single-share-card";
+import NoNearbyShares from "@/features/new-share/common/components/no-nearby-shares";
 
 export default function SharesGrid() {
   const [shares, setShares] = useState<NearbyShares>([]);
@@ -34,7 +35,7 @@ export default function SharesGrid() {
         return;
       } else {
         setShares(response?.data?.data ?? []);
-        console.log("Response : ", response?.data?.data ?? []);
+        // console.log("Response : ", response?.data?.data ?? []);
       }
       setLoading(false);
     }
@@ -50,13 +51,16 @@ export default function SharesGrid() {
   if (error) return <p>Error: {error}</p>;
 
   return (
-    <div className="p-0">
+    <div className="py-5">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {shares
+        {shares.length > 0 ? (
+          shares
           .filter((share) => share.share_type === "single")
           .map((share) => (
             <SingleShareCard key={share.id} share={share} />
-          ))}
+          ))) : (
+            <NoNearbyShares />
+          )}
       </div>
     </div>
   );

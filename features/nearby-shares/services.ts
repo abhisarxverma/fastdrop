@@ -1,8 +1,9 @@
-import { NearbySharesServiceInput } from "@/features/nearby-shares/types";
-import { NearbyShares, ShareWithItems } from "@/types";
+import { NearbyShares } from "@/features/nearby-shares/types";
+import { ShareWithItems } from "@/types";
 import { SupabaseClient } from "@supabase/supabase-js";
+import { NearbySharesServiceInput } from "./validation";
 
-export async function nearbySharesService(
+export async function getNearbyShares(
     supabase: SupabaseClient,
     input: NearbySharesServiceInput
 ): Promise<NearbyShares> {
@@ -18,11 +19,11 @@ export async function nearbySharesService(
       expires_at,
       created_by,
       location,
+      title,
       share_items:share_items (
         id,
         share_id,
         item_type,
-        title,
         content_text,
         file_path,
         language,
@@ -37,20 +38,5 @@ export async function nearbySharesService(
 
     const rows = (data ?? []) as ShareWithItems[];
 
-    const transformed: NearbyShares = rows.map((share) => {
-        if (share.share_type === "single" && share.share_items.length === 1) {
-            return {
-                ...share,
-                ...share.share_items[0],
-                share_type: "single" as const, 
-                share_items: undefined,
-            };
-        }
-        return {
-            ...share,
-            share_type: "multiple" as const,  
-        };
-    });
-
-    return transformed;
+    return rows;
 }

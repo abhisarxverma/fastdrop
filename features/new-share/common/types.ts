@@ -1,6 +1,6 @@
 import { User } from "@supabase/supabase-js"
 
-export type ShareInput = {
+export type BaseShareInput = {
     room_id?: string,
     title: string,
     lat: number,

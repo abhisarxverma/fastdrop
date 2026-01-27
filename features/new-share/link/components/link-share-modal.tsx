@@ -101,7 +101,7 @@ export default function LinkShareModal({ open, setOpen }: { open: boolean, setOp
             People in 30m radius will instantly see this share
           </p>
         </DialogHeader>
-        <div className="flex gap-5 h-full mt-5">
+        <div className="flex gap-5 min-h-80 mt-5">
           <form className="flex-1 h-full" onSubmit={form.handleSubmit(onSubmit)}>
             <FieldGroup className="h-full flex flex-col justify-between gap-5">
               <div className="h-full flex flex-col gap-5">

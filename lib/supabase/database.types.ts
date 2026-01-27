@@ -61,7 +61,6 @@ export type Database = {
           item_type: string
           language: string | null
           share_id: string
-          title: string | null
         }
         Insert: {
           content_text?: string | null
@@ -73,7 +72,6 @@ export type Database = {
           item_type: string
           language?: string | null
           share_id: string
-          title?: string | null
         }
         Update: {
           content_text?: string | null
@@ -85,7 +83,6 @@ export type Database = {
           item_type?: string
           language?: string | null
           share_id?: string
-          title?: string | null
         }
         Relationships: [
           {
@@ -106,6 +103,7 @@ export type Database = {
           location: unknown
           room_id: string | null
           share_type: string
+          title: string
         }
         Insert: {
           created_at?: string
@@ -115,6 +113,7 @@ export type Database = {
           location?: unknown
           room_id?: string | null
           share_type: string
+          title: string
         }
         Update: {
           created_at?: string
@@ -124,6 +123,7 @@ export type Database = {
           location?: unknown
           room_id?: string | null
           share_type?: string
+          title?: string
         }
         Relationships: [
           {
@@ -465,6 +465,25 @@ export type Database = {
       geomfromewkt: { Args: { "": string }; Returns: unknown }
       gettransactionid: { Args: never; Returns: unknown }
       longtransactionsenabled: { Args: never; Returns: boolean }
+      nearby_shares: {
+        Args: { lat: number; lng: number; radius_meters: number }
+        Returns: {
+          created_at: string
+          created_by: string
+          expires_at: string
+          id: string
+          location: unknown
+          room_id: string | null
+          share_type: string
+          title: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "shares"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       populate_geometry_columns:
         | { Args: { tbl_oid: unknown; use_typmod?: boolean }; Returns: number }
         | { Args: { use_typmod?: boolean }; Returns: string }

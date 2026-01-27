@@ -19,9 +19,7 @@ export type FileTypeInfo = {
     icon: IconType
 }
 
-export const fileTypes: {
-  [key: string]: FileTypeInfo;
-} = {
+export const fileTypes = {
   doc: { name: "Word Document", icon: FaFileWord },
   docx: { name: "Word Document", icon: FaFileWord },
 
@@ -61,5 +59,5 @@ export const fileTypes: {
   js: { name: "JavaScript File", icon: FaFileCode },
   ts: { name: "TypeScript File", icon: FaFileCode },
   json: { name: "JSON File", icon: FaFileCode },
-};
+} as const;
 

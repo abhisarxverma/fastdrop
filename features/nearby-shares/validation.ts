@@ -5,3 +5,9 @@ export const NearbySharesActionSchema = z.object({
     lng: z.number(),
     radius: z.number()
 })
+
+export type NearbySharesServiceInput = {
+    lat: number,
+    lng: number,
+    radius: number
+}
