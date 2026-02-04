@@ -1,36 +1,28 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<img src="public/logo.png" width="100" height="100" style="border-radius: 100px">
 
-## Getting Started
+# Fastdrop [ In Development ]
 
-First, run the development server:
+Fastdrop is a lightweight web app for instant file sharing in classrooms and computer labs.  
+Instead of relying on WhatsApp, email, or other login-heavy platforms, Fastdrop lets you **drop a file once and make it instantly visible to everyone nearby**.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Concept
+A frictionless, browser-based hub where any student or professor can share content files in real time without authentication barriers.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Use Case
+- Professors sharing code snippets, assignments, or resources during lab sessions.
+- Students distributing project files or notes quickly to peers.
+- Any group setting where fast, local file sharing is needed.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Audience
+- College students in labs and classrooms.
+- Professors and teaching assistants.
+- Teams working in shared computer environments.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Problem It Solves
+Traditional sharing methods (WhatsApp, email, cloud links) require logins, syncing, or copy-paste overhead.  
+Fastdrop eliminates these steps, making **sharing as fast as opening a web page**.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+More details, setup instructions, and technical documentation will be added as the project evolves.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
