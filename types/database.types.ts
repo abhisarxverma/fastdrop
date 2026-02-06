@@ -17,38 +17,38 @@ export type Database = {
       sessions: {
         Row: {
           created_at: string
-          discoverability: string
           expires_at: string | null
           host_id: string
           id: string
-          is_active: boolean | null
+          is_active: boolean
           join_code: string | null
           location: unknown
           radius_meters: number
+          requires_code: boolean
           title: string
         }
         Insert: {
           created_at?: string
-          discoverability: string
           expires_at?: string | null
           host_id: string
           id?: string
-          is_active?: boolean | null
+          is_active?: boolean
           join_code?: string | null
-          location?: unknown
+          location: unknown
           radius_meters?: number
+          requires_code?: boolean
           title: string
         }
         Update: {
           created_at?: string
-          discoverability?: string
           expires_at?: string | null
           host_id?: string
           id?: string
-          is_active?: boolean | null
+          is_active?: boolean
           join_code?: string | null
           location?: unknown
           radius_meters?: number
+          requires_code?: boolean
           title?: string
         }
         Relationships: []
@@ -362,6 +362,7 @@ export type Database = {
         | { Args: { table_name: string }; Returns: string }
       enablelongtransactions: { Args: never; Returns: string }
       equals: { Args: { geom1: unknown; geom2: unknown }; Returns: boolean }
+      generate_join_code: { Args: { length?: number }; Returns: string }
       geometry: { Args: { "": string }; Returns: unknown }
       geometry_above: {
         Args: { geom1: unknown; geom2: unknown }
@@ -460,32 +461,27 @@ export type Database = {
         Returns: boolean
       }
       geomfromewkt: { Args: { "": string }; Returns: unknown }
-      get_nearby_sessions:
-        | {
-            Args: { lat: number; lng: number; radius_meters: number }
-            Returns: Database["public"]["Tables"]["sessions"]["Row"][]
-          }
-        | {
-            Args: { lat: number; lng: number; radius_meters: number }
-            Returns: {
-              created_at: string
-              discoverability: string
-              expires_at: string | null
-              host_id: string
-              id: string
-              is_active: boolean | null
-              join_code: string | null
-              location: unknown
-              radius_meters: number
-              title: string
-            }[]
-            SetofOptions: {
-              from: "*"
-              to: "sessions"
-              isOneToOne: false
-              isSetofReturn: true
-            }
-          }
+      get_nearby_sessions: {
+        Args: { lat: number; lng: number; radius_meters: number }
+        Returns: {
+          created_at: string
+          expires_at: string | null
+          host_id: string
+          id: string
+          is_active: boolean
+          join_code: string | null
+          location: unknown
+          radius_meters: number
+          requires_code: boolean
+          title: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "sessions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       gettransactionid: { Args: never; Returns: unknown }
       longtransactionsenabled: { Args: never; Returns: boolean }
       nearby_shares: {

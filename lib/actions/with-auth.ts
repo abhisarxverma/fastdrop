@@ -1,25 +1,28 @@
-import { createClient } from "@/lib/supabase/server";
-import { SupabaseClient } from "@supabase/supabase-js";
+import { SupabaseClient, User } from "@supabase/supabase-js";
+import { withSupabase } from "./with-supabase";
 
 export async function withAuth<T>(
   fn: (ctx: {
     supabase: SupabaseClient;
-    user: { id: string };
+    user: User;
   }) => Promise<T>
-) {
-  const supabase = await createClient();
-  const { data, error } = await supabase.auth.getUser();
-  let user = data.user;
+): Promise<T> {
+  return withSupabase(async ({ supabase }) => {
+    const { data, error } = await supabase.auth.getUser();
+    let user = data?.user;
 
-  if (!user || error) {
-    await supabase.auth.signInAnonymously();
-    const { data: { user: newUser } } = await supabase.auth.getUser();
-    if (!newUser) {
-      console.error("With-auth action middleware Error:", error?.message);
-      throw new Error("Session expired. Please log in again.");
+    if (!user || error) {
+      // IMPORTANT: auth bootstrap happens once, intentionally
+      const anon = await supabase.auth.signInAnonymously();
+      if (anon.error || !anon.data.user) {
+        throw new Error("Unable to establish session");
+      }
+      user = anon.data.user;
     }
-    user = newUser;
-  }
 
-  return fn({ supabase, user });
+    return fn({
+      user,
+      supabase,
+    });
+  });
 }

@@ -1,15 +1,19 @@
+import Container from "@/components/layouts/container"
 import Header from "@/components/web/header"
+import AuthProvider from "@/providers/auth-provider"
 import { GeoProvider } from "@/providers/geo-provider"
 
-export default function Layout({ children }: { children: React.ReactNode }) {
+export default function AppLayout({ children }: { children: React.ReactNode }) {
     return (
-        <GeoProvider>
-            <div className="webapp flex-1 flex flex-col items-center">
-                <Header />
-                <main className="flex-1 w-full h-full  flex flex-col max-w-7xl">
-                    {children}
-                </main>
-            </div>
-        </GeoProvider>
+        <AuthProvider>
+            <GeoProvider>
+                <div className="webapp flex-1 flex flex-col items-center">
+                    <Header />
+                    <main className="flex-1 w-full h-full flex flex-col">
+                        <Container>{children}</Container>
+                    </main>
+                </div>
+            </GeoProvider>
+        </AuthProvider>
     )
 }

@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
-import "./globals.css";
-import { ThemeProvider } from "@/providers/theme-provider";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/providers/theme-provider";
 
 const geistSans = Geist({
-  variable: "--font-sans", 
+  variable: "--font-sans",
   subsets: ["latin"],
 });
 
@@ -15,7 +14,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const dmSans = DM_Sans({ subsets: ['latin'], variable: '--font-sans' });
+const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -24,9 +23,9 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
     <html lang="en" suppressHydrationWarning>
       <body
@@ -36,10 +35,9 @@ export default function RootLayout({
           attribute="class"
           defaultTheme="system"
           enableSystem
-          disableTransitionOnChange>
-          <div className="w-full min-h-screen flex flex-col">
-            {children}
-          </div>
+          disableTransitionOnChange
+        >
+          <div className="w-full min-h-screen flex flex-col">{children}</div>
         </ThemeProvider>
       </body>
     </html>

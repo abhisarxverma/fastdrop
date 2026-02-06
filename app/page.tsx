@@ -1,4 +1,4 @@
-import PageShell from "@/components/web/page-shell";
+import PageShell from "@/components/layouts/page-shell";
 
 export default function Home() {
   return (

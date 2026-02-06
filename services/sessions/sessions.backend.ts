@@ -2,16 +2,18 @@ import { fetchBackend } from "@/lib/fetcher";
 import { SessionsService } from "./sessions.service";
 
 export const backendSessionsService: SessionsService = {
-  async createSession(supabase, user, input) {
+  async createSession(input, user) {
+    console.log("I am talking to backend");
     return fetchBackend("/api/sessions", {
         method: "POST",
-        body: input
+        body: { ...input, host_id: user.id }
     });
   },
-//   async getNearbySessions(input) {
-//     return fetchBackend("/api/sessions/nearby", input);
-//   },
-//   async joinSession(input) {
-//     return fetchBackend(`/api/sessions/${input.id}/join`, input);
-//   }
+
+  async getNearbySessions(input) {
+    const { lat, lng } = input;
+    return fetchBackend(`/api/sessions/nearby?lat=${lat}&lng=${lng}`, {
+      method: "GET",
+    });
+  },
 };

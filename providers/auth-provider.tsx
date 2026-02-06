@@ -3,8 +3,6 @@
 import { useEffect, useState, createContext, useContext } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { User } from "@supabase/supabase-js";
-import AuthLoading from "@/features/auth/components/loading";
-import { useRouter } from "next/navigation";
 
 type AuthContextType = {
   user: User | null;
@@ -16,7 +14,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export default function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const router = useRouter()
 
   useEffect(() => {
     const supabase = createClient();
@@ -41,9 +38,9 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     };
   }, []);
 
-  if (loading) return (
-    <AuthLoading />
-  )
+  // if (loading) return (
+  //   <AuthLoading />
+  // )
 
   return (
     <AuthContext.Provider value={{ user, loading }}>
@@ -57,14 +54,5 @@ export function useAuth() {
   if (!ctx) {
     throw new Error("useAuth must be used inside AuthProvider");
   }
-  if (!ctx.user) throw new Error("Please use useStrictUser for getting guaranteed user.")
   return ctx;
 }
-
-export const useStrictUser = () => {
-  const { user, loading } = useAuth();
-  if (!loading && !user) {
-    throw new Error("Authenticated user required.");
-  }
-  return user as User;
-};
