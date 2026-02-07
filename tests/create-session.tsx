@@ -3,7 +3,7 @@ import { getDefaultExpiry } from "@/lib/utils/formatters";
 
 export async function testCreateSession(lat: number, lng: number, requires_code: boolean = false) {
     const createdSession = await createSessionAction({
-        title: "First session",
+        title: "Test Session "+ new Date().getMinutes(),
         lat,
         lng,
         requires_code,

@@ -1,9 +1,9 @@
-import PageShell from "@/components/layouts/page-shell";
+import Container from "@/components/layouts/container";
 
 export default function Home() {
   return (
-    <PageShell>
+    <Container>
       <h2>Sessions near you</h2>
-    </PageShell>
+    </Container>
   );
 }

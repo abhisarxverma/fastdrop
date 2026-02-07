@@ -1,8 +1,11 @@
+import { mapSupabaseError } from "@/lib/errors/supabase-error";
 import { SessionsService } from "./sessions.service";
 import { SessionsRow, SessionWithShares } from "@/types/sessions"
+import { ServiceResponse } from "@/lib/types/service-response";
+import { logLocalError } from "@/lib/logging/logger";
 
 export const localSessionsService: SessionsService = {
-  async createSession(input, user, supabase): Promise<SessionsRow> {
+  async createSession(input, user, supabase): Promise<ServiceResponse<SessionsRow>> {
     const { title, lat, lng, requires_code, radius_meters, expires_at } = input;
 
     const { data, error } = await supabase
@@ -18,59 +21,43 @@ export const localSessionsService: SessionsService = {
       .select("*")
       .single();
 
-    console.log("Created session in service : ", data);
-
     if (error) {
-      console.log("Error occured in create session service : ", error);
-      throw new Error(`Session creation failed : ${error.message}`);
+      logLocalError("create-session", { input }, error);
+
+      return {
+        success: false,
+        message: mapSupabaseError(error),
+        data: null,
+      };
     }
-    return data as SessionsRow;
+    return {
+      success: true,
+      message: "Session created successfully.",
+      data,
+    };
   },
 
-  async getNearbySessions(input, supabase): Promise<SessionWithShares[]> {
+  async getNearbySessions(input, supabase): Promise<ServiceResponse<SessionWithShares[]>> {
     const { lat, lng } = input;
 
     const { data, error } = await supabase
       .rpc('get_nearby_sessions', { lat, lng })
-      .select(`
-    id,
-    created_at,
-    radius_meters,
-    expires_at,
-    host_id,
-    location,
-    title,
-    is_active,
-    requires_code,
-    shares:shares (
-      id,
-      session_id,
-      share_type,
-      created_at,
-      share_items:share_items (
-        id,
-        share_id,
-        item_type,
-        content_text,
-        file_path,
-        language,
-        file_type,
-        created_at,
-        file_name
-      )
-    )
-  `)
-      .order("created_at", { ascending: false });
 
-    console.log("Nearby sessions in service : ", data);
-
-    if (error) throw new Error(`Nearby sessions query failed: ${error.message}`);
+    if (error) {
+      logLocalError("get-nearby-sessions", { input, rpc: "get_nearby_sessions" }, error);
+      return {
+        success: false,
+        message: mapSupabaseError(error),
+        data: null,
+      };
+    }
 
     const sessions: SessionWithShares[] = (data ?? []) as unknown as SessionWithShares[];
 
-    return sessions;
-  },
-  //   async joinSession(input) {
-  //     // direct validation
-  //   }
-};
+    return {
+      success: true,
+      message: "Fetched nearby sessions successfully.",
+      data: sessions,
+    };
+  }
+}

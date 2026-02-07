@@ -1,10 +1,12 @@
-import PageShell from "@/components/layouts/page-shell";
-import { Loader } from "lucide-react";
+import Container from "@/components/layouts/container";
+import { LuLoader } from "react-icons/lu";
+
 
 export default function Loading() {
     return (
-        <PageShell addClassName="flex items-center justify-center">
-            <Loader className="animate-spin" />
-        </PageShell>
+        <Container className="h-50 flex items-center justify-center gap-5">
+            Loading
+            <LuLoader className="animate-spin" />
+        </Container>
     )
 }

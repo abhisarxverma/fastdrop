@@ -1,7 +1,10 @@
+import { ServiceResponse } from "@/lib/types/service-response";
+import { SafeServerError } from "./action-client";
+
 export function unwrapActionResult<T>(
   result: {
-    data?: T;
-    serverError?: string;
+    data?: ServiceResponse<T>;
+    serverError?: SafeServerError;
     validationErrors?: unknown;
   }
 ): T {
@@ -10,12 +13,16 @@ export function unwrapActionResult<T>(
   }
 
   if (result.serverError) {
-    throw new Error(result.serverError);
+    throw new Error(result.serverError.message);
   }
 
   if (!result.data) {
-    throw new Error("No data returned");
+    throw new Error("No response from server");
   }
 
-  return result.data;
+  if (!result.data.success) {
+    throw new Error(result.data.message);
+  }
+
+  return result.data.data as T;
 }

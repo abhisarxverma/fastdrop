@@ -7,18 +7,6 @@ import { createSessionSchema } from "@/schemas/sessions/create-session.schema";
 import { getNearbySessionsSchema } from "@/schemas/sessions/get-nearby-sessions.schema";
 import { sessionsService } from "@/services";
 
-// export const createSessionAction = authAction
-//   .inputSchema(createSessionSchema)
-//   .action(async ({ parsedInput }) => {
-//     return withAuth(async ({ supabase, user }) => {
-//       return sessionsService.createSession(
-//           supabase,
-//           user,
-//           parsedInput,
-//       );
-//     });
-//   });
-
 export const getNearbySessionsAction = actionClient
   .inputSchema(getNearbySessionsSchema)
   .action(async ({ parsedInput }) => {
