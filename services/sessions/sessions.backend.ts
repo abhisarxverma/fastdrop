@@ -16,4 +16,12 @@ export const backendSessionsService: SessionsService = {
       method: "GET",
     });
   },
+  async getActiveSessionOfUser(user) {;
+    return fetchBackend(`/api/sessions/get-active-session`, {
+      method: "POST",
+      body: {
+        id: user.id
+      }
+    });
+  },
 };

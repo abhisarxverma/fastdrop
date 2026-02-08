@@ -10,7 +10,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
                 <div className="webapp flex-1 flex flex-col">
                     <AppHeader />
                     <main className="flex-1 w-full h-full flex flex-col">
-                        <Container className="flex-1 h-full flex flex-col">{children}</Container>
+                        {children}
                     </main>
                 </div>
             </GeoProvider>

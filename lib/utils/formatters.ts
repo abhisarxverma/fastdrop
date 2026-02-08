@@ -3,7 +3,7 @@ export const getDefaultExpiry = () => {
   date.setHours(date.getHours() + 1);
 
   // Format directly for datetime-local
-  return date.toISOString().slice(0, 16);
+  return date.toISOString();
 };
 
 export const formatDateForInput = (date: Date) => {
@@ -11,12 +11,13 @@ export const formatDateForInput = (date: Date) => {
     return new Date(date.getTime() - tzOffset).toISOString().slice(0, 16);
 };
 
-export function timeAgo(timestamp: string) {
+export function relativeTimeFromNow(timestamp: string) {
   const now = new Date();
-  const past = new Date(timestamp);
-  const diffMs = now.getTime() - past.getTime();
+  const target = new Date(timestamp);
+  const diffMs = target.getTime() - now.getTime(); // positive if future, negative if past
+  const absDiff = Math.abs(diffMs);
 
-  const seconds = Math.floor(diffMs / 1000);
+  const seconds = Math.floor(absDiff / 1000);
   const minutes = Math.floor(seconds / 60);
   const hours   = Math.floor(minutes / 60);
   const days    = Math.floor(hours / 24);
@@ -24,13 +25,16 @@ export function timeAgo(timestamp: string) {
   const months  = Math.floor(days / 30);
   const years   = Math.floor(days / 365);
 
-  if (seconds < 60) return `${seconds}s ago`;
-  if (minutes < 60) return `${minutes}min ago`;
-  if (hours < 24)   return `${hours}h ago`;
-  if (days < 7)     return `${days}d ago`;
-  if (weeks < 5)    return `${weeks}w ago`;
-  if (months < 12)  return `${months}mo ago`;
-  return `${years}y ago`;
+  let unit: string;
+  if (seconds < 60) unit = `${seconds}s`;
+  else if (minutes < 60) unit = `${minutes}min`;
+  else if (hours < 24)   unit = `${hours}h`;
+  else if (days < 7)     unit = `${days}d`;
+  else if (weeks < 5)    unit = `${weeks}w`;
+  else if (months < 12)  unit = `${months}mo`;
+  else                   unit = `${years}y`;
+
+  return diffMs < 0 ? `${unit} ago` : `in ${unit}`;
 }
 
 

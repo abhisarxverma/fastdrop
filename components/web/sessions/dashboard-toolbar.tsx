@@ -12,9 +12,11 @@ interface DashboardToolbarProps {
     onViewChange: (val: "rows" | "grid") => void; 
     searchInput: string;
     onSearchInputChange: (val: string) => void;
+    disableStart: boolean;
+    onStartClick: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export default function DashboardToolbar({ view, onViewChange, searchInput, onSearchInputChange }: DashboardToolbarProps) {
+export default function DashboardToolbar({ view, onViewChange, searchInput, onSearchInputChange, disableStart=false, onStartClick }: DashboardToolbarProps) {
   return (
     <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex flex-wrap gap-6">
@@ -49,7 +51,7 @@ export default function DashboardToolbar({ view, onViewChange, searchInput, onSe
         </div>
       </div>
 
-      <Button size="lg" className="rounded-[8px] flex items-center justify-center gap-2">
+      <Button disabled={disableStart} onClick={() => onStartClick(true)} size="lg" className="rounded-[8px] flex items-center justify-center gap-2">
         <FaPlus />
         Start a session
       </Button>

@@ -1,33 +1,95 @@
 "use client";
 
-import { AppFooter } from "@/components/web/layout/app-footer";
+import { getActiveSessionOfUserAction, getNearbySessionsAction } from "@/actions/sessions.actions";
+import { ActiveSessionOfUserBanner } from "@/components/web/sessions/active-session-of-user-banner";
+import { unwrapActionResult } from "@/lib/actions/unwrap-result";
+import { useGeo } from "@/providers/geo-provider";
+import { NearbySession, Session } from "@/types/sessions";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 import DashboardToolbar from "@/components/web/sessions/dashboard-toolbar";
 import { SessionList } from "@/components/web/sessions/sessions-list";
-import { useState } from "react";
+import { AppFooter } from "@/components/web/layout/app-footer";
+import Container from "@/components/layouts/container";
+import { StartSessionDialog } from "@/components/web/sessions/start-session-dialog";
 
 export default function NearbySessionsPage() {
+  const [view, setView] = useState<"rows" | "grid">("grid");
+  const [searchInput, setSearchInput] = useState("");
+  const [runningSession, setRunningSession] = useState<Session | null>(null);
+  const [sessions, setSessions] = useState<NearbySession[]>([]);
+  const [startDialogOpen, setStartDialogOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter()
 
-  const [ view, setView ] = useState<"rows" | "grid">("rows");
-  const [ searchInput, setSearchInput ] = useState<string>("");
+  const { location } = useGeo();
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const [nearbyRes, activeRes] = await Promise.all([
+          getNearbySessionsAction({ lat: location.lat, lng: location.lng }),
+          getActiveSessionOfUserAction(),
+        ]);
+
+        setSessions(unwrapActionResult(nearbyRes));
+        setRunningSession(unwrapActionResult(activeRes)); 
+      } catch (err) {
+        toast.error((err as Error).message);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [location]);
 
   return (
-    <main className="flex-1 flex flex-col py-6 sm:py-8 md:py-10">
-      <div className="flex-1 flex flex-col gap-8">
-        <section className="space-y-1">
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">
-            Sessions near you
-          </h1>
-          <p className="text-sm sm:text-base md:text-md text-muted-foreground">
-            Join a session or start one.
-          </p>
-        </section>
+    <div className="h-full flex-1 flex flex-col gap-3">
 
-        <DashboardToolbar searchInput={searchInput} onSearchInputChange={setSearchInput} view={view} onViewChange={setView} />
+      {startDialogOpen && <StartSessionDialog open={startDialogOpen} onOpenChange={setStartDialogOpen} />}
 
-        <SessionList searchInput={searchInput} view={view} />
-      </div>
+      {runningSession && (
+        <ActiveSessionOfUserBanner
+          session={runningSession}
+          onEnter={() => router.push(`/sessions/${runningSession.id}`)}
+          onEnd={() => { }}
+        />
+      )}
 
-      <AppFooter />
-    </main>
+      <Container className="flex-1 h-full flex flex-col">
+
+        <main className="flex-1 flex flex-col py-6 sm:py-8 md:py-10">
+          <div className="flex-1 flex flex-col gap-8">
+            <section className="space-y-1">
+              <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">
+                Sessions near you
+              </h1>
+              <p className="text-sm sm:text-base md:text-md text-muted-foreground">
+                Join a session or start one.
+              </p>
+            </section>
+
+            <DashboardToolbar
+              searchInput={searchInput}
+              onSearchInputChange={setSearchInput}
+              view={view}
+              onViewChange={setView}
+              disableStart={loading || !!runningSession}
+              onStartClick={setStartDialogOpen}
+            />
+
+            <SessionList
+              loading={loading}
+              sessions={sessions}
+              searchInput={searchInput}
+              view={view}
+            />
+
+          </div>
+
+          <AppFooter />
+        </main>
+      </Container>
+    </div>
   );
 }

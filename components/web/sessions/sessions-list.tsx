@@ -1,68 +1,38 @@
-import { SessionWithShares } from "@/types/sessions";
-import { EmptyNearbySessions } from "./empty-nearby-sessions";
-import { SessionCard } from "./session-card";
+import { NearbySession } from "@/types/sessions";
 import { SessionListSkeleton } from "./sessions-list-skeletons";
-import { useEffect, useState } from "react";
-import { getNearbySessionsAction } from "@/actions/sessions.actions";
-import { useGeo } from "@/providers/geo-provider";
-import { unwrapActionResult } from "@/lib/actions/unwrap-result";
-import { toast } from "sonner";
+import { EmptyNearbySessions } from "./empty-nearby-sessions";
 import { EmptySearchResult } from "./empty-search-result";
 import { PaginatedList } from "../reusables/paginated-list";
+import { SessionCard } from "./session-card";
 
-interface SessionListProps {
+export function SessionList({
+  sessions,
+  loading,
+  view,
+  searchInput,
+}: {
+  sessions: NearbySession[];
+  loading: boolean;
   view: "rows" | "grid";
   searchInput: string;
-}
-
-export function SessionList({ view, searchInput }: SessionListProps) {
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [sessions, setSessions] = useState<SessionWithShares[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const { location } = useGeo();
-
-  useEffect(() => {
-    (async () => {
-      try {
-        // testCreateSession(location.lat, location.lng);
-        const result = await getNearbySessionsAction({
-          lat: location.lat,
-          lng: location.lng,
-        });
-
-        const fetchedSessions = unwrapActionResult(result);
-        console.log("Sessions: ", fetchedSessions);
-        setSessions(fetchedSessions);
-
-      } catch (err) {
-        setError((err as Error).message);
-        toast.error((err as Error).message);
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, [location, setError, setIsLoading, setSessions]);
-
-  if (isLoading) return <SessionListSkeleton />;
+}) {
+  console.log("Sessions: ", sessions);
+  if (loading) return <SessionListSkeleton />;
   if (sessions.length === 0) return <EmptyNearbySessions />;
 
-  const filteredSessions = sessions.filter((s) => s.title.includes(searchInput));
+  const filtered = sessions.filter(s =>
+    s.title.toLowerCase().includes(searchInput.toLowerCase())
+  );
 
-  if (filteredSessions.length === 0) return (
-    <EmptySearchResult
-      title="No results found"
-      subtitle="Try adjusting your search or filters."
-    />
-  )
+  if (filtered.length === 0) return <EmptySearchResult title="No result" subtitle="Try changing the search query." />;
 
   return (
     <PaginatedList
-      items={filteredSessions.map((s) => (
-        <SessionCard key={s.id} session={s} />
+      items={filtered.map(s => (
+        <SessionCard key={s.id} session={s} view={view} />
       ))}
-      view={view}
       pageSize={6}
+      view={view}
     />
-
   );
 }

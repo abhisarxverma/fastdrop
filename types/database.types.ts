@@ -17,11 +17,11 @@ export type Database = {
       sessions: {
         Row: {
           created_at: string
-          expires_at: string | null
+          ended_by_host: boolean
+          expires_at: string
           host_id: string
           id: string
-          is_active: boolean
-          join_code: string | null
+          join_code: string
           location: unknown
           radius_meters: number
           requires_code: boolean
@@ -29,11 +29,11 @@ export type Database = {
         }
         Insert: {
           created_at?: string
-          expires_at?: string | null
+          ended_by_host?: boolean
+          expires_at: string
           host_id: string
           id?: string
-          is_active?: boolean
-          join_code?: string | null
+          join_code: string
           location: unknown
           radius_meters?: number
           requires_code?: boolean
@@ -41,11 +41,11 @@ export type Database = {
         }
         Update: {
           created_at?: string
-          expires_at?: string | null
+          ended_by_host?: boolean
+          expires_at?: string
           host_id?: string
           id?: string
-          is_active?: boolean
-          join_code?: string | null
+          join_code?: string
           location?: unknown
           radius_meters?: number
           requires_code?: boolean
@@ -462,25 +462,19 @@ export type Database = {
       }
       geomfromewkt: { Args: { "": string }; Returns: unknown }
       get_nearby_sessions: {
-        Args: { lat: number; lng: number; radius_meters: number }
+        Args: { lat: number; lng: number }
         Returns: {
           created_at: string
-          expires_at: string | null
+          distance_meters: number
+          ended_by_host: boolean
+          expires_at: string
           host_id: string
           id: string
-          is_active: boolean
-          join_code: string | null
-          location: unknown
           radius_meters: number
           requires_code: boolean
+          shares_count: number
           title: string
         }[]
-        SetofOptions: {
-          from: "*"
-          to: "sessions"
-          isOneToOne: false
-          isSetofReturn: true
-        }
       }
       gettransactionid: { Args: never; Returns: unknown }
       longtransactionsenabled: { Args: never; Returns: boolean }

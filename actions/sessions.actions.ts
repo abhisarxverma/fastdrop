@@ -22,3 +22,10 @@ export const createSessionAction = actionClient
       return sessionsService.createSession(parsedInput, user, supabase);
     })
   })
+
+export const getActiveSessionOfUserAction = actionClient
+  .action(async () => {
+    return withAuth(({ user, supabase }) => {
+      return sessionsService.getActiveSessionOfUser(user, supabase);
+    });
+  });
