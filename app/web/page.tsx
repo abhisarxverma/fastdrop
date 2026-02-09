@@ -13,6 +13,7 @@ import { SessionList } from "@/components/web/sessions/sessions-list";
 import { AppFooter } from "@/components/web/layout/app-footer";
 import Container from "@/components/layouts/container";
 import { StartSessionDialog } from "@/components/web/sessions/start-session-dialog";
+import { useSessionsRealtime } from "@/hooks/use-sessions-realtime";
 
 export default function NearbySessionsPage() {
   const [view, setView] = useState<"rows" | "grid">("grid");
@@ -34,7 +35,7 @@ export default function NearbySessionsPage() {
         ]);
 
         setSessions(unwrapActionResult(nearbyRes));
-        setRunningSession(unwrapActionResult(activeRes)); 
+        setRunningSession(unwrapActionResult(activeRes));
       } catch (err) {
         toast.error((err as Error).message);
       } finally {
@@ -43,10 +44,29 @@ export default function NearbySessionsPage() {
     })();
   }, [location]);
 
+  useSessionsRealtime({
+    lat: location.lat,
+    lng: location.lng,
+    onInsert: (session) => {
+      setSessions((prev) => {
+        if (prev.some((s) => s.id === session.id)) return prev;
+        return [session, ...prev];
+      });
+    },
+    onDelete: (sessionId) => {
+      setSessions((prev) => prev.filter((s) => s.id !== sessionId));
+    },
+  });
+
   return (
     <div className="h-full flex-1 flex flex-col gap-3">
 
-      {startDialogOpen && <StartSessionDialog open={startDialogOpen} onOpenChange={setStartDialogOpen} />}
+      {startDialogOpen && <StartSessionDialog
+        open={startDialogOpen}
+        onOpenChange={setStartDialogOpen}
+        onCreated={(createdSession) => {
+          setRunningSession(createdSession);
+        }} />}
 
       {runningSession && (
         <ActiveSessionOfUserBanner
@@ -59,7 +79,7 @@ export default function NearbySessionsPage() {
       <Container className="flex-1 h-full flex flex-col">
 
         <main className="flex-1 flex flex-col py-6 sm:py-8 md:py-10">
-          <div className="flex-1 flex flex-col gap-8">
+          <div className="flex-1 min-h-150 flex flex-col gap-8">
             <section className="space-y-1">
               <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">
                 Sessions near you
@@ -84,7 +104,6 @@ export default function NearbySessionsPage() {
               searchInput={searchInput}
               view={view}
             />
-
           </div>
 
           <AppFooter />

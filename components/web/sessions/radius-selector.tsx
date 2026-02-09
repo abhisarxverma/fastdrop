@@ -5,7 +5,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
 import { RadiusSelectType } from "./start-session-dialog";
 
 interface RadiusSelectorProps {
@@ -16,9 +15,6 @@ interface RadiusSelectorProps {
 export default function RadiusSelector({ value, onChange }: RadiusSelectorProps) {
 
   return (
-    <div className="flex flex-col gap-2">
-      <Label>Session Radius</Label>
-
       <Select defaultValue="30" value={String(value)} onValueChange={(val) => onChange(parseInt(val) as RadiusSelectType)}>
         <SelectTrigger className="h-12 bg-muted/40 focus:ring-primary/20">
           <SelectValue placeholder="Select range" />
@@ -42,10 +38,5 @@ export default function RadiusSelector({ value, onChange }: RadiusSelectorProps)
           </SelectItem>
         </SelectContent>
       </Select>
-
-      {/* <p className="text-xs text-muted-foreground px-1">
-        Controls who can discover this session nearby.
-      </p> */}
-    </div>
   )
 }

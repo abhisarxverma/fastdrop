@@ -28,11 +28,12 @@ export function SessionList({
 
   return (
     <PaginatedList
-      items={filtered.map(s => (
-        <SessionCard key={s.id} session={s} view={view} />
-      ))}
-      pageSize={6}
+      items={filtered}
       view={view}
+      pageSize={6}
+      renderItem={(session) => (
+        <SessionCard session={session} view={view} />
+      )}
     />
   );
 }

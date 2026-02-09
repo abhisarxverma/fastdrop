@@ -1,4 +1,4 @@
-<img src="public/fastdrop_logo.png" width="100" height="100" style="border-radius: 100px">
+<img src="public/fastdrop-logo.png" width="100" height="100" style="border-radius: 100px">
 
 # Fastdrop [ In Development ]
 

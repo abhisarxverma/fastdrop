@@ -1,6 +1,8 @@
 "use client";
 
 import { useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+
 import {
   Pagination,
   PaginationContent,
@@ -10,13 +12,19 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-interface PaginatedListProps {
-  items: React.JSX.Element[];             // already mapped JSX elements
-  view: "rows" | "grid";            // layout mode
-  pageSize?: number;                // items per page
+interface PaginatedListProps<T extends { id: string }> {
+  items: T[];
+  view: "rows" | "grid";
+  pageSize?: number;
+  renderItem: (item: T) => React.ReactNode;
 }
 
-export function PaginatedList({ items, view, pageSize = 6 }: PaginatedListProps) {
+export function PaginatedList<T extends { id: string }>({
+  items,
+  view,
+  pageSize = 6,
+  renderItem,
+}: PaginatedListProps<T>) {
   const [page, setPage] = useState(1);
 
   const totalPages = Math.ceil(items.length / pageSize);
@@ -25,18 +33,35 @@ export function PaginatedList({ items, view, pageSize = 6 }: PaginatedListProps)
 
   return (
     <div className="flex flex-col min-h-full gap-6">
-      {/* Layout wrapper */}
-      <section
+      {/* List */}
+      <motion.section
+        layout
         className={
           view === "rows"
             ? "flex flex-col gap-3 sm:gap-4 flex-1"
             : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 flex-1"
         }
       >
-        {currentItems}
-      </section>
+        <AnimatePresence mode="popLayout">
+          {currentItems.map((item) => (
+            <motion.div
+              key={item.id}
+              layout
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -12 }}
+              transition={{
+                duration: 0.25,
+                ease: "easeOut",
+              }}
+            >
+              {renderItem(item)}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </motion.section>
 
-      {/* Pagination controls */}
+      {/* Pagination */}
       {totalPages > 1 && (
         <Pagination>
           <PaginationContent>

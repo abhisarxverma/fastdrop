@@ -72,7 +72,7 @@ export const localSessionsService: SessionsService = {
     };
   },
 
-  async getActiveSessionOfUser(user, supabase) {
+  async getActiveSessionOfUser(user, supabase): Promise<ServiceResponse<SessionsRow>> {
     const { data, error } = await supabase
       .from("sessions")
       .select("*")

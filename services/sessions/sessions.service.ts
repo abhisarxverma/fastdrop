@@ -7,6 +7,6 @@ import { SupabaseClient, User } from "@supabase/supabase-js";
 export interface SessionsService {
   createSession(input: CreateSessionInput, user: User, supabase: SupabaseClient, ): Promise<ServiceResponse<SessionsRow>>;
   getNearbySessions(input: GetNearbySessionsInput, supabase: SupabaseClient, ): Promise<ServiceResponse<NearbySession[]>>;
-  getActiveSessionOfUser(user: User, supabase: SupabaseClient) : Promise<ServiceResponse<Session | null>>;
+  getActiveSessionOfUser(user: User, supabase: SupabaseClient) : Promise<ServiceResponse<SessionsRow>>;
 
 }
