@@ -12,3 +12,6 @@ export const MAX_CONTENT_LENGTH = 5000;
 export function stringValidator(min: number, max: number) {
     return z.string().min(min, { error: LENGTH_MIN_ERROR(min) }).max(max, { error: LENGTH_MAX_ERROR(max) });
 }
+
+export const contentValidator =  z.string().min(MIN_CONTENT_LENGTH, { error: LENGTH_MIN_ERROR(MIN_CONTENT_LENGTH) }).max(MAX_CONTENT_LENGTH, { error: LENGTH_MAX_ERROR(MAX_CONTENT_LENGTH) });
+export const fileNameValidator = z.string().min(4, { error: "Min 4 characters" }).max(50, { error: "Maximum 50 characters" });

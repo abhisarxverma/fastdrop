@@ -1,18 +1,16 @@
 import { SupabaseClient } from "@supabase/supabase-js";
 import { RpcResult } from "../types";
 
-export async function isSessionVisibleToUserRpc(
+export async function validateSessionCodeRpc(
   supabase: SupabaseClient,
   sessionId: string,
-  lat: number,
-  lng: number,
+  code: string
 ): Promise<RpcResult<boolean>> {
   const { data, error } = await supabase.rpc(
-    "is_session_visible_to_user",
+    "validate_session_code",
     {
       p_session_id: sessionId,
-      p_user_lat: lat,
-      p_user_lng: lng,
+      p_code: code
     }
   );
 

@@ -3,7 +3,6 @@ import { SessionsService } from "./sessions.service";
 
 export const backendSessionsService: SessionsService = {
   async createSession(input, user) {
-    console.log("I am talking to backend");
     return fetchBackend("/api/sessions", {
         method: "POST",
         body: { ...input, host_id: user.id }
@@ -16,6 +15,7 @@ export const backendSessionsService: SessionsService = {
       method: "GET",
     });
   },
+
   async getActiveSessionOfUser(user) {;
     return fetchBackend(`/api/sessions/get-active-session`, {
       method: "POST",
@@ -23,5 +23,26 @@ export const backendSessionsService: SessionsService = {
         id: user.id
       }
     });
+  },
+
+  async getNearbySessionById(input) {
+    return fetchBackend("/api/sessions/nearby/"+input.sessionId, {
+      method: 'POST',
+      body: input
+    })
+  },
+
+  async validateSessionCode(input) {
+    return fetchBackend("/api/sessions/validate-code", {
+      method: 'POST',
+      body: input
+    })
+  },
+
+  async getSessionContentById(input) {
+    return fetchBackend("/api/sessions/get-content", {
+      method: "POST",
+      body: input
+    })
   },
 };

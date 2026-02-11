@@ -71,7 +71,7 @@ export default function NearbySessionsPage() {
       {runningSession && (
         <ActiveSessionOfUserBanner
           session={runningSession}
-          onEnter={() => router.push(`/sessions/${runningSession.id}`)}
+          onEnter={() => router.push(`/web/sessions/${runningSession.id}`)}
           onEnd={() => { }}
         />
       )}

@@ -6,6 +6,7 @@ import { MdFileUpload, MdLocationOn } from "react-icons/md";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 import Ping from "../reusables/ping";
+import { useRouter } from "next/navigation";
 
 type SessionCardView = "rows" | "grid";
 
@@ -17,6 +18,7 @@ interface SessionCardProps {
 export function SessionCard({ session, view }: SessionCardProps) {
   const isLocked : boolean = session.requires_code;
   const isGrid : boolean = view === "grid";
+  const router = useRouter();
 
   return (
     <div
@@ -81,6 +83,7 @@ export function SessionCard({ session, view }: SessionCardProps) {
           className={cn(
             isGrid && "w-full"
           )}
+          onClick={() => router.push(`/web/sessions/${session.id}`)}
         >
           Join session
         </Button>

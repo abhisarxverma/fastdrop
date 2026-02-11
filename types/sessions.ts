@@ -1,10 +1,7 @@
-import { Tables } from "./utils";
+import { ShareWithItems } from "./shares";
+import { SupabaseTables } from "./utils";
 
-export type SessionsRow = Tables<"sessions">;
-
-export type SharesRow = Tables<"shares">;
-
-export type ShareItemsRow = Tables<"share_items">;
+export type SessionsRow = SupabaseTables<"sessions">;
 
 export type Session = Omit<SessionsRow, "join_code">;
 
@@ -17,4 +14,10 @@ export type NearbySession = {
   expires_at: string;
   distance_meters: number;
   shares_count: number;
+  ended_by_host: boolean;
+  created_at: string;
 };
+
+export type SessionWithShares = Session & {
+  shares: ShareWithItems[]
+}

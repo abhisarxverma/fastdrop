@@ -22,7 +22,7 @@ type GeoContextValue = {
 const GeoContext = createContext<GeoContextValue | null>(null);
 
 export function GeoProvider({ children }: { children: ReactNode }) {
-  
+
   const [location, setLocation] = useState<GeoLocation | null>(() => storage.get("fastdrop_location"));
   const [error, setError] = useState<string | null>(null);
   const [requested, setRequested] = useState(false);
@@ -51,7 +51,8 @@ export function GeoProvider({ children }: { children: ReactNode }) {
       },
       {
         enableHighAccuracy: true,
-        maximumAge: 60_000,
+        timeout: 10000,
+        maximumAge: 0,
       }
     );
   }

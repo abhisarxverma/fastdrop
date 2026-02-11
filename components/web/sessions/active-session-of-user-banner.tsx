@@ -50,6 +50,16 @@ export function ActiveSessionOfUserBanner({
           </div>
 
           {/* Right */}
+          <div className="flex items-center gap-2">
+
+          <div className="shrink-0">
+            <Button
+              variant="outline"
+              onClick={onEnter}
+            >
+              Enter Session
+            </Button>
+          </div>
           <div className="shrink-0">
             <Button
               variant="outline"
@@ -58,6 +68,7 @@ export function ActiveSessionOfUserBanner({
             >
               End Session
             </Button>
+          </div>
           </div>
         </div>
       </Container>

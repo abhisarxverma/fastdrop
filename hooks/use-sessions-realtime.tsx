@@ -3,6 +3,10 @@
 import { useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { NearbySession, SessionsRow } from "@/types/sessions";
+import { isSessionVisibleToUserRpc } from "@/lib/supabase/rpc/is-session-visible";
+import { getNearbySessionByIdRpc } from "@/lib/supabase/rpc/get-nearby-session-by-id";
+import { logError } from "@/lib/logging/logger";
+import { useAuth } from "@/providers/auth-provider";
 
 interface UseSessionsRealtimeProps {
     lat: number;
@@ -17,8 +21,9 @@ export function useSessionsRealtime({
     onInsert,
     onDelete
 }: UseSessionsRealtimeProps) {
+    const { user } = useAuth();
     useEffect(() => {
-        if (!lat || !lng) return;
+        if (!lat || !lng || !user) return;
 
         const supabase = createClient();
 
@@ -32,33 +37,35 @@ export function useSessionsRealtime({
                     table: "sessions",
                 },
                 async (payload) => {
-                    const session = payload.new as NearbySession;
+                    const session = payload.new as SessionsRow;
 
-                    const { data: isVisible, error: visibilityCheckError } = await supabase.rpc(
-                        "is_session_visible_to_user",
-                        {
-                            p_session_id: session.id,
-                            p_user_lat: lat,
-                            p_user_lng: lng,
-                        }
-                    );
+                    if (session.host_id === user.id) return null;
 
-                    if (visibilityCheckError || !isVisible) return;
+                    const { data: isVisible, error: visibilityCheckError } = await isSessionVisibleToUserRpc(supabase, session.id, lat, lng)
 
-                    const { data, error } = await supabase.rpc(
-                        "get_nearby_session_by_id",
-                        {
-                            p_session_id: session.id,
-                            p_lat: lat,
-                            p_lng: lng,
-                        }
-                    );
-
-                    if (error || !data || data.length === 0) {
+                    if (visibilityCheckError){
+                        logError({
+                            source: "local",
+                            scope: "Sessions realtime - visibility check by rpc",
+                            error: visibilityCheckError
+                        })
                         return null;
                     }
 
-                    onInsert(session);
+                    if (!isVisible) return;
+
+                    const { data, error } = await getNearbySessionByIdRpc(supabase, session.id, lat, lng);
+
+                    if (error) {
+                        logError({
+                            source: "local",
+                            scope: "Sessions realtime - getting nearby session by id",
+                            error
+                        })
+                        return null;
+                    }
+
+                    onInsert(data as NearbySession);
                 }
             )
             .on(
@@ -78,5 +85,5 @@ export function useSessionsRealtime({
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [lat, lng, onInsert, onDelete]);
+    }, [lat, lng, user, onInsert, onDelete]);
 }

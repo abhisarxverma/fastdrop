@@ -6,6 +6,7 @@ import {
 } from "@/components/ui/toggle-group";
 import SearchInput from "../reusables/search-input";
 import { FaPlus } from "react-icons/fa";
+import ViewToggle from "../reusables/view-toggle";
 
 interface DashboardToolbarProps { 
     view: "rows" | "grid"; 
@@ -20,34 +21,13 @@ export default function DashboardToolbar({ view, onViewChange, searchInput, onSe
   return (
     <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
       <div className="flex flex-wrap gap-6">
-        <SearchInput value={searchInput} onChange={onSearchInputChange} />
+        <SearchInput value={searchInput} onChange={onSearchInputChange} addClass="sm:w-64" placeholder="Search sessions...." />
         <div className="flex items-center gap-3">
           <span className="text-xs sm:text-sm md:text-md font-semibold uppercase text-muted-foreground">
             View
           </span>
 
-          <ToggleGroup
-            type="single"
-            defaultValue="rows"
-            className="border bg-muted"
-            value={view}
-            onValueChange={(val) => val && onViewChange(val as "rows" | "grid")}
-          >
-            <ToggleGroupItem
-              value="rows"
-              aria-label="Rows view"
-              className="rounded-md"
-            >
-              <LuRows2 className="h-4 w-4 sm:h-5 sm:w-5" />
-            </ToggleGroupItem>
-            <ToggleGroupItem
-              value="grid"
-              aria-label="Grid view"
-              className="rounded-md"
-            >
-              <LuGrid2X2 className="h-4 w-4 sm:h-5 sm:w-5" />
-            </ToggleGroupItem>
-          </ToggleGroup>
+          <ViewToggle value={view} onChange={onViewChange} />
         </div>
       </div>
 

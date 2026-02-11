@@ -9,7 +9,7 @@ import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 export function AppHeader() {
   return (
-    <header className="sticky top-0 z-20 border-b bg-card/70">
+    <header className="sticky top-0 z-20 border-b bg-primary/5">
       <Container>
         <div className="flex items-center justify-between py-2">
           {/* Logo */}
