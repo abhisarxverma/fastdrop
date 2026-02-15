@@ -2,9 +2,11 @@ import { fetchBackend } from "@/lib/fetcher";
 import { SessionsService } from "./sessions.service";
 
 export const backendSessionsService: SessionsService = {
-  async createSession(input, user) {
+  async createSession(input, user, supabase) {
+    const { data, error } = await supabase.auth.getSession();
     return fetchBackend("/api/sessions", {
         method: "POST",
+        authorization : `Bearer ${data.session.access_token}`,
         body: { ...input, host_id: user.id }
     });
   },
@@ -17,10 +19,10 @@ export const backendSessionsService: SessionsService = {
   },
 
   async getActiveSessionOfUser(user) {;
-    return fetchBackend(`/api/sessions/get-active-session`, {
+    return fetchBackend(`/api/sessions/active`, {
       method: "POST",
       body: {
-        id: user.id
+        user_id: user.id
       }
     });
   },

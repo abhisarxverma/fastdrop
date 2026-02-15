@@ -4,11 +4,14 @@ import {
   createContext,
   useContext,
   useState,
+  useEffect,
   ReactNode,
 } from "react";
 
-import { storage } from "@/lib/utils/browser"
-import { Button } from "@/components/ui/button";
+import { storage } from "@/lib/utils/browser";
+import { GeoCenteredState } from "@/components/web/geo/geo-centered-state";
+import { GeoLoadingContent } from "@/components/web/geo/geo-loading-content";
+import { GeoEnableContent } from "@/components/web/geo/geo-enable-content";
 
 type GeoLocation = {
   lat: number;
@@ -22,12 +25,22 @@ type GeoContextValue = {
 const GeoContext = createContext<GeoContextValue | null>(null);
 
 export function GeoProvider({ children }: { children: ReactNode }) {
-
-  const [location, setLocation] = useState<GeoLocation | null>(() => storage.get("fastdrop_location"));
+  const [location, setLocation] = useState<GeoLocation | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [requested, setRequested] = useState(false);
+  const [isCheckingStorage, setIsCheckingStorage] = useState(true);
 
-  console.log("Geo provider running : ", !!location);
+  useEffect(() => {
+    let cancelled = false;
+    Promise.resolve().then(() => {
+      if (cancelled) return;
+      const loc: GeoLocation | null = storage.get("fastdrop_location");
+      setLocation(loc);
+      setIsCheckingStorage(false);
+    });
+    return () => { cancelled = true };
+  }, []);
+
 
   function requestLocation() {
     if (!navigator.geolocation) {
@@ -59,29 +72,17 @@ export function GeoProvider({ children }: { children: ReactNode }) {
 
   if (!location) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-base-100">
-        <div className="max-w-md space-y-4 p-6 text-center">
-          <h1 className="text-xl font-semibold">Enable Location</h1>
-          <p className="text-sm opacity-70">
-            Fastdrop uses your location to show and share files with nearby
-            devices. This works without login and stays local.
-          </p>
-
-          {error && <p className="text-error">{error}</p>}
-
-          <Button
-            size="lg"
-            onClick={requestLocation}
-            disabled={requested}
-          >
-            Enable Location
-          </Button>
-
-          <p className="text-xs opacity-50">
-            Location is only used for proximity filtering.
-          </p>
-        </div>
-      </div>
+      <GeoCenteredState>
+        {isCheckingStorage ? (
+          <GeoLoadingContent />
+        ) : (
+          <GeoEnableContent
+            onRequest={requestLocation}
+            requested={requested}
+            error={error}
+          />
+        )}
+      </GeoCenteredState>
     );
   }
 

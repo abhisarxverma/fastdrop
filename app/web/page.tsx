@@ -34,10 +34,13 @@ export default function NearbySessionsPage() {
           getActiveSessionOfUserAction(),
         ]);
 
+        console.log("Active : ", activeRes);
+
         setSessions(unwrapActionResult(nearbyRes));
         setRunningSession(unwrapActionResult(activeRes));
       } catch (err) {
         toast.error((err as Error).message);
+        console.log("Error in web: ", err);
       } finally {
         setLoading(false);
       }

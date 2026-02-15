@@ -1,12 +1,11 @@
 import z from "zod";
-import { contentValidator, fileNameValidator } from "../utils"
+import { contentValidator } from "../utils"
 import { baseShareSchema } from "./base-share"
 
 export const textShareActionSchema = baseShareSchema.extend({
     content: contentValidator,
-    fileName: fileNameValidator
 })
 
-export const TextShareFormSchema = textShareActionSchema.omit({ sessionId: true });
+export const textShareFormSchema = textShareActionSchema.omit({ session_id: true, share_type: true });
 
 export type TextShareInput = z.infer<typeof textShareActionSchema>;

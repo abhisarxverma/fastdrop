@@ -5,8 +5,8 @@ export const baseShareSchema = z.object({
   title: z.string()
     .min(MIN_TITLE_LENGTH, { error: LENGTH_MIN_ERROR(MIN_TITLE_LENGTH) })
     .max(MAX_TITLE_LENGTH, { error: LENGTH_MAX_ERROR(MAX_TITLE_LENGTH) }),
-  sessionId: z.string().optional(),
-  shareType: z.string(),
+  session_id: z.string(),
+  share_type: z.string(),
 });
 
 export type BaseShareInput = z.infer<typeof baseShareSchema>;

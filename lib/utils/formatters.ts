@@ -14,7 +14,7 @@ export const formatDateForInput = (date: Date) => {
 export function relativeTimeFromNow(timestamp: string) {
   const now = new Date();
   const target = new Date(timestamp);
-  const diffMs = target.getTime() - now.getTime(); // positive if future, negative if past
+  const diffMs = target.getTime() - now.getTime(); 
   const absDiff = Math.abs(diffMs);
 
   const seconds = Math.floor(absDiff / 1000);

@@ -18,7 +18,7 @@ import { ShareItemType } from "@/types/share-items";
 import { Button } from "@/components/ui/button";
 
 interface ShareFabProps {
-    onSelect: (type: ShareItemType) => void;
+    onSelect: (type: ShareItemType | null) => void;
 }
 
 export default function ShareFab({ onSelect }: ShareFabProps) {
@@ -32,9 +32,10 @@ export default function ShareFab({ onSelect }: ShareFabProps) {
 
     return (
         <div className="fixed bottom-5 right-5 sm:bottom-8 sm:right-8 z-50">
-            <DropdownMenu open={open} onOpenChange={setOpen}>
+            <DropdownMenu open={open} onOpenChange={(val) => {
+                setOpen(val);
+            }}>
 
-                {/* MENU */}
                 <DropdownMenuContent
                     side="top"
                     align="end"
