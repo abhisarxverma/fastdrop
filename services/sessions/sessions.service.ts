@@ -8,10 +8,10 @@ import { SessionsRow, NearbySession, SessionWithShares } from "@/types/sessions"
 import { SupabaseClient, User } from "@supabase/supabase-js";
 
 export interface SessionsService {
-  createSession(input: CreateSessionInput, user: User, supabase: SupabaseClient, ): Promise<ServiceResponse<SessionsRow>>;
-  getNearbySessions(input: GetNearbySessionsInput, supabase: SupabaseClient, ): Promise<ServiceResponse<NearbySession[]>>;
-  getActiveSessionOfUser(user: User, supabase: SupabaseClient) : Promise<ServiceResponse<SessionsRow>>;
-  getNearbySessionById(input: GetNearbySessionByIdInput, supabase: SupabaseClient ) : Promise<ServiceResponse<NearbySession | null>>;
-  validateSessionCode(input: ValidateSessionCodeInput, supabase: SupabaseClient) : Promise<ServiceResponse<boolean>>;
-  getSessionContentById(input: GetSessionContentByIdInput, supabase: SupabaseClient) : Promise<ServiceResponse<SessionWithShares>>;
+  createSession(input: CreateSessionInput, user: User, supabase: SupabaseClient, token: string ): Promise<ServiceResponse<SessionsRow>>;
+  getNearbySessions(input: GetNearbySessionsInput, supabase: SupabaseClient, token: string ): Promise<ServiceResponse<NearbySession[]>>;
+  getActiveSessionOfUser(user: User, supabase: SupabaseClient, token: string) : Promise<ServiceResponse<SessionsRow>>;
+  getNearbySessionById(input: GetNearbySessionByIdInput, supabase: SupabaseClient, token: string ) : Promise<ServiceResponse<NearbySession | null>>;
+  validateSessionCode(input: ValidateSessionCodeInput, supabase: SupabaseClient, token: string) : Promise<ServiceResponse<boolean>>;
+  getSessionContentById(input: GetSessionContentByIdInput, supabase: SupabaseClient, token: string) : Promise<ServiceResponse<SessionWithShares>>;
 }

@@ -15,5 +15,4 @@ export interface ShareService {
     createCodeShare(input: CodeShareInput, user: User, supabase: SupabaseClient): Promise<ServiceResponse<CodeShareItem>>;
     createFileShare(input: FileShareInput, user: User, supabase: SupabaseClient): Promise<ServiceResponse<FileShareItem>>;
     createLinkShare(input: LinkShareInput, user: User, supabase: SupabaseClient): Promise<ServiceResponse<LinkShareItem>>;
-    uploadFileToSupabase(input: UploadFileToSupabaseInput, supabase: SupabaseClient): Promise<ServiceResponse<string>>;
 }

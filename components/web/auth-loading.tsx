@@ -1,6 +1,6 @@
 import { LuLoaderCircle } from "react-icons/lu";
 
-export default function AuthLoading() {
+export function AuthLoading() {
     return (
         <div className="flex-1 flex items-center justify-center">
             <div className="flex flex-col gap-2 items-center">

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-
 import {
   Pagination,
   PaginationContent,
@@ -32,14 +31,14 @@ export function PaginatedList<T extends { id: string }>({
   const currentItems = items.slice(start, start + pageSize);
 
   return (
-    <div className="flex flex-col min-h-full gap-6">
-      {/* List */}
+    <div className="flex flex-col flex-1">
+      {/* Content */}
       <motion.section
         layout
         className={
           view === "rows"
-            ? "flex flex-col gap-3 sm:gap-4 flex-1"
-            : "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 flex-1"
+            ? "flex flex-col gap-3 sm:gap-4"
+            : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2.5 xl:grid-cols-2.5 gap-4"
         }
       >
         <AnimatePresence mode="popLayout">
@@ -47,13 +46,10 @@ export function PaginatedList<T extends { id: string }>({
             <motion.div
               key={item.id}
               layout
-              initial={{ opacity: 0, y: 12 }}
+              initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{
-                duration: 0.25,
-                ease: "easeOut",
-              }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
             >
               {renderItem(item)}
             </motion.div>
@@ -63,34 +59,42 @@ export function PaginatedList<T extends { id: string }>({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <Pagination>
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                aria-disabled={page === 1}
-              />
-            </PaginationItem>
-
-            {Array.from({ length: totalPages }).map((_, i) => (
-              <PaginationItem key={i}>
-                <PaginationLink
-                  isActive={page === i + 1}
-                  onClick={() => setPage(i + 1)}
-                >
-                  {i + 1}
-                </PaginationLink>
+        <div className="mt-8 pt-6 border-t border-border flex justify-center">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={() =>
+                    setPage((p) => Math.max(1, p - 1))
+                  }
+                  aria-disabled={page === 1}
+                />
               </PaginationItem>
-            ))}
 
-            <PaginationItem>
-              <PaginationNext
-                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                aria-disabled={page === totalPages}
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
+              {Array.from({ length: totalPages }).map((_, i) => (
+                <PaginationItem key={i}>
+                  <PaginationLink
+                    isActive={page === i + 1}
+                    onClick={() => setPage(i + 1)}
+                  >
+                    {i + 1}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+
+              <PaginationItem>
+                <PaginationNext
+                  onClick={() =>
+                    setPage((p) =>
+                      Math.min(totalPages, p + 1)
+                    )
+                  }
+                  aria-disabled={page === totalPages}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        </div>
       )}
     </div>
   );

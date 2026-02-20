@@ -10,13 +10,12 @@ import { Field, FieldLabel, FieldError } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { fileShareFormSchema } from "@/schemas/share/file-share";
 import { fileShareAction } from "@/actions/share.actions";
-import { unwrapActionResult } from "@/lib/actions/unwrap-result";
 import { getExtension, removeExtension } from "@/lib/utils/file-share";
 import { FileDropzone } from "./file-dropzone";
 import { UploadedFileCard } from "./uploaded-file-card";
 import { Upload } from "lucide-react";
 import {createClient} from "@/lib/supabase/client";
-import { randomUUID } from "crypto"
+import { MAX_FILE_SIZE_BYTES } from "@/lib/env"
 
 interface ShareFileModalProps {
   open: boolean;
@@ -48,7 +47,7 @@ export function ShareFileModal({
             return;
         }
 
-        if (data.file.size > MAX_FILE_SIZE_LIMIT) {
+        if (data.file.size > MAX_FILE_SIZE_BYTES) {
             toast.error("File exceeds maximum allowed size");
             return;
         }
@@ -57,43 +56,49 @@ export function ShareFileModal({
             try {
                 const file = data.file;
 
-                const filePath = `${session_id}/${randomUUID()}_${data.file_name}.${data.file_type}`;
+                const fileName = `${session_id}/${crypto.randomUUID()}_${data.file_name}.${data.file_type}`;
 
-                const { error: uploadError } = await supabase.storage
-                .from(OPEN_SHARES_BUCKET_NAME)
-                .upload(filePath, file, {
-                    cacheControl: "3600",
-                    upsert: false,
-                });
+               const { error: uploadError } = await supabase.storage
+                  .from("fastdrop")
+                  .upload(fileName, file);
 
                 if (uploadError) {
                     console.error("Upload error:", uploadError);
                     toast.error("File upload failed. Please try again.");
                     return;
                 }
+                  
+                const { data: publicUrlData } = supabase.storage
+                  .from("fastdrop")
+                  .getPublicUrl(fileName);
+
+                const fileUrl = publicUrlData.publicUrl;
 
                 const payload = {
                     file_type: data.file_type,
                     file_name: data.file_name,
-                    file_path: filePath,
-                    file_size: file.size,
+                    file_path: fileUrl,
+                    title: data.title,
                     session_id,
                     share_type: "single",
                 };
 
                 const res = await fileShareAction(payload);
-                const data = unwrapActionResult(res);
+                console.log("res : ", res);
 
-                if (!data.success && !data?.data) {
+                if (!res.success && !res?.data) {
                     await supabase.storage
-                    .from(OPEN_SHARES_BUCKET_NAME)
+                    .from("fastdrop")
                     .remove([filePath]);
 
                     toast.error("Failed to create file share");
+                    throw new Error(res.message);
                     return;
                 }
 
                 toast.success("File shared successfully");
+                form.reset(); 
+                onOpenChange(false);
             } catch (err) {
                 console.error("Unexpected error:", err);
                 toast.error("Unexpected error occurred");
@@ -126,8 +131,8 @@ export function ShareFileModal({
 
               <Input
                 {...field}
-                placeholder="Add a title for this share (optional)"
-                className="h-11 rounded-xl"
+                placeholder="Add a title for this share"
+                className=""
               />
 
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}

@@ -1,6 +1,5 @@
 
 import { TbBrandCSharp } from "react-icons/tb";
-import { IconType } from "react-icons"
 import {
   FaHtml5,
   FaCss3Alt,
@@ -28,7 +27,7 @@ import {
 
 export type LanguageInfoType = {
   name: string;
-  icon: IconType
+  icon: ReactNode
 };
 
 // These are the programming languages that are common and are supported by Monaco code editor

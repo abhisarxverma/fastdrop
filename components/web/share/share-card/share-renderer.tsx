@@ -7,11 +7,12 @@ import { MultipleShareCard } from "./multiple-share-card";
 interface Props {
   share: ShareWithItems;
   view: "grid" | "rows";
+  onOpen: () => void;
 }
 
-export function ShareRenderer({ share, view }: Props) {
+export function ShareRenderer({ share, view, onOpen }: Props) {
   if (share.share_type === "single") {
-    return <SingleShareCard share={share} view={view} />;
+    return <SingleShareCard onOpen={onOpen} share={share} view={view} />;
   }
 
   return <MultipleShareCard share={share} view={view} />;

@@ -8,16 +8,19 @@ import {
   Copy,
 } from "lucide-react";
 import { ShareItem } from "@/types/share-items";
+import { fileTypes } from "@/constants/file-type-info"
+import { codeLanguageInfo } from "@/constants/monaco-languages";
 
 export function getShareMeta(item: ShareItem) {
   switch (item.item_type) {
     case "file":
+      const fileInfo = fileTypes[item.file_type];
       return {
-        label: item.file_type.toUpperCase(),
+        label: fileInfo.name.toUpperCase(),
         labelColor: "text-red-600",
         title: item.file_name,
         iconBg: "bg-red-50 text-red-500",
-        Icon: FileText,
+        Icon: fileInfo.icon,
         ActionIcon: Download,
         actionLabel: "Download",
         actionShortLabel: "Download",
@@ -38,12 +41,13 @@ export function getShareMeta(item: ShareItem) {
       };
 
     case "code":
+      const languageInfo = codeLanguageInfo[item.language];
       return {
-        label: "Code",
+        label: `${languageInfo.name} code`,
         labelColor: "text-gray-600",
-        title: `${item.language} Snippet`,
+        title: `${languageInfo.name} Snippet`,
         iconBg: "bg-gray-50 text-gray-600",
-        Icon: Code,
+        Icon: languageInfo.icon,
         ActionIcon: Copy,
         actionLabel: "Copy Code",
         actionShortLabel: "Copy",

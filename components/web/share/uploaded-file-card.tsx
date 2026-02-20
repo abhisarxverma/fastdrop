@@ -38,10 +38,6 @@ export function UploadedFileCard({
               extension={fileType}
             />
           </div>
-
-          <div className="ml-2 px-2 py-1 rounded-md bg-muted text-xs font-medium text-muted-foreground select-none">
-            .{fileType}
-          </div>
         </div>
 
         <p className="text-sm text-muted-foreground">

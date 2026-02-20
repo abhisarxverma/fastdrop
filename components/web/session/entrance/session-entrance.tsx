@@ -5,11 +5,11 @@ import CheckingSessionLoader from "./checking-session-loader";
 import { SessionCodeGate } from "./session-code-gate";
 import { NearbySession } from "@/types/sessions";
 import { SessionExpiredModal } from "./session-expired-modal";
-import { getNearbySessionByIdAction } from "@/actions/sessions.actions";
+import { getNearbySessionByIdRpc } from "@/lib/supabase/rpc/get-nearby-session-by-id";
 import { useGeo } from "@/providers/geo-provider";
-import { unwrapActionResult } from "@/lib/actions/unwrap-result";
 import { useAuth } from "@/providers/auth-provider";
 import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
 
 type EntranceState =
   | "checking"
@@ -31,32 +31,34 @@ export function SessionEntrance({
 
   const { location } = useGeo();
   const { user, loading: authLoading } = useAuth();
-
+  
   useEffect(() => {
     if (authLoading) return;
     if (!user) return;
     if (!location) return;
-
+    
     let cancelled = false;
+    const supabase = createClient();
 
     async function runEntranceFlow() {
       try {
-        const res = await getNearbySessionByIdAction({
+        const res = await getNearbySessionByIdRpc(
+          supabase,
           sessionId,
-          lat: location.lat,
-          lng: location.lng,
-        });
+          location.lat,
+          location.lng,
+        );
 
         if (cancelled) return;
 
-        const fetchedSessionDetails = unwrapActionResult(res);
-        console.log("session res : ",fetchedSessionDetails);
+        console.log("session res : ",res);
 
-        if (!fetchedSessionDetails) {
+        if (!res.data || res.error) {
           setState("expired");
           return;
         }
 
+        const fetchedSessionDetails = res.data;
         setSessionDetails(fetchedSessionDetails);
 
         const isHost = fetchedSessionDetails.host_id === user?.id;

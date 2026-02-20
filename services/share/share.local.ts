@@ -4,8 +4,6 @@ import { ServiceResponse } from "@/lib/types/service-response";
 import { logLocalError } from "@/lib/logging/logger";
 import { mapSupabaseError } from "@/lib/errors/supabase-error";
 import { FileShareItem } from "@/types/share-items";
-import { OPEN_SHARES_BUCKET_NAME } from "@/lib/env";
-import { randomUUID } from "crypto";
 
 export const localShareService: ShareService = {
 
@@ -120,39 +118,6 @@ export const localShareService: ShareService = {
             message: "Code share created successfully",
             data: shareItem as CodeShareItem
         };
-    },
-
-    async uploadFileToSupabase(input, user, supabase): Promise<ServiceResponse<string>> {
-        const { file, file_name, file_type } = input;
-
-        if (file.size > MAX_FILE_SIZE_LIMIT) {
-            return {
-                success: false,
-                message: `File exceeds ${MAX_FILE_SIZE_LIMIT_MB}MB limit`,
-                data: null
-            }
-        }
-
-        const filePath = `${user.id}/${randomUUID()}_${file_name}.${file_type}`;
-
-        const { error } = await supabase.storage
-            .from(OPEN_SHARES_BUCKET_NAME)
-            .upload(filePath, file);
-
-        if (error) {
-            logLocalError("upload-file-to-supabase", { filePath }, error);
-            return {
-                success: false,
-                message: mapSupabaseError(error),
-                data: null
-            }
-        }
-
-        return {
-            success: true,
-            message: "File uploaded successfully",
-            data: filePath
-        }
     },
 
     async createFileShare(input, user, supabase): Promise<ServiceResponse<FileShareItem>> {

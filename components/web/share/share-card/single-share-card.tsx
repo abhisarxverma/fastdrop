@@ -7,13 +7,15 @@ import { ShareItemCard } from "./share-item-card";
 interface Props {
   share: ShareWithItems;
   view: "grid" | "rows";
+  onOpen: () => void;
 }
 
-export function SingleShareCard({ share, view }: Props) {
+export function SingleShareCard({ share, view, onOpen }: Props) {
   const item = mapRowToShareItem(share.items[0]);
 
   return (
     <ShareItemCard
+      onClick={onOpen}
       item={item}
       title={share.title}
       createdAt={share.created_at}

@@ -49,6 +49,7 @@ export function ShareDialog({
           rounded-2xl
           border
           overflow-hidden
+          [&>button]:hidden
         "
                 onInteractOutside={(e) => e.preventDefault()}
                 onEscapeKeyDown={(e) => e.preventDefault()}
