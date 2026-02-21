@@ -31,7 +31,7 @@ export function ViewTextModal({
       title={title}
       description={description}
       createdAt={createdAt}
-      icon={<FileText className="size-5 text-amber-600" />}
+      icon={FileText}
       footer={
         <>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>

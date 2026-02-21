@@ -32,13 +32,12 @@ export function PaginatedList<T extends { id: string }>({
 
   return (
     <div className="flex flex-col flex-1">
-      {/* Content */}
       <motion.section
         layout
         className={
           view === "rows"
             ? "flex flex-col gap-3 sm:gap-4"
-            : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2.5 xl:grid-cols-2.5 gap-4"
+            : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
         }
       >
         <AnimatePresence mode="popLayout">
@@ -57,7 +56,6 @@ export function PaginatedList<T extends { id: string }>({
         </AnimatePresence>
       </motion.section>
 
-      {/* Pagination */}
       {totalPages > 1 && (
         <div className="mt-8 pt-6 border-t border-border flex justify-center">
           <Pagination>

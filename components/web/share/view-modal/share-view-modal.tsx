@@ -10,11 +10,12 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ReactNode } from "react";
 import { Button } from "@/components/ui/button";
+import { IconType } from "react-icons";
 
 interface ShareViewModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  icon?: ReactNode;
+  icon: IconType;
   title: string;
   description?: string;
   createdAt?: Date | string;
@@ -40,9 +41,9 @@ export function ShareViewModal({
   footer,
 }: ShareViewModalProps) {
   const parsedDate =
-    typeof createdAt === "string"
-      ? new Date(createdAt)
-      : createdAt;
+    typeof createdAt === "string" ? new Date(createdAt) : createdAt;
+
+  const Icon = icon;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -57,16 +58,17 @@ export function ShareViewModal({
           rounded-2xl
           border
           overflow-hidden
+          [&>button]:hidden
         "
+         onInteractOutside={(e) => e.preventDefault()}
+        onEscapeKeyDown={(e) => e.preventDefault()}
       >
         <DialogHeader className="px-6 py-5 border-b bg-background">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-4 min-w-0">
-              {icon && (
-                <div className="size-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                  {icon}
-                </div>
-              )}
+              <div className="size-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                {<Icon className="text-primary size-5" />}
+              </div>
 
               <div className="min-w-0">
                 <DialogTitle className="text-lg font-semibold truncate">
@@ -94,9 +96,7 @@ export function ShareViewModal({
           </div>
         </DialogHeader>
 
-        <ScrollArea className="px-6 py-6 max-h-[65vh]">
-          {children}
-        </ScrollArea>
+        <ScrollArea className="px-6 py-6 max-h-[65vh]">{children}</ScrollArea>
 
         <div className="px-6 py-5 border-t bg-muted/40 flex items-center justify-between">
           <div className="flex items-center gap-4 ml-auto">

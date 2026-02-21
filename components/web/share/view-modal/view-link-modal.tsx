@@ -27,7 +27,7 @@ export function ViewLinkModal({
       onOpenChange={onOpenChange}
       title={title}
       createdAt={createdAt}
-      icon={<LinkIcon className="size-5 text-blue-500" />}
+      icon={LinkIcon}
       footer={
         <>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>

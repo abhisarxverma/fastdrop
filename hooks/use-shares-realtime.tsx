@@ -1,8 +1,10 @@
 import { createClient } from "@/lib/supabase/client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { ShareWithItems } from "@/types/shares";
 import { getSessionContentByIdRpc } from "@/lib/supabase/rpc/get-session-content-by-id";
 import { useAuth } from "@/providers/auth-provider";
+import { logLocalError } from "@/lib/logging/logger";
+import { RealtimeChannel } from "@supabase/supabase-js";
 
 type UseSharesRealtimeResult = {
   shares: ShareWithItems[];
@@ -10,45 +12,69 @@ type UseSharesRealtimeResult = {
   error: string | null;
 };
 
-export function useSharesRealtime(sessionId: string): UseSharesRealtimeResult {
+const supabase = createClient();
+
+export function useSharesRealtime(
+  sessionId: string
+): UseSharesRealtimeResult {
+  const { user } = useAuth();
+
   const [shares, setShares] = useState<ShareWithItems[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const { user } = useAuth();
-  
+
+  const channelRef = useRef<RealtimeChannel | null>(null);
+  const mountedRef = useRef<boolean>(false);
+
+  const fetchInitialData = useCallback(async () => {
+    setLoading(true);
+
+    const { data, error } = await getSessionContentByIdRpc(
+      supabase,
+      sessionId
+    );
+
+    if (error) {
+      logLocalError(
+        "get session content by id in useSharesRealtime",
+        { session_id: sessionId },
+        error
+      );
+      setError(error.message);
+      setLoading(false);
+      return;
+    }
+
+    setShares(data?.shares ?? []);
+    setLoading(false);
+  }, [sessionId]);
+
   useEffect(() => {
     if (!sessionId || !user) return;
-    
-    const supabase = createClient();
-    let channel: RealtimeChannel;
 
-    async function init() {
-      setLoading(true);
-      const { data, error } = await getSessionContentByIdRpc(
-        supabase,
-        sessionId,
-      );
+    let isCancelled = false;
 
-      if (error) {
-        logLocalError(
-          "get session content by id in use shares realtime hook",
-          { session_id: sessionId },
-          error,
-        );
-        setError(error.message);
-        setLoading(false);
+    async function setupRealtime() {
+      if (mountedRef.current) {
+        // prevents double subscription in StrictMode
         return;
       }
+      mountedRef.current = true;
 
-      console.log("data : ", data);
-      const shares = data?.shares ?? [];
-      if (data) setShares(shares);
+      await fetchInitialData();
 
-      setLoading(false);
+      if (isCancelled) return;
 
-      channel = supabase
+      // Always remove previous channel before creating new one
+      if (channelRef.current) {
+        await supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+
+      const channel = supabase
         .channel(`shares-session-${sessionId}`)
 
+        // SHARE INSERT
         .on(
           "postgres_changes",
           {
@@ -65,12 +91,14 @@ export function useSharesRealtime(sessionId: string): UseSharesRealtimeResult {
               .select("*")
               .eq("share_id", newShare.id);
 
-            console.log("new share in realtime : ", newShare);
-
-            setShares((prev) => [{ ...newShare, items: items ?? [] }, ...prev]);
-          },
+            setShares((prev) => [
+              { ...newShare, items: items ?? [] } as ShareWithItems,
+              ...prev,
+            ]);
+          }
         )
 
+        // SHARE DELETE
         .on(
           "postgres_changes",
           {
@@ -80,10 +108,13 @@ export function useSharesRealtime(sessionId: string): UseSharesRealtimeResult {
             filter: `session_id=eq.${sessionId}`,
           },
           (payload) => {
-            setShares((prev) => prev.filter((s) => s.id !== payload.old.id));
-          },
+            setShares((prev) =>
+              prev.filter((s) => s.id !== payload.old.id)
+            );
+          }
         )
 
+        // SHARE ITEM UPDATE (add deterministic filter)
         .on(
           "postgres_changes",
           {
@@ -101,15 +132,17 @@ export function useSharesRealtime(sessionId: string): UseSharesRealtimeResult {
                 return {
                   ...share,
                   items: share.items.map((item) =>
-                    item.id === updatedItem.id ? updatedItem : item,
+                    item.id === updatedItem.id
+                      ? updatedItem
+                      : item
                   ),
-                };
-              }),
+                } as ShareWithItems;
+              })
             );
-          },
+          }
         )
 
-        // .on(
+         // .on(
         //   "postgres_changes",
         //   {
         //     event: "DELETE",
@@ -159,15 +192,27 @@ export function useSharesRealtime(sessionId: string): UseSharesRealtimeResult {
 
         .subscribe((status, err) => {
           console.log("Realtime status:", status, err);
+
+          if (status === "CHANNEL_ERROR") {
+            console.warn("Realtime channel error. Resetting...");
+          }
         });
+
+      channelRef.current = channel;
     }
 
-    init();
+    setupRealtime();
 
     return () => {
-      if (channel) supabase.removeChannel(channel);
+      isCancelled = true;
+      mountedRef.current = false;
+
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
     };
-  }, [sessionId, user]);
+  }, [sessionId, user, fetchInitialData]);
 
   return { shares, loading, error };
 }

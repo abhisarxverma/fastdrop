@@ -39,8 +39,6 @@ export function SessionPageContent({
     null,
   );
 
-  console.log("active share : ", activeShare);
-
   return (
     <div className="flex flex-col">
       <SessionHeader

@@ -4,6 +4,7 @@ import { ShareViewModal } from "./share-view-modal";
 import { Button } from "@/components/ui/button";
 import { Copy } from "lucide-react";
 import { ReactNode } from "react";
+import { IconType } from "react-icons";
 
 interface ViewCodeModalProps {
   open: boolean;
@@ -13,7 +14,7 @@ interface ViewCodeModalProps {
   createdAt?: string;
   children: ReactNode;
   onCopy?: () => void;
-  languageIcon?: ReactNode;
+  LanguageIcon: IconType;
 }
 
 export function ViewCodeModal({
@@ -24,7 +25,7 @@ export function ViewCodeModal({
   createdAt,
   children,
   onCopy,
-  languageIcon,
+  LanguageIcon,
 }: ViewCodeModalProps) {
   return (
     <ShareViewModal
@@ -32,7 +33,7 @@ export function ViewCodeModal({
       onOpenChange={onOpenChange}
       title={title}
       description={description}
-      icon={languageIcon}
+      icon={LanguageIcon}
       createdAt={createdAt}
       footer={
         <>

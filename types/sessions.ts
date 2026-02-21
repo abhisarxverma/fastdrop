@@ -16,6 +16,7 @@ export type NearbySession = {
   shares_count: number;
   ended_by_host: boolean;
   created_at: string;
+  sharing_enabled: boolean;
 };
 
 export type SessionWithShares = Session & {

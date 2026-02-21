@@ -3,10 +3,11 @@ import { SupabaseTables } from "./utils";
 
 export type ShareItemsRow = SupabaseTables<"share_items">;
 
-export type ShareItemType = "all" | "text" | "code" | "file" | "link";
+export type ShareItemType = "text" | "code" | "file" | "link";
 
 export type BaseItem = {
   id: string;
+  title: string;
   share_id: string;
   created_at: string;
 };

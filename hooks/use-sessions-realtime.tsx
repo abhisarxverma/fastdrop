@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useCallback } from "react";
+import { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { NearbySession, SessionsRow } from "@/types/sessions";
 import { isSessionVisibleToUserRpc } from "@/lib/supabase/rpc/is-session-visible";
@@ -9,81 +10,134 @@ import { logError } from "@/lib/logging/logger";
 import { useAuth } from "@/providers/auth-provider";
 
 interface UseSessionsRealtimeProps {
-    lat: number;
-    lng: number;
-    onInsert: (session: NearbySession) => void;
-    onDelete: (sessionId: SessionsRow["id"]) => void;
+  lat: number;
+  lng: number;
+  onInsert: (session: NearbySession) => void;
+  onDelete: (sessionId: SessionsRow["id"]) => void;
 }
 
+const supabase = createClient();
+
 export function useSessionsRealtime({
-    lat,
-    lng,
-    onInsert,
-    onDelete
-}: UseSessionsRealtimeProps) {
-    const { user } = useAuth();
-    useEffect(() => {
-        if (!lat || !lng || !user) return;
+  lat,
+  lng,
+  onInsert,
+  onDelete,
+}: UseSessionsRealtimeProps): void {
+  const { user } = useAuth();
 
-        const supabase = createClient();
+  const channelRef = useRef<RealtimeChannel | null>(null);
+  const mountedRef = useRef<boolean>(false);
 
-        const channel = supabase
-            .channel("sessions-insert")
-            .on(
-                "postgres_changes",
-                {
-                    event: "INSERT",
-                    schema: "public",
-                    table: "sessions",
-                },
-                async (payload) => {
-                    const session = payload.new as SessionsRow;
+  const handleInsert = useCallback(
+    async (session: SessionsRow) => {
+      if (!user) return;
+      if (session.host_id === user.id) return;
 
-                    if (session.host_id === user.id) return null;
+      const { data: isVisible, error: visibilityError } =
+        await isSessionVisibleToUserRpc(
+          supabase,
+          session.id,
+          lat,
+          lng
+        );
 
-                    const { data: isVisible, error: visibilityCheckError } = await isSessionVisibleToUserRpc(supabase, session.id, lat, lng)
+      if (visibilityError) {
+        logError({
+          source: "local",
+          scope: "Sessions realtime - visibility check RPC",
+          error: visibilityError,
+        });
+        return;
+      }
 
-                    if (visibilityCheckError){
-                        logError({
-                            source: "local",
-                            scope: "Sessions realtime - visibility check by rpc",
-                            error: visibilityCheckError
-                        })
-                        return null;
-                    }
+      if (!isVisible) return;
 
-                    if (!isVisible) return;
+      const { data, error } = await getNearbySessionByIdRpc(
+        supabase,
+        session.id,
+        lat,
+        lng
+      );
 
-                    const { data, error } = await getNearbySessionByIdRpc(supabase, session.id, lat, lng);
+      if (error) {
+        logError({
+          source: "local",
+          scope: "Sessions realtime - get nearby session RPC",
+          error,
+        });
+        return;
+      }
 
-                    if (error) {
-                        logError({
-                            source: "local",
-                            scope: "Sessions realtime - getting nearby session by id",
-                            error
-                        })
-                        return null;
-                    }
+      if (data) onInsert(data as NearbySession);
+    },
+    [lat, lng, user, onInsert]
+  );
 
-                    onInsert(data as NearbySession);
-                }
-            )
-            .on(
-                "postgres_changes",
-                {
-                    event: "DELETE",
-                    schema: "public",
-                    table: "sessions",
-                },
-                (payload) => {
-                    const deletedId = payload.old.id;
-                    onDelete(deletedId);
-                }
-            )
-            .subscribe();
+  useEffect(() => {
+    if (!lat || !lng || !user) return;
 
-        return () => {
-            supabase.removeChannel(channel);
-        };
-    }, [lat, lng, user, onInsert, onDelete]);
+    let isCancelled = false;
+
+    async function setupRealtime() {
+      if (mountedRef.current) return; 
+      mountedRef.current = true;
+
+      if (channelRef.current) {
+        await supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+
+      const channel = supabase
+        .channel("sessions-realtime-global")
+
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "sessions",
+          },
+          async (payload) => {
+            if (isCancelled) return;
+            await handleInsert(payload.new as SessionsRow);
+          }
+        )
+
+        .on(
+          "postgres_changes",
+          {
+            event: "DELETE",
+            schema: "public",
+            table: "sessions",
+          },
+          (payload) => {
+            if (isCancelled) return;
+            onDelete(payload.old.id);
+          }
+        )
+
+        .subscribe((status, err) => {
+          console.log("Sessions realtime:", status, err);
+
+          if (status === "CHANNEL_ERROR") {
+            console.warn("Sessions realtime channel error");
+          }
+        });
+
+      channelRef.current = channel;
+    }
+
+    setupRealtime();
+
+    return () => {
+      isCancelled = true;
+      mountedRef.current = false;
+
+      if (channelRef.current) {
+        supabase.removeChannel(channelRef.current);
+        channelRef.current = null;
+      }
+    };
+  }, [lat, lng, user, handleInsert, onDelete]);
 }

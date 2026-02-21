@@ -3,7 +3,7 @@ import { ShareService } from "./share.service";
 import { ServiceResponse } from "@/lib/types/service-response";
 import { logLocalError } from "@/lib/logging/logger";
 import { mapSupabaseError } from "@/lib/errors/supabase-error";
-import { FileShareItem } from "@/types/share-items";
+import { CodeShareItem, FileShareItem, LinkShareItem, TextShareItem } from "@/types/share-items";
 
 export const localShareService: ShareService = {
 
@@ -38,7 +38,7 @@ export const localShareService: ShareService = {
     },
 
     async createTextShare(input, user, supabase): Promise<ServiceResponse<TextShareItem>> {
-        const { content } = input;
+        const { content, title } = input;
 
         const baseShareResponse = await this.createBaseShare(input, user, supabase);
 
@@ -57,7 +57,8 @@ export const localShareService: ShareService = {
             .insert({
                 share_id: baseShare.id,
                 content_text: content,
-                item_type: "text"
+                item_type: "text",
+                title
             })
             .select()
             .single();
@@ -79,7 +80,7 @@ export const localShareService: ShareService = {
     },
 
     async createCodeShare(input, user, supabase): Promise<ServiceResponse<CodeShareItem>> {
-        const { content, language } = input;
+        const { content, language, title } = input;
 
         const baseShareResponse = await this.createBaseShare(input, user, supabase);
 
@@ -99,7 +100,8 @@ export const localShareService: ShareService = {
                 share_id: baseShare.id,
                 content_text: content,
                 item_type: "code",
-                language
+                language,
+                title
             })
             .select()
             .single();
@@ -121,7 +123,7 @@ export const localShareService: ShareService = {
     },
 
     async createFileShare(input, user, supabase): Promise<ServiceResponse<FileShareItem>> {
-        const { file_path, file_type, file_name } = input;
+        const { file_path, file_type, file_name, title } = input;
 
         const baseShareResponse = await this.createBaseShare(input, user, supabase);
 
@@ -142,7 +144,8 @@ export const localShareService: ShareService = {
                 file_path,
                 item_type: "file",
                 file_type,
-                file_name
+                file_name,
+                title
             })
             .select()
             .single();
@@ -164,7 +167,7 @@ export const localShareService: ShareService = {
     },
 
     async createLinkShare(input, user, supabase): Promise<ServiceResponse<LinkShareItem>>{
-        const { content } = input;
+        const { content, title } = input;
 
         const baseShareResponse = await this.createBaseShare(input, user, supabase);
 
@@ -183,7 +186,8 @@ export const localShareService: ShareService = {
             .insert({
                 share_id: baseShare.id,
                 content_text: content,
-                item_type: "link"
+                item_type: "link",
+                title
             })
             .select()
             .single();
@@ -200,8 +204,7 @@ export const localShareService: ShareService = {
         return {
             success: true,
             message: "Link share created successfully",
-            data: shareItem as CodeShareItem
+            data: shareItem as LinkShareItem
         };
     }
-
 }

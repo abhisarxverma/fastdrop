@@ -14,6 +14,35 @@ export type Database = {
   }
   public: {
     Tables: {
+      session_bans: {
+        Row: {
+          banned_at: string
+          id: string
+          session_id: string
+          user_id: string
+        }
+        Insert: {
+          banned_at?: string
+          id?: string
+          session_id: string
+          user_id: string
+        }
+        Update: {
+          banned_at?: string
+          id?: string
+          session_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_bans_session_fk"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sessions: {
         Row: {
           created_at: string
@@ -25,6 +54,7 @@ export type Database = {
           location: unknown
           radius_meters: number
           requires_code: boolean
+          sharing_enabled: boolean
           title: string
         }
         Insert: {
@@ -37,6 +67,7 @@ export type Database = {
           location: unknown
           radius_meters?: number
           requires_code?: boolean
+          sharing_enabled?: boolean
           title: string
         }
         Update: {
@@ -49,6 +80,7 @@ export type Database = {
           location?: unknown
           radius_meters?: number
           requires_code?: boolean
+          sharing_enabled?: boolean
           title?: string
         }
         Relationships: []
@@ -64,6 +96,7 @@ export type Database = {
           item_type: string
           language: string | null
           share_id: string
+          title: string
         }
         Insert: {
           content_text?: string | null
@@ -75,6 +108,7 @@ export type Database = {
           item_type: string
           language?: string | null
           share_id: string
+          title: string
         }
         Update: {
           content_text?: string | null
@@ -86,6 +120,7 @@ export type Database = {
           item_type?: string
           language?: string | null
           share_id?: string
+          title?: string
         }
         Relationships: [
           {
@@ -461,6 +496,22 @@ export type Database = {
         Returns: boolean
       }
       geomfromewkt: { Args: { "": string }; Returns: unknown }
+      get_nearby_session_by_id: {
+        Args: { p_lat: number; p_lng: number; p_session_id: string }
+        Returns: {
+          created_at: string
+          distance_meters: number
+          ended_by_host: boolean
+          expires_at: string
+          host_id: string
+          id: string
+          radius_meters: number
+          requires_code: boolean
+          shares_count: number
+          sharing_enabled: boolean
+          title: string
+        }[]
+      }
       get_nearby_sessions: {
         Args: { lat: number; lng: number }
         Returns: {
@@ -473,10 +524,23 @@ export type Database = {
           radius_meters: number
           requires_code: boolean
           shares_count: number
+          sharing_enabled: boolean
           title: string
         }[]
       }
+      get_session_content_by_id: {
+        Args: { p_session_id: string }
+        Returns: Json
+      }
       gettransactionid: { Args: never; Returns: unknown }
+      is_session_visible_to_user: {
+        Args: { p_session_id: string; p_user_lat: number; p_user_lng: number }
+        Returns: boolean
+      }
+      is_user_banned: {
+        Args: { p_session_id: string; p_user_id: string }
+        Returns: boolean
+      }
       longtransactionsenabled: { Args: never; Returns: boolean }
       nearby_shares: {
         Args: { lat: number; lng: number; radius_meters: number }
@@ -1126,6 +1190,10 @@ export type Database = {
           table_name: string
         }
         Returns: string
+      }
+      validate_session_code: {
+        Args: { p_code: string; p_session_id: string }
+        Returns: boolean
       }
     }
     Enums: {

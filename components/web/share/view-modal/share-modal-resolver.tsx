@@ -4,9 +4,10 @@ import { ViewCodeModal } from "./view-code-modal";
 import { CodeEditor } from "@/components/web/share/code-editor";
 import { ViewFileModal } from "./view-file-modal";
 import { ShareWithItems } from "@/types/shares";
-import { ViewLinkModal } from "./view-link-modal";
 import { codeLanguageInfo } from "@/constants/monaco-languages";
+import { fileTypes } from "@/constants/file-type-info"
 import { CodeShareItem, FileShareItem, LinkShareItem, TextShareItem } from "@/types/share-items";
+import { ViewLinkModal } from "./view-link-modal";
 
 export function ShareModalResolver({
   share,
@@ -43,7 +44,7 @@ export function ShareModalResolver({
           title={share.title}
           description={`${languageMeta.name} Code`}
           createdAt={codeShareItem.created_at}
-          languageIcon={languageMeta.icon}
+          LanguageIcon={languageMeta.icon}
         >
           <CodeEditor
             value={codeShareItem.content_text}
@@ -68,13 +69,16 @@ export function ShareModalResolver({
 
     case "file":
       const fileShareItem = item as FileShareItem;
+      const fileInfo = fileTypes[fileShareItem.file_type];
       return (
         <ViewFileModal
           open
           onOpenChange={onClose}
           title={share.title}
+          description={fileInfo.name}
           fileName={fileShareItem.file_name}
           createdAt={fileShareItem.created_at}
+          FileIcon={fileInfo.icon}
         />
       );
 
