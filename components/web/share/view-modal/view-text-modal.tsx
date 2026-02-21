@@ -2,15 +2,16 @@
 
 import { ShareViewModal } from "./share-view-modal";
 import { Button } from "@/components/ui/button";
-import { Copy } from "lucide-react";
+import { Copy, FileText } from "lucide-react";
 import { ReactNode } from "react";
 
 interface ViewTextModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
-  meta?: string;
-  children: ReactNode; // your read-only rich editor
+  description?: string;
+  createdAt?: string;
+  children: ReactNode;
   onCopy?: () => void;
 }
 
@@ -18,7 +19,8 @@ export function ViewTextModal({
   open,
   onOpenChange,
   title,
-  meta,
+  description,
+  createdAt,
   children,
   onCopy,
 }: ViewTextModalProps) {
@@ -27,14 +29,12 @@ export function ViewTextModal({
       open={open}
       onOpenChange={onOpenChange}
       title={title}
-      subtitle={meta}
-      icon={<Copy className="size-5 text-amber-600" />}
+      description={description}
+      createdAt={createdAt}
+      icon={<FileText className="size-5 text-amber-600" />}
       footer={
         <>
-          <Button
-            variant="ghost"
-            onClick={() => onOpenChange(false)}
-          >
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Close
           </Button>
 

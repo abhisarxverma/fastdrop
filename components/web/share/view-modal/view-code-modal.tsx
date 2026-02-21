@@ -9,12 +9,11 @@ interface ViewCodeModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   title: string;
-  description?: string
-  meta?: string;
+  description?: string;
+  createdAt?: string;
   children: ReactNode;
   onCopy?: () => void;
-  sharedAt: string
-  LanguageIcon: ReactNode
+  languageIcon?: ReactNode;
 }
 
 export function ViewCodeModal({
@@ -22,28 +21,22 @@ export function ViewCodeModal({
   onOpenChange,
   title,
   description,
-  meta,
+  createdAt,
   children,
   onCopy,
-  sharedAt,
-  LanguageIcon
+  languageIcon,
 }: ViewCodeModalProps) {
   return (
     <ShareViewModal
       open={open}
       onOpenChange={onOpenChange}
       title={title}
-      subtitle={meta}
       description={description}
-      Icon={LanguageIcon}
-      maxWidth="max-w-3xl"
-      sharedAt={sharedAt}
+      icon={languageIcon}
+      createdAt={createdAt}
       footer={
         <>
-          <Button
-            variant="ghost"
-            onClick={() => onOpenChange(false)}
-          >
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Close
           </Button>
 

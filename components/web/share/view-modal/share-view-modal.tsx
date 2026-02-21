@@ -14,10 +14,10 @@ import { Button } from "@/components/ui/button";
 interface ShareViewModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  icon: ReactNode;
+  icon?: ReactNode;
   title: string;
   description?: string;
-  sharedAt?: Date | string;
+  createdAt?: Date | string;
   children: ReactNode;
   footer?: ReactNode;
 }
@@ -35,14 +35,14 @@ export function ShareViewModal({
   icon,
   title,
   description,
-  sharedAt,
+  createdAt,
   children,
   footer,
 }: ShareViewModalProps) {
   const parsedDate =
-    typeof sharedAt === "string"
-      ? new Date(sharedAt)
-      : sharedAt;
+    typeof createdAt === "string"
+      ? new Date(createdAt)
+      : createdAt;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -57,17 +57,16 @@ export function ShareViewModal({
           rounded-2xl
           border
           overflow-hidden
-          [&>button]:hidden
         "
-        onInteractOutside={(e) => e.preventDefault()}
-        onEscapeKeyDown={(e) => e.preventDefault()}
       >
         <DialogHeader className="px-6 py-5 border-b bg-background">
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-4 min-w-0">
-              <div className="size-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
-                {<Icon className="size-5 text-blue-600"  />}
-              </div>
+              {icon && (
+                <div className="size-11 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                  {icon}
+                </div>
+              )}
 
               <div className="min-w-0">
                 <DialogTitle className="text-lg font-semibold truncate">

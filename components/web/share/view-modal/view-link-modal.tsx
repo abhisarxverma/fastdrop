@@ -9,6 +9,7 @@ interface ViewLinkModalProps {
   onOpenChange: (open: boolean) => void;
   title: string;
   url: string;
+  createdAt?: string;
   onCopy?: () => void;
 }
 
@@ -17,6 +18,7 @@ export function ViewLinkModal({
   onOpenChange,
   title,
   url,
+  createdAt,
   onCopy,
 }: ViewLinkModalProps) {
   return (
@@ -24,12 +26,12 @@ export function ViewLinkModal({
       open={open}
       onOpenChange={onOpenChange}
       title={title}
+      createdAt={createdAt}
       icon={<LinkIcon className="size-5 text-blue-500" />}
-      maxWidth="max-w-xl"
       footer={
         <>
-          <Button variant="ghost" onClick={onOpenChange.bind(null, false)}>
-            Cancel
+          <Button variant="ghost" onClick={() => onOpenChange(false)}>
+            Close
           </Button>
 
           <Button onClick={() => window.open(url, "_blank")}>
@@ -40,9 +42,7 @@ export function ViewLinkModal({
       }
     >
       <div className="rounded-xl border p-4 bg-background flex items-center justify-between gap-4">
-        <p className="text-sm text-muted-foreground break-all">
-          {url}
-        </p>
+        <p className="text-sm text-muted-foreground break-all">{url}</p>
 
         <Button size="icon" variant="ghost" onClick={onCopy}>
           <Copy className="size-4" />
