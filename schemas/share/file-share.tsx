@@ -20,3 +20,10 @@ export type UploadFileToSupabaseInput = {
 }
 
 export type FileShareInput = z.infer<typeof fileShareActionSchema>;
+
+export const fileItemSchema = fileShareActionSchema
+  .omit({ session_id: true, share_type: true })
+  .extend({ item_type: z.literal("file"), 
+    // file: z
+    // .instanceof(File, { error: "Please upload a file to share" }).nullable(),
+   })

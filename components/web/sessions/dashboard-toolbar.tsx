@@ -1,9 +1,4 @@
 import { Button } from "@/components/ui/button";
-import { LuGrid2X2, LuRows2 } from "react-icons/lu";
-import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@/components/ui/toggle-group";
 import SearchInput from "../reusables/search-input";
 import { FaPlus } from "react-icons/fa";
 import ViewToggle from "../reusables/view-toggle";
@@ -20,8 +15,8 @@ interface DashboardToolbarProps {
 export default function DashboardToolbar({ view, onViewChange, searchInput, onSearchInputChange, disableStart=false, onStartClick }: DashboardToolbarProps) {
   return (
     <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-      <div className="flex flex-wrap gap-6">
-        <SearchInput value={searchInput} onChange={onSearchInputChange} addClass="sm:w-64" placeholder="Search sessions...." />
+      <div className="flex gap-6">
+        <SearchInput value={searchInput} onChange={onSearchInputChange} addClass="sm:w-75" placeholder="Search sessions...." />
         <div className="flex items-center gap-3">
           <span className="text-xs sm:text-sm md:text-md font-semibold uppercase text-muted-foreground">
             View

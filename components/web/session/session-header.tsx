@@ -26,14 +26,12 @@ export function SessionHeader({
     onLeave,
 }: SessionHeaderProps) {
     return (
-        <section className="w-full border-b bg-background">
+        <section className="w-full border-b bg-card/60">
             <Container>
                 <div className="py-6 flex flex-col gap-6">
 
-                    {/* TOP ROW */}
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
 
-                        {/* LEFT */}
                         <div className="flex flex-col gap-3 lg:max-w-[50%]">
 
                             <div className="flex flex-wrap items-center gap-3">
@@ -50,7 +48,6 @@ export function SessionHeader({
                                 </Badge>
                             </div>
 
-                            {/* MOBILE META */}
                             <div className="flex flex-col gap-2 sm:hidden text-xs text-muted-foreground">
                                 <div className="flex items-center gap-2">
                                     <CalendarDays className="size-4 opacity-70" />
@@ -69,7 +66,6 @@ export function SessionHeader({
                             </div>
                         </div>
 
-                        {/* RIGHT DESKTOP */}
                         <div className="hidden sm:flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
 
                             <div className="flex items-center gap-2">
@@ -113,7 +109,6 @@ export function SessionHeader({
 
                     </div>
 
-                    {/* MOBILE LEAVE BUTTON */}
                     <div className="sm:hidden">
                         <Button
                             onClick={onLeave}

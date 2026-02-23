@@ -9,3 +9,7 @@ export const textShareActionSchema = baseShareSchema.extend({
 export const textShareFormSchema = textShareActionSchema.omit({ session_id: true, share_type: true });
 
 export type TextShareInput = z.infer<typeof textShareActionSchema>;
+
+export const textItemSchema = textShareActionSchema
+  .omit({ session_id: true, share_type: true })
+  .extend({ item_type: z.literal("text") })

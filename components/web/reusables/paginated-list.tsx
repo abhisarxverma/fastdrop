@@ -21,7 +21,7 @@ interface PaginatedListProps<T extends { id: string }> {
 export function PaginatedList<T extends { id: string }>({
   items,
   view,
-  pageSize = 6,
+  pageSize = 12,
   renderItem,
 }: PaginatedListProps<T>) {
   const [page, setPage] = useState(1);

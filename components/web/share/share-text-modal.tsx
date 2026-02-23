@@ -44,13 +44,14 @@ export function ShareTextModal({
         startTransition(async () => {
             try {
                 const res = await textShareAction(actionInput);
+                console.log("Txt share res : ", res);
                 const data = unwrapActionResult(res);
                 console.log("Text share data: ", data);
                 toast.success("Text shared successfully!");
                 onOpenChange(false);
                 form.reset();
             } catch (error) {
-                toast.error("Something went wrong!");
+                toast.error((error as Error).message);
                 console.error((error as Error));
             }
         });

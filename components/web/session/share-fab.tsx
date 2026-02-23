@@ -16,9 +16,10 @@ import {
 } from "lucide-react";
 import { ShareItemType } from "@/types/share-items";
 import { Button } from "@/components/ui/button";
+import { FaFolder } from "react-icons/fa";
 
 interface ShareFabProps {
-    onSelect: (type: ShareItemType | null) => void;
+    onSelect: (type: ShareItemType | "folder" | null) => void;
 }
 
 export default function ShareFab({ onSelect }: ShareFabProps) {
@@ -81,6 +82,13 @@ export default function ShareFab({ onSelect }: ShareFabProps) {
                     >
                         <StickyNote className={iconClass} />
                         <span className="text-sm font-medium">Text Note</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                        onClick={() => onSelect("folder")}
+                        className={`${itemClass} group`}
+                    >
+                        <FaFolder className={iconClass} />
+                        <span className="text-sm font-medium">Folder (Multiple items)</span>
                     </DropdownMenuItem>
                 </DropdownMenuContent>
 

@@ -5,7 +5,6 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { relativeTimeFromNow } from "@/lib/utils/formatters";
 import { getShareMeta } from "./lib/share-meta";
-import { toast } from "sonner";
 
 interface Props {
   item: ShareItem;

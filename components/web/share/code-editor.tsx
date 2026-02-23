@@ -44,7 +44,7 @@ export function CodeEditor({
   return (
     <div className="w-full rounded-lg overflow-hidden border shadow-sm">
       <Editor
-        height="250px"
+        height="320px"
         language={language}
         value={value}
         theme="vs-dark"

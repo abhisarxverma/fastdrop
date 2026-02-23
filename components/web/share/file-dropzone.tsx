@@ -5,14 +5,20 @@ import { useCallback } from "react";
 import { Upload } from "lucide-react";
 
 type FileDropzoneProps = {
-  onChange: (file: File | null) => void;
+  onChange: (files: File[]) => void;
+  multiple?: boolean;
+  directory?: boolean;
 };
 
-export function FileDropzone({ onChange }: FileDropzoneProps) {
+export function FileDropzone({
+  onChange,
+  multiple = false,
+  directory = false,
+}: FileDropzoneProps) {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {
-        onChange(acceptedFiles[0]);
+        onChange(acceptedFiles);
       }
     },
     [onChange]
@@ -20,7 +26,7 @@ export function FileDropzone({ onChange }: FileDropzoneProps) {
 
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
-    multiple: false,
+    multiple,
     noClick: true,
     noKeyboard: true,
   });
@@ -39,7 +45,10 @@ export function FileDropzone({ onChange }: FileDropzoneProps) {
       `}
       onClick={open}
     >
-      <input {...getInputProps()} />
+      <input
+        {...getInputProps()}
+        {...(directory ? { webkitdirectory: "true" } : {})}
+      />
 
       <div className="size-14 rounded-full bg-background border flex items-center justify-center mb-4 text-muted-foreground transition-colors group-hover:text-primary">
         <Upload className="size-6" />
@@ -47,7 +56,7 @@ export function FileDropzone({ onChange }: FileDropzoneProps) {
 
       <div className="text-center space-y-1">
         <p className="text-sm font-semibold">
-          Drag & drop file here or{" "}
+          Drag & drop file{directory ? "s or folders" : ""} here or{" "}
           <span className="text-primary">click to browse</span>
         </p>
         <p className="text-xs text-muted-foreground">

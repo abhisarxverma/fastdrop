@@ -52,18 +52,16 @@ export function SessionFilters({
 
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between lg:gap-6">
 
-          {/* LEFT SIDE */}
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:flex-1">
 
             <div className="flex-1 min-w-[200px]">
               <SearchInput
                 value={searchInput}
                 onChange={onSearchInputChange}
-                placeholder="Search in session..."
+                placeholder="Search here"
               />
             </div>
 
-            {/* Hidden below md */}
             <div className="hidden md:block">
               <ViewToggle
                 value={view}
@@ -73,7 +71,6 @@ export function SessionFilters({
 
           </div>
 
-          {/* RIGHT SIDE */}
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center lg:gap-4">
 
             <div className="overflow-x-auto lg:overflow-visible">
@@ -87,7 +84,7 @@ export function SessionFilters({
               <SelectContent>
                 <SelectItem value="newest">Newest first</SelectItem>
                 <SelectItem value="oldest">Oldest first</SelectItem>
-                <SelectItem value="az">Name A-Z</SelectItem>
+                {/* <SelectItem value="az">Name A-Z</SelectItem> */}
               </SelectContent>
             </Select>
 

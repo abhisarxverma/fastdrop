@@ -24,10 +24,11 @@ import {
   SiTypescript,
   SiGraphql,
 } from "react-icons/si";
+import { IconType } from "react-icons";
 
 export type LanguageInfoType = {
   name: string;
-  icon: ReactNode
+  icon: IconType
 };
 
 // These are the programming languages that are common and are supported by Monaco code editor

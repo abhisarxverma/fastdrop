@@ -11,6 +11,8 @@ import { containsProfanity } from "@/lib/utils/profanity";
 import { isBlockedDomain } from "@/lib/utils/link-moderation";
 import { logError } from "@/lib/logging/logger"
 import ogs from "open-graph-scraper";
+import { LinkMetadataResponse } from "@/types/utils";
+import { folderShareActionSchema } from "@/schemas/share/folder-share";
 
 export const textShareAction = actionClient
     .inputSchema(textShareActionSchema)
@@ -44,6 +46,14 @@ export const linkShareAction = actionClient
         })
     })
 
+export const folderShareAction = actionClient
+    .inputSchema(folderShareActionSchema)
+    .action(async ({ parsedInput }) => {
+      return withAuth(async ({ supabase, user, token }) => {
+        return shareService.createFolderShare(parsedInput, user, supabase, token);
+      })
+    })
+
 const GOOGLE_SAFE_BROWSING_API = `https://safebrowsing.googleapis.com/v4/threatMatches:find?key=${process.env.GOOGLE_API_KEY}`
 
 async function checkSafeBrowsing(url: string): Promise<boolean> {
@@ -70,8 +80,9 @@ async function checkSafeBrowsing(url: string): Promise<boolean> {
   return !data.matches
 }
 
-
-export async function fetchMetadata(url: string): Promise<MetadataResponse> {
+export async function fetchMetadata(url: string): Promise<LinkMetadataResponse> {
+  let result;
+  let safe;
   try {
     if (isBlockedDomain(url)) {
       return {
@@ -80,12 +91,11 @@ export async function fetchMetadata(url: string): Promise<MetadataResponse> {
       };
     }
 
-    const safe = await checkSafeBrowsing(url)
+    safe = await checkSafeBrowsing(url)
     if (!safe) {
       return { status: "unsafe", message: "This link is flagged as unsafe." }
     }
 
-    let result;
     try {
       result = (await ogs({ url })).result;
     } catch (error) {

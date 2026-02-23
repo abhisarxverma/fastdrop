@@ -1,22 +1,9 @@
-import { SharesRow } from "@/types/shares";
 import { ShareService } from "./share.service";
 import { ServiceResponse } from "@/lib/types/service-response";
 import { TextShareItem, CodeShareItem, LinkShareItem, FileShareItem } from "@/types/share-items";
 import { fetchBackend } from "@/lib/fetcher";
 
 export const backendShareService: ShareService = {
-
-    async createBaseShare(input, user): Promise<ServiceResponse<SharesRow>> {
-        return fetchBackend("/api/share/base", {
-            method: "POST",
-            body: {
-                title: input.title,
-                share_type: input.share_type,
-                created_by: user.id,
-                session_id: input.session_id
-            }
-        })
-    },
     
     async createTextShare(input, user, supabase, token): Promise<ServiceResponse<TextShareItem>> {
 
@@ -33,10 +20,11 @@ export const backendShareService: ShareService = {
         })
     },
 
-    async createCodeShare(input, user): Promise<ServiceResponse<CodeShareItem>> {
+    async createCodeShare(input, user, supabase, token): Promise<ServiceResponse<CodeShareItem>> {
 
         return fetchBackend("/api/share/code", {
             method: "POST",
+            authorization : `Bearer ${token}`,
             body: {
                 session_id: input.session_id,
                 share_type: input.share_type,
@@ -48,10 +36,11 @@ export const backendShareService: ShareService = {
         })
     },
 
-    async createFileShare(input, user): Promise<ServiceResponse<FileShareItem>> {
+    async createFileShare(input, user, supabase, token): Promise<ServiceResponse<FileShareItem>> {
 
         return fetchBackend("/api/share/file", {
             method: "POST",
+            authorization : `Bearer ${token}`,
             body: {
                 session_id: input.session_id,
                 share_type: input.share_type,
@@ -64,15 +53,30 @@ export const backendShareService: ShareService = {
         })
     },
 
-    async createLinkShare(input, user): Promise<ServiceResponse<LinkShareItem>> {
+    async createLinkShare(input, user, supabase, token): Promise<ServiceResponse<LinkShareItem>> {
         return fetchBackend("/api/share/link", {
             method: "POST",
+            authorization : `Bearer ${token}`,
             body: {
                 session_id: input.session_id,
                 share_type: input.share_type,
                 created_by: user.id,
                 content_text: input.content,
                 title: input.title
+            }
+        })
+    },
+
+    async createFolderShare(input, user, supabase, token): Promise<ServiceResponse<string>> {
+        return fetchBackend("/api/share/folder", {
+            method: 'POST',
+            authorization : `Bearer ${token}`,
+            body: {
+                session_id: input.session_id,
+                share_type: input.share_type,
+                created_by: user.id,
+                title: input.title,
+                items: input.items
             }
         })
     }

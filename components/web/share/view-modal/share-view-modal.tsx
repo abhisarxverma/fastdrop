@@ -71,7 +71,7 @@ export function ShareViewModal({
               </div>
 
               <div className="min-w-0">
-                <DialogTitle className="text-lg font-semibold truncate">
+                <DialogTitle className="text-lg font-semibold max-w-100 truncate">
                   {title}
                 </DialogTitle>
 

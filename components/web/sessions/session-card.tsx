@@ -29,7 +29,6 @@ export function SessionCard({ session, view }: SessionCardProps) {
           : "flex flex-col md:flex-row md:items-center md:justify-between gap-4 p-4 sm:p-5"
       )}
     >
-      {/* Content */}
       <div className="flex flex-col gap-3">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h3
@@ -75,7 +74,6 @@ export function SessionCard({ session, view }: SessionCardProps) {
         </div>
       </div>
 
-      {/* CTA */}
       <div className={cn(isGrid ? "pt-2" : "self-start md:self-center")}>
         <Button
           variant="outline"

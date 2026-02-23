@@ -11,3 +11,7 @@ export const linkShareFormSchema = linkShareActionSchema.omit({
 })
 
 export type LinkShareInput = z.infer<typeof linkShareActionSchema>;
+
+export const linkItemSchema = linkShareActionSchema
+  .omit({ session_id: true, share_type: true })
+  .extend({ item_type: z.literal("link") })

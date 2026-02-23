@@ -35,7 +35,7 @@ export function ShareFileModal({
     resolver: zodResolver(fileShareFormSchema),
     defaultValues: {
       title: "",
-      file: null,
+      file: undefined,
       file_name: "",
       file_type: "",
     },
@@ -86,13 +86,13 @@ export function ShareFileModal({
                 const res = await fileShareAction(payload);
                 console.log("res : ", res);
 
-                if (!res.success && !res?.data) {
+                if (!res?.data || !res.data?.success) {
                     await supabase.storage
                     .from("fastdrop")
-                    .remove([filePath]);
+                    .remove([fileName]);
 
                     toast.error("Failed to create file share");
-                    throw new Error(res.message);
+                    throw new Error(res?.data?.message);
                     return;
                 }
 
@@ -150,8 +150,9 @@ export function ShareFileModal({
               <Field>
                 <FieldLabel>File</FieldLabel>
                 <FileDropzone
-                  value={field.value}
-                  onChange={(file) => {
+                  // value={field.value}
+                  onChange={(files) => {
+                    const file = files[0];
                     field.onChange(file);
                     if (file) {
                       form.setValue("file_name", file.name, {
@@ -184,7 +185,7 @@ export function ShareFileModal({
                   file={form.getValues("file")}
                   fileName={removeExtension(field.value)}
                   fileType={form.getValues("file_type")}
-                  onPreview={() => {}}
+                  // onPreview={() => {}}
                   onRemove={() => {
                     form.setValue("file", null as unknown as File);
                     form.setValue("file_type", "");
