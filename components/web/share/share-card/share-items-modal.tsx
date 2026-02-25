@@ -4,37 +4,50 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { ShareWithItems } from "@/types/shares";
 import { mapRowToShareItem } from "@/lib/mappers/map-share-item";
 import { ShareItemCard } from "./share-item-card";
+import { ShareItem } from "@/types/share-items";
+import { useState } from "react";
+import { ShareItemViewResolver } from "../share-folder/share-item-view-resolver";
 
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   share: ShareWithItems;
-  view: "grid" | "rows";
 }
 
-export function ShareItemsModal({ open, onOpenChange, share, view }: Props) {
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>{share.title}</DialogTitle>
-        </DialogHeader>
+export function ShareItemsModal({ open, onOpenChange, share }: Props) {
+  const [selectedItem, setSelectedItem] = useState<ShareItem | null>(null);
 
-        <div className="space-y-3">
-          {share.items.map((row) => {
-            const item = mapRowToShareItem(row);
-            return (
+  const items = share.items.map(mapRowToShareItem);
+
+  return (
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>{share.title}</DialogTitle>
+          </DialogHeader>
+
+          <div className="space-y-3">
+            {items.map((item : ShareItem) => (
               <ShareItemCard
                 key={item.id}
                 item={item}
-                title={share.title}
+                title={item.title}
                 createdAt={share.created_at}
-                view={view}
+                view="rows"
+                onClick={() => setSelectedItem(item)}
               />
-            );
-          })}
-        </div>
-      </DialogContent>
-    </Dialog>
+            ))}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <ShareItemViewResolver
+        item={selectedItem}
+        open={!!selectedItem}
+        onClose={() => setSelectedItem(null)}
+        shareTitle={selectedItem?.title ?? share.title}
+      />
+    </>
   );
 }

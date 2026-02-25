@@ -1,20 +1,18 @@
 import {
-  FileText,
   Link as LinkIcon,
-  Code,
   StickyNote,
   Download,
   ExternalLink,
   Copy,
 } from "lucide-react";
-import { ShareItem } from "@/types/share-items";
 import { fileTypes } from "@/constants/file-type-info"
 import { codeLanguageInfo } from "@/constants/monaco-languages";
+import { ShareMetaInput } from "@/types/share-meta-input";
 
-export function getShareMeta(item: ShareItem) {
+export function getShareMeta(item: ShareMetaInput) {
   switch (item.item_type) {
     case "file":
-      const fileInfo = fileTypes[item.file_type];
+      const fileInfo = fileTypes[item.file_type as keyof typeof fileTypes];
       return {
         label: fileInfo.name.toUpperCase(),
         labelColor: "text-red-600",
@@ -58,7 +56,7 @@ export function getShareMeta(item: ShareItem) {
       return {
         label: "Text",
         labelColor: "text-amber-600",
-        title: item.content_text.slice(0, 60),
+        title: item.title,
         iconBg: "bg-amber-50 text-amber-600",
         Icon: StickyNote,
         ActionIcon: Copy,

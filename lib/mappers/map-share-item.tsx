@@ -19,6 +19,7 @@ export function mapRowToShareItem(row: ShareItemsRow): ShareItem {
         file_type: row.file_type! as keyof typeof fileTypes,
         file_name: row.file_name!,
         file_path: row.file_path!,
+        title: row.title,
       } satisfies FileShareItem;
 
     case "code":
@@ -29,6 +30,7 @@ export function mapRowToShareItem(row: ShareItemsRow): ShareItem {
         item_type: "code",
         content_text: row.content_text!,
         language: row.language!,
+        title: row.title,
       } satisfies CodeShareItem;
 
     case "text":
@@ -38,6 +40,7 @@ export function mapRowToShareItem(row: ShareItemsRow): ShareItem {
         created_at: row.created_at,
         item_type: "text",
         content_text: row.content_text!,
+        title: row.title,
       } satisfies TextShareItem;
 
     case "link":
@@ -47,6 +50,7 @@ export function mapRowToShareItem(row: ShareItemsRow): ShareItem {
         created_at: row.created_at,
         item_type: "link",
         content_text: row.content_text!,
+        title: row.title,
       } satisfies LinkShareItem;
 
     default:

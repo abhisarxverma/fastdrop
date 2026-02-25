@@ -1,35 +1,43 @@
 "use client";
 
-import { useTransition } from "react";
-import { useForm, useFieldArray, FormProvider } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { ShareDialog } from "../share-dialog";
+import { useState, useTransition } from "react";
 import {
-  folderShareFormSchema,
+  useForm,
+  useFieldArray,
+  FormProvider,
+  FieldErrors,
+} from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
   FolderShareFormValues,
   FolderShareInput,
+  folderShareFormSchema,
 } from "@/schemas/share/folder-share";
+
+import { ShareDialog } from "../share-dialog";
+import { Input } from "@/components/ui/input";
+import { Field, FieldLabel, FieldError } from "@/components/ui/field";
+import { AddItemDropdown } from "./add-item-dropdown";
+import { FolderItemsRow } from "./folder-items-row";
+import { FileDropzone } from "../file-dropzone";
+import { getExtension } from "@/lib/utils/file-share";
+import { resolveItemTypeFromExtension } from "@/lib/utils/share-item-resolver";
+import { toast } from "sonner";
+import { FaFolder } from "react-icons/fa";
+import { ItemEditModal } from "./item-edit-modal";
 import { folderShareAction } from "@/actions/share.actions";
 import { unwrapActionResult } from "@/lib/actions/unwrap-result";
-import { createClient } from "@/lib/supabase/client";
 import { MAX_FILE_SIZE_BYTES } from "@/lib/env";
-import { MainShareHeader } from "./main-share-header";
-import { FolderUploadBar } from "./folder-upload-bar";
-import { ItemsEditor } from "./items-editor";
-import { FaFolder } from "react-icons/fa6";
+import { createClient } from "@/lib/supabase/client";
 
-interface ShareMultiModalProps {
+interface Props {
   open: boolean;
-  onOpenChange: (val: boolean) => void;
+  onOpenChange: (open: boolean) => void;
   session_id: string;
 }
 
-export function ShareMultiModal({
-  open,
-  onOpenChange,
-  session_id,
-}: ShareMultiModalProps) {
+export function ShareFolderModal({ open, onOpenChange, session_id }: Props) {
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
   const supabase = createClient();
 
@@ -41,26 +49,72 @@ export function ShareMultiModal({
     },
   });
 
-  const { fields, append, remove } = useFieldArray<
-    FolderShareFormValues,
-    "items"
-  >({
+  const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "items",
   });
 
-  async function handleSubmit(data: FolderShareFormValues) {
+  function handleAdd(
+    type: FolderShareFormValues["items"][number]["item_type"],
+  ) {
+    switch (type) {
+      case "code":
+        append({
+          title: "",
+          item_type: "code",
+          content: "",
+          language: "typescript",
+        });
+        break;
+
+      case "text":
+        append({
+          title: "",
+          item_type: "text",
+          content: "",
+        });
+        break;
+
+      case "link":
+        append({
+          title: "",
+          item_type: "link",
+          content: "",
+        });
+        break;
+
+      case "file":
+        append({
+          title: "",
+          item_type: "file",
+          file: null,
+          file_name: "",
+          file_type: "pdf",
+          file_path: "",
+        });
+        break;
+    }
+
+    setEditingIndex(fields.length);
+  }
+
+  function handleSubmit(data: FolderShareFormValues) {
     startTransition(async () => {
       const uploadedPaths: string[] = [];
 
       try {
+        const currentValues = form.getValues(); 
         const transformedItems: FolderShareInput["items"] = [];
 
-        for (const item of data.items) {
+        for (const item of currentValues.items) {
           if (item.item_type === "file") {
-            if (!item.file) throw new Error("Missing file");
+            if (!(item.file instanceof File)) {
+              throw new Error("Missing file");
+            }
 
-            if (item.file.size > MAX_FILE_SIZE_BYTES) {
+            const file = item.file as File;
+
+            if (file.size > MAX_FILE_SIZE_BYTES) {
               throw new Error("File exceeds maximum size");
             }
 
@@ -69,7 +123,7 @@ export function ShareMultiModal({
 
             const { error } = await supabase.storage
               .from("fastdrop")
-              .upload(storagePath, item.file);
+              .upload(storagePath, file);
 
             if (error) throw new Error("File upload failed");
 
@@ -92,7 +146,7 @@ export function ShareMultiModal({
         }
 
         const payload: FolderShareInput = {
-          title: data.title,
+          title: currentValues.title,
           session_id,
           share_type: "folder",
           items: transformedItems,
@@ -114,28 +168,104 @@ export function ShareMultiModal({
     });
   }
 
+  const onError = (errors: FieldErrors<FolderShareFormValues>) => {
+    console.log("Validation failed:", errors);
+  };
+
   return (
     <ShareDialog
-      icon={<FaFolder className="size-5 text-primary" />}
+      icon={<FaFolder className="size-5" />}
       open={open}
       onOpenChange={onOpenChange}
       title="Share Folder"
-      description="Share multiple resources in a single folder"
+      description="Add and manage items before sharing"
       submitLabel="Share folder"
+      onSubmit={form.handleSubmit(handleSubmit, onError)}
       isSubmitting={isPending}
-      onSubmit={form.handleSubmit(handleSubmit)}
     >
-    <FormProvider {...form}>
-      <form className="space-y-8">
-        <MainShareHeader control={form.control} />
-        <FolderUploadBar append={append} />
-        <ItemsEditor
-          fields={fields}
-          control={form.control}
-          remove={remove}
-        />
-      </form>
-    </ FormProvider>
+      <FormProvider {...form}>
+        <>
+          <form className="space-y-8">
+            <Field>
+              <FieldLabel>Share Title</FieldLabel>
+              <Input {...form.register("title")} />
+              <FieldError errors={[form.formState.errors.title]} />
+            </Field>
+
+            <AddItemDropdown onAdd={handleAdd} />
+
+            {fields.length === 0 ? (
+              <FileDropzone
+                multiple
+                directory
+                onChange={async (files) => {
+                  for (const file of files) {
+                    const ext = getExtension(file.name);
+                    const resolved = resolveItemTypeFromExtension(ext);
+
+                    if (!resolved.type) {
+                      toast.error(`Unsupported file type: .${ext}`);
+                      continue;
+                    }
+
+                    if (resolved.type === "code") {
+                      const content = await file.text();
+
+                      append({
+                        title: file.name,
+                        item_type: "code",
+                        content,
+                        language: resolved.language!,
+                      });
+
+                      continue;
+                    }
+
+                    if (resolved.type === "text") {
+                      const content = await file.text();
+
+                      append({
+                        title: file.name,
+                        item_type: "text",
+                        content,
+                      });
+
+                      continue;
+                    }
+
+                    if (resolved.type === "file") {
+                      append({
+                        title: file.name,
+                        item_type: "file",
+                        file,
+                        file_name: file.name,
+                        file_type: ext,
+                        file_path: "",
+                      });
+                    }
+                  }
+                }}
+              />
+            ) : (
+              <FolderItemsRow
+                fields={fields}
+                remove={remove}
+                onEdit={(index) => setEditingIndex(index)}
+              />
+            )}
+          </form>
+
+          {editingIndex !== null && (
+            <ItemEditModal
+              index={editingIndex}
+              open={editingIndex !== null}
+              onOpenChange={(open) => {
+                if (!open) setEditingIndex(null);
+              }}
+            />
+          )}
+        </>
+      </FormProvider>
     </ShareDialog>
   );
 }

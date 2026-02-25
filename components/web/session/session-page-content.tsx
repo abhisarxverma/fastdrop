@@ -20,7 +20,7 @@ import { ShareRenderer } from "../share/share-card/share-renderer";
 import { useSharesRealtime } from "@/hooks/use-shares-realtime";
 import { ShareModalResolver } from "@/components/web/share/view-modal/share-modal-resolver";
 import { fileTypes } from "@/constants/file-type-info";
-import { ShareMultiModal } from "../share/share-folder/share-folder-modal";
+import { ShareFolderModal } from "../share/share-folder/share-folder-modal";
 
 interface SessionPageContentProps {
   sessionId: string;
@@ -161,7 +161,7 @@ export function SessionPageContent({
         onOpenChange={(open) => !open && setNewShareType(null)}
         session_id={sessionId}
       />
-      <ShareMultiModal
+      <ShareFolderModal
         open={newShareType === "folder"}
         onOpenChange={(open) => !open && setNewShareType(null)}
         session_id={sessionId}
