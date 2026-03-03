@@ -191,28 +191,51 @@ export function useSharesRealtime(
           },
         )
 
-        // .on(
-        //   "postgres_changes",
-        //   {
-        //     event: "INSERT",
-        //     schema: "public",
-        //     table: "share_items",
-        //   },
-        //   (payload) => {
-        //     const newItem = payload.new;
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "share_items",
+          },
+          (payload) => {
+            const newItem = payload.new;
 
-        //     setShares((prev) =>
-        //       prev.map((share) => {
-        //         if (share.id !== newItem.share_id) return share;
+            setShares((prev) =>
+              prev.map((share) => {
+                if (share.id !== newItem.share_id) return share;
 
-        //         return {
-        //           ...share,
-        //           items: [newItem, ...share.items],
-        //         } as ShareWithItems;
-        //       }),
-        //     );
-        //   },
-        // )
+                return {
+                  ...share,
+                  items: [newItem, ...share.items],
+                } as ShareWithItems;
+              }),
+            );
+          },
+        )
+
+        .on(
+          "postgres_changes",
+          {
+            event: "DELETE",
+            schema: "public",
+            table: "share_items",
+          },
+          (payload) => {
+            const oldItem = payload.old;
+
+            setShares((prev) =>
+              prev.map((share) => {
+                if (share.id !== oldItem.share_id) return share;
+
+                return {
+                  ...share,
+                  items: share.items.filter((item) => item.id != oldItem.id),
+                } as ShareWithItems;
+              }),
+            );
+          },
+        )
 
         .subscribe((status, err) => {
           console.log("Realtime status:", status, err);

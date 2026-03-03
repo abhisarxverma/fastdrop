@@ -29,6 +29,7 @@ export function ShareEditModalResolver({
 
   return (
     <FolderShareEditModal
+      session_id={share.session_id}
       share={share}
       open={open}
       onOpenChange={onOpenChange}

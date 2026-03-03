@@ -1,11 +1,10 @@
 import { ShareWithItems } from "@/types/shares";
-import { EditShareInput } from "@/schemas/share/edit-share";
+import { EditShareFormValues } from "@/schemas/share/edit-share";
 
 export function mapShareToEditFormValues(
   share: ShareWithItems
-): EditShareInput {
+): EditShareFormValues {
   return {
-    share_id: share.id,
     title: share.title,
     items: share.items.map((item) => {
       switch (item.item_type) {
@@ -23,7 +22,7 @@ export function mapShareToEditFormValues(
             item_type: "code",
             title: item.title,
             content: item.content_text ?? "",
-            language: item.language ?? "plaintext",
+            language: item.language ?? "typescript",
           };
 
         case "link":
@@ -40,12 +39,13 @@ export function mapShareToEditFormValues(
             item_type: "file",
             title: item.title,
             file_name: item.file_name ?? "",
-            file_path: item.file_path ?? "",
             file_type: item.file_type ?? "",
+            file_path: item.file_path ?? undefined,
+            file: null,
           };
 
         default:
-          throw new Error("Invalid item_type");
+          throw new Error("Unknown item type");
       }
     }),
   };

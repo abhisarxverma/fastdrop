@@ -3,65 +3,197 @@
 import { useState, useTransition } from "react";
 import {
   useForm,
-  FormProvider,
   useFieldArray,
-  useWatch,
+  FormProvider,
+  FieldErrors,
 } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  editShareActionSchema,
-  EditShareInput,
+  editShareFormSchema,
+  EditShareFormValues,
 } from "@/schemas/share/edit-share";
+
 import { ShareWithItems } from "@/types/shares";
-import { mapShareToEditFormValues } from "@/lib/utils/map-share-to-edit-form-values";
 import { editShareAction } from "@/actions/share.actions";
-import { unwrapActionResult } from "@/lib/actions/unwrap-result";
 import { ShareDialog } from "../share-dialog";
 import { Input } from "@/components/ui/input";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
+import { AddItemDropdown } from "../share-folder/add-item-dropdown";
 import { toast } from "sonner";
-import { Pencil, Trash2 } from "lucide-react";
-import { EditItemModal } from "./edit-item-modal";
 import { FaEdit } from "react-icons/fa";
-import { Badge } from "@/components/ui/badge";
+import { EditItemModal } from "./edit-item-modal";
+import { MAX_FILE_SIZE_BYTES } from "@/lib/env";
+import { createClient } from "@/lib/supabase/client";
+import { mapShareToEditFormValues } from "@/lib/utils/map-share-to-edit-form-values";
+import { Button } from "@/components/ui/button";
+import { LuDelete } from "react-icons/lu";
 
 interface Props {
   share: ShareWithItems;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  session_id: string;
 }
 
-export function FolderShareEditModal({ share, open, onOpenChange }: Props) {
+export function FolderShareEditModal({
+  share,
+  open,
+  onOpenChange,
+  session_id,
+}: Props) {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [isPending, startTransition] = useTransition();
+  const supabase = createClient();
 
-  const form = useForm<EditShareInput>({
-    resolver: zodResolver(editShareActionSchema),
+  const form = useForm<EditShareFormValues>({
+    resolver: zodResolver(editShareFormSchema),
     defaultValues: mapShareToEditFormValues(share),
   });
 
-  const { fields, remove } = useFieldArray({
+  const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "items",
   });
 
-  const items = useWatch({
-    control: form.control,
-    name: "items",
-  });
+  function handleAdd(
+    type: EditShareFormValues["items"][number]["item_type"]
+  ) {
+    switch (type) {
+      case "code":
+        append({
+          id: undefined,
+          title: "",
+          item_type: "code",
+          content: "",
+          language: "typescript",
+        });
+        break;
 
-  function onSubmit(values: EditShareInput) {
+      case "text":
+        append({
+          id: undefined,
+          title: "",
+          item_type: "text",
+          content: "",
+        });
+        break;
+
+      case "link":
+        append({
+          id: undefined,
+          title: "",
+          item_type: "link",
+          content: "",
+        });
+        break;
+
+      case "file":
+        append({
+          id: undefined,
+          title: "",
+          item_type: "file",
+          file: null,
+          file_name: "",
+          file_type: "pdf",
+          file_path: "",
+        });
+        break;
+    }
+
+    setEditingIndex(fields.length);
+  }
+
+  function handleSubmit(data: EditShareFormValues) {
     startTransition(async () => {
+      const uploadedPaths: string[] = [];
+      const oldFilesToDelete: string[] = [];
+
       try {
-        const res = await editShareAction(values);
-        unwrapActionResult(res);
+        const transformedItems: EditShareFormValues["items"] = [];
+
+        for (const item of data.items) {
+          /* ---------------- FILE ---------------- */
+
+          if (item.item_type === "file") {
+            // New file uploaded
+            if (item.file instanceof File) {
+              if (item.file.size > MAX_FILE_SIZE_BYTES) {
+                throw new Error("File exceeds maximum size");
+              }
+
+              const storagePath = `${session_id}/${crypto.randomUUID()}_${item.file_name}`;
+
+              const { error } = await supabase.storage
+                .from("fastdrop")
+                .upload(storagePath, item.file);
+
+              if (error) throw new Error("File upload failed");
+
+              uploadedPaths.push(storagePath);
+
+              const { data: publicUrlData } = supabase.storage
+                .from("fastdrop")
+                .getPublicUrl(storagePath);
+
+              // If replacing existing file → delete old
+              if (item.file_path) {
+                oldFilesToDelete.push(item.file_path);
+              }
+
+              transformedItems.push({
+                ...item,
+                file: null,
+                file_path: publicUrlData.publicUrl,
+              });
+
+              continue;
+            }
+
+            // No new file → keep existing
+            if (item.file_path) {
+              transformedItems.push(item);
+              continue;
+            }
+
+            throw new Error("Missing file");
+          }
+
+          /* ---------------- NON FILE ---------------- */
+
+          transformedItems.push(item);
+        }
+
+        await editShareAction({
+          share_id: share.id,
+          title: data.title,
+          items: transformedItems,
+        });
+
+        // Delete old replaced files AFTER success
+        if (oldFilesToDelete.length > 0) {
+          await supabase.storage
+            .from("fastdrop")
+            .remove(oldFilesToDelete);
+        }
+
         toast.success("Folder updated successfully");
         onOpenChange(false);
-      } catch {
-        toast.error("Failed to update folder");
+      } catch (error) {
+        // Rollback newly uploaded files
+        if (uploadedPaths.length > 0) {
+          await supabase.storage
+            .from("fastdrop")
+            .remove(uploadedPaths);
+        }
+
+        toast.error((error as Error).message);
       }
     });
   }
+
+  const onError = (errors: FieldErrors<EditShareFormValues>) => {
+    console.log("Validation failed:", errors);
+  };
 
   return (
     <FormProvider {...form}>
@@ -71,8 +203,8 @@ export function FolderShareEditModal({ share, open, onOpenChange }: Props) {
         onOpenChange={onOpenChange}
         title="Edit Folder"
         submitLabel="Save Changes"
+        onSubmit={form.handleSubmit(handleSubmit, onError)}
         isSubmitting={isPending}
-        onSubmit={form.handleSubmit(onSubmit)}
       >
         <div className="space-y-6">
           <Field>
@@ -81,27 +213,32 @@ export function FolderShareEditModal({ share, open, onOpenChange }: Props) {
             <FieldError errors={[form.formState.errors.title]} />
           </Field>
 
+          <AddItemDropdown onAdd={handleAdd} />
+
           <div className="space-y-3">
             {fields.map((field, index) => (
               <div
                 key={field.id}
                 className="flex items-center justify-between p-3 border rounded-md"
               >
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium truncate">
-                    {items?.[index]?.title}
-                  </span>
-                  <Badge>{items?.[index]?.item_type.toUpperCase()}</Badge>
-                </div>
+                <span className="text-sm font-medium truncate">
+                  {form.watch(`items.${index}.title`) || "Untitled"}
+                </span>
 
                 <div className="flex items-center gap-2">
-                  <button type="button" onClick={() => setEditingIndex(index)}>
-                    <Pencil className="size-4" />
-                  </button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => setEditingIndex(index)}
+                  >
+                    <FaEdit />
+                  </Button>
 
-                  <button type="button" onClick={() => remove(index)}>
-                    <Trash2 className="size-4 text-red-500" />
-                  </button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => remove(index)}
+                  >
+                    <LuDelete />
+                  </Button>
                 </div>
               </div>
             ))}
@@ -112,8 +249,8 @@ export function FolderShareEditModal({ share, open, onOpenChange }: Props) {
       {editingIndex !== null && (
         <EditItemModal
           index={editingIndex}
-          open={editingIndex !== null}
-          onOpenChange={(open: boolean) => {
+          open
+          onOpenChange={(open) => {
             if (!open) setEditingIndex(null);
           }}
         />
