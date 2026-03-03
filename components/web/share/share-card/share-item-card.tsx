@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { relativeTimeFromNow } from "@/lib/utils/formatters";
 import { getShareMeta } from "./lib/share-meta";
+import { ShareActionsMenu } from "../edit-share/share-actions-menu";
 
 interface Props {
   item: ShareItem;
@@ -12,6 +13,11 @@ interface Props {
   createdAt: string;
   view: "grid" | "rows";
   onClick: () => void;
+  canManage: boolean;
+
+  onEdit?: () => void;
+  onDelete?: () => void;
+  onBan?: () => void;
 }
 
 export function ShareItemCard({
@@ -20,15 +26,22 @@ export function ShareItemCard({
   createdAt,
   view,
   onClick,
+  canManage,
+  onEdit,
+  onDelete,
+  onBan,
 }: Props) {
   const meta = getShareMeta(item);
   const createdAgo = relativeTimeFromNow(createdAt);
 
+  const showActions = canManage && onEdit && onDelete && onBan;
+
   if (view === "grid") {
     return (
-      <Card onClick={() => {
-        onClick();
-      }} className="group h-full flex flex-col justify-between rounded-[8px] border-border/60 hover:border-primary/40 hover:shadow-md transition-all duration-200 py-1">
+      <Card
+        onClick={onClick}
+        className="group h-full flex flex-col justify-between rounded-[8px] border-border/60 hover:border-primary/40 hover:shadow-md transition-all duration-200 py-1"
+      >
         <div className="p-5 flex flex-col gap-5 flex-1">
           <div className="flex items-start justify-between">
             <div
@@ -37,9 +50,21 @@ export function ShareItemCard({
               <meta.Icon className="size-6" />
             </div>
 
-            <span className="text-[11px] text-muted-foreground font-medium">
-              {createdAgo}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] text-muted-foreground font-medium">
+                {createdAgo}
+              </span>
+
+              {showActions && (
+                <div onClick={(e) => e.stopPropagation()}>
+                  <ShareActionsMenu
+                    onEdit={onEdit}
+                    onDelete={onDelete}
+                    onBan={onBan}
+                  />
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="space-y-1.5">
@@ -57,6 +82,10 @@ export function ShareItemCard({
           <Button
             variant={meta.buttonVariant}
             className="w-full h-9 text-xs font-semibold"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClick();
+            }}
           >
             <meta.ActionIcon className="size-4 mr-2" />
             {meta.actionLabel}
@@ -66,8 +95,13 @@ export function ShareItemCard({
     );
   }
 
+  // ================= ROW VIEW =================
+
   return (
-    <Card onClick={onClick} className="group border-border/60 hover:border-primary/30 transition-colors py-1">
+    <Card
+      onClick={onClick}
+      className="group border-border/60 hover:border-primary/30 transition-colors py-1"
+    >
       <div className="flex items-center justify-between px-4 py-3">
         <div className="flex items-center gap-3 min-w-0">
           <div
@@ -86,14 +120,30 @@ export function ShareItemCard({
           </div>
         </div>
 
-        <Button
-          size="sm"
-          variant={meta.buttonVariant}
-          className="h-8 text-xs font-medium"
-        >
-          <meta.ActionIcon className="size-4 mr-1.5" />
-          {meta.actionShortLabel}
-        </Button>
+        <div className="flex items-center gap-2">
+          {showActions && (
+            <div onClick={(e) => e.stopPropagation()}>
+              <ShareActionsMenu
+                onEdit={onEdit}
+                onDelete={onDelete}
+                onBan={onBan}
+              />
+            </div>
+          )}
+
+          <Button
+            size="sm"
+            variant={meta.buttonVariant}
+            className="h-8 text-xs font-medium"
+            onClick={(e) => {
+              e.stopPropagation();
+              onClick();
+            }}
+          >
+            <meta.ActionIcon className="size-4 mr-1.5" />
+            {meta.actionShortLabel}
+          </Button>
+        </div>
       </div>
     </Card>
   );

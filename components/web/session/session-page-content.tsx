@@ -21,6 +21,13 @@ import { useSharesRealtime } from "@/hooks/use-shares-realtime";
 import { ShareModalResolver } from "@/components/web/share/view-modal/share-modal-resolver";
 import { fileTypes } from "@/constants/file-type-info";
 import { ShareFolderModal } from "../share/share-folder/share-folder-modal";
+import { useAuth } from "@/providers/auth-provider";
+import { deleteShareAction } from "@/actions/share.actions";
+import { banUserFromSharingAction } from "@/actions/users.actions";
+import { toast } from "sonner";
+import { DeleteShareConfirmModal } from "../confirm-modals/delete-share-confirm-modal";
+import { BanUserConfirmModal } from "../confirm-modals/ban-user-confirm-modal";
+import { ShareEditModalResolver } from "../share/edit-share/share-edit-modal-resolver";
 
 interface SessionPageContentProps {
   sessionId: string;
@@ -32,6 +39,9 @@ export function SessionPageContent({
   sessionDetails,
 }: SessionPageContentProps) {
   const { shares, loading } = useSharesRealtime(sessionId);
+  const { user } = useAuth();
+
+  const isHost = user?.id === sessionDetails.host_id;
 
   const [view, setView] = useState<"rows" | "grid">("rows");
   const [searchInput, setSearchInput] = useState("");
@@ -39,8 +49,66 @@ export function SessionPageContent({
     ShareItemType | "all" | "folder"
   >("all");
   const [sortFilter, setSortFilter] = useState<string>("newest");
-  const [newShareType, setNewShareType] = useState<ShareItemType | "folder" | null>(null);
-  const [activeShare, setActiveShare] = useState<ShareWithItems | null>(null);
+  const [newShareType, setNewShareType] = useState<
+    ShareItemType | "folder" | null
+  >(null);
+
+  const [activeShare, setActiveShare] =
+    useState<ShareWithItems | null>(null);
+
+  const [shareToEdit, setShareToEdit] =
+    useState<ShareWithItems | null>(null);
+
+  const [shareToDelete, setShareToDelete] =
+    useState<ShareWithItems | null>(null);
+
+  const [shareToBan, setShareToBan] =
+    useState<ShareWithItems | null>(null);
+
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isBanning, setIsBanning] = useState(false);
+
+  function handleEdit(share: ShareWithItems) {
+    setShareToEdit(share);
+  }
+
+  async function handleDeleteConfirm() {
+    if (!shareToDelete) return;
+
+    try {
+      setIsDeleting(true);
+
+      await deleteShareAction({
+        share_id: shareToDelete.id,
+      });
+
+      toast.success("Share deleted successfully");
+      setShareToDelete(null);
+    } catch {
+      toast.error("Failed to delete share");
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
+  async function handleBanConfirm() {
+    if (!shareToBan) return;
+
+    try {
+      setIsBanning(true);
+
+      await banUserFromSharingAction({
+        session_id: sessionId,
+      });
+
+      toast.success("User banned successfully");
+      setShareToBan(null);
+    } catch {
+      toast.error("Failed to ban user");
+    } finally {
+      setIsBanning(false);
+    }
+  }
 
   const filteredShares = useMemo(() => {
     let result = shares.map((share) => {
@@ -58,6 +126,7 @@ export function SessionPageContent({
 
     if (searchInput.trim() !== "") {
       const query = searchInput.toLowerCase();
+
       result = result.filter((share) =>
         share.items.some(
           (item) =>
@@ -65,24 +134,27 @@ export function SessionPageContent({
             item.title?.toLowerCase().includes(query) ||
             item.language?.toLowerCase().includes(query) ||
             (item.file_type &&
-              fileTypes[item.file_type as keyof typeof fileTypes].name
+              fileTypes[
+                item.file_type as keyof typeof fileTypes
+              ].name
                 .toLowerCase()
-                .includes(query)),
-        ),
+                .includes(query))
+        )
       );
     }
 
-    if (sortFilter === "oldest") {
-      result = [...result].sort(
-        (a, b) =>
-          new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
-      );
-    } else {
-      result = [...result].sort(
-        (a, b) =>
-          new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
-      );
-    }
+    result =
+      sortFilter === "oldest"
+        ? [...result].sort(
+            (a, b) =>
+              new Date(a.created_at).getTime() -
+              new Date(b.created_at).getTime()
+          )
+        : [...result].sort(
+            (a, b) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime()
+          );
 
     return result;
   }, [shares, typeFilter, searchInput, sortFilter]);
@@ -92,7 +164,7 @@ export function SessionPageContent({
       <SessionHeader
         sessionDetails={sessionDetails}
         onLeave={() => {}}
-        isHost={false}
+        isHost={isHost}
       />
 
       <Container className="flex flex-col flex-1 pt-6 pb-16 space-y-6">
@@ -124,16 +196,22 @@ export function SessionPageContent({
             <NormalList
               items={filteredShares}
               view={view}
-              renderItem={(share) => (
-                <ShareRenderer
-                  key={share.id}
-                  share={share}
-                  view={view}
-                  onOpen={() => {
-                    setActiveShare(share);
-                  }}
-                />
-              )}
+              renderItem={(share) => {
+                const isCreator = user?.id === share.created_by;
+                const canManage = isHost || isCreator;
+
+                return (
+                  <ShareRenderer
+                    share={share}
+                    view={view}
+                    canManage={canManage}
+                    onOpen={() => setActiveShare(share)}
+                    onEdit={() => handleEdit(share)}
+                    onDelete={() => setShareToDelete(share)}
+                    onBan={() => setShareToBan(share)}
+                  />
+                );
+              }}
             />
           )}
         </div>
@@ -146,21 +224,25 @@ export function SessionPageContent({
         onOpenChange={(open) => !open && setNewShareType(null)}
         session_id={sessionId}
       />
+
       <ShareCodeModal
         open={newShareType === "code"}
         onOpenChange={(open) => !open && setNewShareType(null)}
         session_id={sessionId}
       />
+
       <ShareFileModal
         open={newShareType === "file"}
         onOpenChange={(open) => !open && setNewShareType(null)}
         session_id={sessionId}
       />
+
       <ShareLinkModal
         open={newShareType === "link"}
         onOpenChange={(open) => !open && setNewShareType(null)}
         session_id={sessionId}
       />
+
       <ShareFolderModal
         open={newShareType === "folder"}
         onOpenChange={(open) => !open && setNewShareType(null)}
@@ -173,6 +255,29 @@ export function SessionPageContent({
           onClose={() => setActiveShare(null)}
         />
       )}
+
+      <ShareEditModalResolver
+        share={shareToEdit}
+        open={!!shareToEdit}
+        onOpenChange={(open: boolean) => {
+          if (!open) setShareToEdit(null);
+        }}
+      />
+
+      <DeleteShareConfirmModal
+        open={!!shareToDelete}
+        onOpenChange={() => setShareToDelete(null)}
+        onConfirm={handleDeleteConfirm}
+        shareTitle={shareToDelete?.title}
+        loading={isDeleting}
+      />
+
+      <BanUserConfirmModal
+        open={!!shareToBan}
+        onOpenChange={() => setShareToBan(null)}
+        onConfirm={handleBanConfirm}
+        loading={isBanning}
+      />
     </div>
   );
 }

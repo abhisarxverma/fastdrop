@@ -36,6 +36,7 @@ export function ShareItemsModal({ open, onOpenChange, share }: Props) {
                 createdAt={share.created_at}
                 view="rows"
                 onClick={() => setSelectedItem(item)}
+                canManage={false}
               />
             ))}
           </div>

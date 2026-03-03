@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import { useState, useEffect, useRef, useCallback } from "react";
-import { ShareWithItems } from "@/types/shares";
+import { SharesRow, ShareWithItems } from "@/types/shares";
 import { getSessionContentByIdRpc } from "@/lib/supabase/rpc/get-session-content-by-id";
 import { useAuth } from "@/providers/auth-provider";
 import { logLocalError } from "@/lib/logging/logger";
@@ -98,6 +98,30 @@ export function useSharesRealtime(
           }
         )
 
+        // SHARE UPDATE
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "shares",
+            filter: `session_id=eq.${sessionId}`,
+          },
+          async (payload) => {
+            const updatedShare = payload.new as SharesRow;
+
+            setShares((prev) =>
+              prev.map((share) => {
+                if (share.id !== updatedShare.id) return share;
+
+                return {
+                  ...updatedShare,
+                  items: share.items,
+                } as ShareWithItems;
+              })
+            );
+        })
+
         // SHARE DELETE
         .on(
           "postgres_changes",
@@ -142,30 +166,30 @@ export function useSharesRealtime(
           }
         )
 
-         // .on(
-        //   "postgres_changes",
-        //   {
-        //     event: "DELETE",
-        //     schema: "public",
-        //     table: "share_items",
-        //   },
-        //   (payload) => {
-        //     const deletedItem = payload.old;
+         .on(
+          "postgres_changes",
+          {
+            event: "DELETE",
+            schema: "public",
+            table: "share_items",
+          },
+          (payload) => {
+            const deletedItem = payload.old;
 
-        //     setShares((prev) =>
-        //       prev.map((share) => {
-        //         if (share.id !== deletedItem.share_id) return share;
+            setShares((prev) =>
+              prev.map((share) => {
+                if (share.id !== deletedItem.share_id) return share;
 
-        //         return {
-        //           ...share,
-        //           items: share.items.filter(
-        //             (item) => item.id !== deletedItem.id,
-        //           ),
-        //         };
-        //       }),
-        //     );
-        //   },
-        // )
+                return {
+                  ...share,
+                  items: share.items.filter(
+                    (item) => item.id !== deletedItem.id,
+                  ),
+                };
+              }),
+            );
+          },
+        )
 
         // .on(
         //   "postgres_changes",
@@ -184,7 +208,7 @@ export function useSharesRealtime(
         //         return {
         //           ...share,
         //           items: [newItem, ...share.items],
-        //         };
+        //         } as ShareWithItems;
         //       }),
         //     );
         //   },

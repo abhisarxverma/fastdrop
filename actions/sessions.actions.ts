@@ -21,8 +21,8 @@ export const getNearbySessionsAction = actionClient
 export const createSessionAction = actionClient
   .inputSchema(createSessionSchema)
   .action(async ({ parsedInput }) => {
-    return withAuth(({ user, supabase }) => {
-      return sessionsService.createSession(parsedInput, user, supabase);
+    return withAuth(({ user, supabase, token }) => {
+      return sessionsService.createSession(parsedInput, user, supabase, token);
     })
   })
 

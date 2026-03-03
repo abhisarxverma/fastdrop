@@ -79,6 +79,28 @@ export const backendShareService: ShareService = {
                 items: input.items
             }
         })
+    },
+
+    async editShare(input, user, supabase, token): Promise<ServiceResponse<{ share_id: string }>> {
+        return fetchBackend("/api/share/edit", {
+            method: "POST",
+            authorization: `Bearer ${token}`,
+            body: {
+                share_id: input.share_id,
+                share_title: input.title,
+                items: input.items
+            }
+        })
+    },
+
+    async deleteShare(input, user, supabase, token) {
+        return fetchBackend("/api/share/delete", {
+            method: "POST",
+            authorization: `Bearer ${token}`,
+            body: {
+                share_id: input.share_id,
+            }
+        })
     }
 
 }

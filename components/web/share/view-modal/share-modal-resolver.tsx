@@ -5,9 +5,15 @@ import { CodeEditor } from "@/components/web/share/code-editor";
 import { ViewFileModal } from "./view-file-modal";
 import { ShareWithItems } from "@/types/shares";
 import { codeLanguageInfo } from "@/constants/monaco-languages";
-import { fileTypes } from "@/constants/file-type-info"
-import { CodeShareItem, FileShareItem, LinkShareItem, TextShareItem } from "@/types/share-items";
+import { fileTypes } from "@/constants/file-type-info";
+import {
+  CodeShareItem,
+  FileShareItem,
+  LinkShareItem,
+  TextShareItem,
+} from "@/types/share-items";
 import { ViewLinkModal } from "./view-link-modal";
+import { ShareItemsModal } from "../share-card/share-items-modal";
 
 export function ShareModalResolver({
   share,
@@ -16,6 +22,8 @@ export function ShareModalResolver({
   share: ShareWithItems;
   onClose: () => void;
 }) {
+  if (share.share_type === "folder")
+    return <ShareItemsModal open onOpenChange={onClose} share={share} />;
   const item = share.items[0];
 
   switch (item.item_type) {

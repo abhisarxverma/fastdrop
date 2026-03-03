@@ -26,17 +26,28 @@ export function relativeTimeFromNow(timestamp: string) {
   const years   = Math.floor(days / 365);
 
   let unit: string;
-  if (seconds < 60) unit = `${seconds}s`;
-  else if (minutes < 60) unit = `${minutes}min`;
-  else if (hours < 24)   unit = `${hours}h`;
-  else if (days < 7)     unit = `${days}d`;
-  else if (weeks < 5)    unit = `${weeks}w`;
-  else if (months < 12)  unit = `${months}mo`;
-  else                   unit = `${years}y`;
+
+  // Special case for very small differences
+  if (seconds < 5) {
+    return "Just now";
+  } else if (seconds < 60) {
+    unit = `${seconds}s`;
+  } else if (minutes < 60) {
+    unit = `${minutes}min`;
+  } else if (hours < 24) {
+    unit = `${hours}h`;
+  } else if (days < 7) {
+    unit = `${days}d`;
+  } else if (weeks < 5) {
+    unit = `${weeks}w`;
+  } else if (months < 12) {
+    unit = `${months}mo`;
+  } else {
+    unit = `${years}y`;
+  }
 
   return diffMs < 0 ? `${unit} ago` : `in ${unit}`;
 }
-
 
 export function formatSupabaseTimestamp(timestampz: string) {
   const date = new Date(timestampz);

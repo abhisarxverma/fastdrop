@@ -5,6 +5,9 @@ import { SessionsService } from "./sessions/sessions.service";
 import { localShareService } from "./share/share.local";
 import { backendShareService } from "./share/share.backend";
 import { ShareService } from "./share/share.service";
+import { UsersService } from "./users/users.service";
+import { backendUsersService } from "./users/users.backend";
+import { localUsersService } from "./users/users.local";
 
 export const sessionsService: SessionsService = USE_BACKEND_API
   ? backendSessionsService
@@ -13,3 +16,7 @@ export const sessionsService: SessionsService = USE_BACKEND_API
 export const shareService: ShareService = USE_BACKEND_API
   ? backendShareService
   : localShareService
+
+export const usersService: UsersService = USE_BACKEND_API
+  ? backendUsersService
+  : localUsersService

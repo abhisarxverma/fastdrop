@@ -214,6 +214,12 @@ export function ShareLinkModal({
                 </p>
               )}
 
+              {visualStatus === "validating" && (
+                <p className="text-xs font-bold text-blue-600 flex items-center gap-1">
+                  <Loader2 className="size-1 animate-spin" /> Validating link
+                </p>
+              )}
+
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}

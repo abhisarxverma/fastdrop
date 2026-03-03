@@ -41,18 +41,18 @@ export const fileTypes = {
   zip: { name: "Archive File", icon: FaFileArchive },
   rar: { name: "Archive File", icon: FaFileArchive },
 
-  jpg: { name: "Image File", icon: FaFileImage },
-  jpeg: { name: "Image File", icon: FaFileImage },
-  gif: { name: "Image File", icon: FaFileImage },
-  png: { name: "Image File", icon: FaFileImage },
-  svg: { name: "Image File", icon: FaFileImage },
+  // jpg: { name: "Image File", icon: FaFileImage },
+  // jpeg: { name: "Image File", icon: FaFileImage },
+  // gif: { name: "Image File", icon: FaFileImage },
+  // png: { name: "Image File", icon: FaFileImage },
+  // svg: { name: "Image File", icon: FaFileImage },
 
-  mp3: { name: "Audio File", icon: FaFileAudio },
-  wav: { name: "Audio File", icon: FaFileAudio },
+  // mp3: { name: "Audio File", icon: FaFileAudio },
+  // wav: { name: "Audio File", icon: FaFileAudio },
 
-  mp4: { name: "Video File", icon: FaFileVideo },
-  avi: { name: "Video File", icon: FaFileVideo },
-  mkv: { name: "Video File", icon: FaFileVideo },
+  // mp4: { name: "Video File", icon: FaFileVideo },
+  // avi: { name: "Video File", icon: FaFileVideo },
+  // mkv: { name: "Video File", icon: FaFileVideo },
 
   html: { name: "HTML File", icon: FaFileCode },
   css: { name: "CSS File", icon: FaFileCode },

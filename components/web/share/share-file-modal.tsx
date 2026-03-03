@@ -16,6 +16,7 @@ import { UploadedFileCard } from "./uploaded-file-card";
 import { Upload } from "lucide-react";
 import {createClient} from "@/lib/supabase/client";
 import { MAX_FILE_SIZE_BYTES } from "@/lib/env"
+import { fileTypes } from "@/constants/file-type-info";
 
 interface ShareFileModalProps {
   open: boolean;
@@ -155,6 +156,12 @@ export function ShareFileModal({
                     const file = files[0];
                     field.onChange(file);
                     if (file) {
+                      const extension = getExtension(file.name);
+                      if (!Object.keys(fileTypes).includes(extension)) {
+                        toast.error(`${extension} file type not supported to share.`);
+                        field.onChange(null);
+                        return;
+                      }
                       form.setValue("file_name", file.name, {
                         shouldValidate: true,
                       });

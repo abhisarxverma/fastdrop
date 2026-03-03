@@ -6,6 +6,8 @@ import { createCodeShareRpc } from "@/lib/supabase/rpc/share-creation/create-cod
 import { createFileShareRpc } from "@/lib/supabase/rpc/share-creation/create-file-share";
 import { createLinkShareRpc } from "@/lib/supabase/rpc/share-creation/create-link-share";
 import { createFolderShareRpc } from "@/lib/supabase/rpc/share-creation/create-folder-share";
+import { editShareRpc } from "@/lib/supabase/rpc/edit-share";
+import { deleteShareRpc } from "@/lib/supabase/rpc/delete-share";
 
 export const localShareService: ShareService = {
 
@@ -31,6 +33,16 @@ export const localShareService: ShareService = {
 
     async createFolderShare(input, user, supabase): Promise<ServiceResponse<string>> {
         const data = await createFolderShareRpc(supabase, user, input);
+        return data;
+    },
+
+    async editShare(input, user, supabase): Promise<ServiceResponse<{ share_id : string }>> {
+        const data = await editShareRpc(supabase, user, input);
+        return data;
+    },
+
+    async deleteShare(input, user, supabase): Promise<ServiceResponse<{ share_id : string }>> {
+        const data = await deleteShareRpc(supabase, user, input);
         return data;
     }
 }

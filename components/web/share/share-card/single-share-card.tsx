@@ -8,18 +8,26 @@ interface Props {
   share: ShareWithItems;
   view: "grid" | "rows";
   onOpen: () => void;
+  canManage: boolean;
+  onEdit: () => void;
+  onBan: () => void;
+  onDelete: () => void;
 }
 
-export function SingleShareCard({ share, view, onOpen }: Props) {
+export function SingleShareCard({ share, view, onOpen, onBan, canManage, onEdit, onDelete }: Props) {
   const item = mapRowToShareItem(share.items[0]);
 
   return (
     <ShareItemCard
+      canManage={canManage}
       onClick={onOpen}
       item={item}
       title={share.title}
       createdAt={share.created_at}
       view={view}
+      onEdit={onEdit}
+      onDelete={onDelete}
+      onBan={onBan}
     />
   );
 }

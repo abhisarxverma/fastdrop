@@ -1,6 +1,8 @@
 
 import { ServiceResponse } from "@/lib/types/service-response";
 import { CodeShareInput } from "@/schemas/share/code-share";
+import { DeleteShareInput } from "@/schemas/share/delete-share";
+import { EditShareInput } from "@/schemas/share/edit-share";
 import { FileShareInput } from "@/schemas/share/file-share";
 import { FolderShareInput } from "@/schemas/share/folder-share";
 import { LinkShareInput } from "@/schemas/share/link-share";
@@ -14,4 +16,6 @@ export interface ShareService {
     createFileShare(input: FileShareInput, user: User, supabase: SupabaseClient, token: string): Promise<ServiceResponse<FileShareItem>>;
     createLinkShare(input: LinkShareInput, user: User, supabase: SupabaseClient, token: string): Promise<ServiceResponse<LinkShareItem>>;
     createFolderShare(input: FolderShareInput, user: User, supabase: SupabaseClient, token: string): Promise<ServiceResponse<string>>;
+    editShare(input: EditShareInput, user: User, supabase: SupabaseClient, token: string): Promise<ServiceResponse<{ share_id : string }>>;
+    deleteShare(input: DeleteShareInput, user: User, supabase: SupabaseClient, token: string): Promise<ServiceResponse<{ share_id : string }>>;
 }

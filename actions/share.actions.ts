@@ -1,7 +1,6 @@
 "use server";
 
 import { actionClient } from "@/lib/actions/action-client";
-import { withAuth } from "@/lib/actions/with-auth";
 import { textShareActionSchema } from "@/schemas/share/text-share";
 import { codeShareActionSchema } from "@/schemas/share/code-share";
 import { fileShareActionSchema } from "@/schemas/share/file-share";
@@ -13,6 +12,9 @@ import { logError } from "@/lib/logging/logger"
 import ogs from "open-graph-scraper";
 import { LinkMetadataResponse } from "@/types/utils";
 import { folderShareActionSchema } from "@/schemas/share/folder-share";
+import { editShareActionSchema } from "@/schemas/share/edit-share";
+import { deleteShareActionSchema } from "@/schemas/share/delete-share";
+import { withAuth } from "@/lib/actions/with-auth";
 
 export const textShareAction = actionClient
     .inputSchema(textShareActionSchema)
@@ -51,6 +53,22 @@ export const folderShareAction = actionClient
     .action(async ({ parsedInput }) => {
       return withAuth(async ({ supabase, user, token }) => {
         return shareService.createFolderShare(parsedInput, user, supabase, token);
+      })
+    })
+
+export const editShareAction = actionClient
+    .inputSchema(editShareActionSchema)
+    .action(async ({ parsedInput }) => {
+      return withAuth(async ({ supabase, user, token }) => {
+        return shareService.editShare(parsedInput, user, supabase, token);
+      })
+    })
+
+export const deleteShareAction = actionClient
+    .inputSchema(deleteShareActionSchema)
+    .action(async ({ parsedInput }) => {
+      return withAuth(async ({ supabase, user, token }) => {
+        return shareService.deleteShare(parsedInput, user, supabase, token);
       })
     })
 

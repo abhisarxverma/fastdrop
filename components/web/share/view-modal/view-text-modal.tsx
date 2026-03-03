@@ -2,8 +2,9 @@
 
 import { ShareViewModal } from "./share-view-modal";
 import { Button } from "@/components/ui/button";
-import { Copy, FileText } from "lucide-react";
+import { Copy } from "lucide-react";
 import { ReactNode } from "react";
+import { BsFileEarmarkText } from "react-icons/bs";
 
 interface ViewTextModalProps {
   open: boolean;
@@ -31,7 +32,7 @@ export function ViewTextModal({
       title={title}
       description={description}
       createdAt={createdAt}
-      icon={FileText}
+      icon={BsFileEarmarkText}
       footer={
         <>
           <Button variant="ghost" onClick={() => onOpenChange(false)}>

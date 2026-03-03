@@ -1,6 +1,5 @@
 import {
   Link as LinkIcon,
-  StickyNote,
   Download,
   ExternalLink,
   Copy,
@@ -8,6 +7,7 @@ import {
 import { fileTypes } from "@/constants/file-type-info"
 import { codeLanguageInfo } from "@/constants/monaco-languages";
 import { ShareMetaInput } from "@/types/share-meta-input";
+import { BsFileEarmarkText } from "react-icons/bs";
 
 export function getShareMeta(item: ShareMetaInput) {
   switch (item.item_type) {
@@ -58,7 +58,7 @@ export function getShareMeta(item: ShareMetaInput) {
         labelColor: "text-amber-600",
         title: item.title,
         iconBg: "bg-amber-50 text-amber-600",
-        Icon: StickyNote,
+        Icon: BsFileEarmarkText,
         ActionIcon: Copy,
         actionLabel: "Copy Text",
         actionShortLabel: "Copy",
