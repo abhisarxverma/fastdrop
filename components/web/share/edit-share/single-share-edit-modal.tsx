@@ -1,8 +1,8 @@
 "use client";
 
-import { useForm, useWatch } from "react-hook-form";
+import { FieldErrors, useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { editShareActionSchema, EditShareInput } from "@/schemas/share/edit-share";
+import { editShareActionSchema, EditShareFormValues, EditShareInput } from "@/schemas/share/edit-share";
 import { ShareWithItems } from "@/types/shares";
 import { mapShareToEditFormValues } from "@/lib/utils/map-share-to-edit-form-values";
 import { editShareAction } from "@/actions/share.actions";
@@ -39,7 +39,11 @@ export function SingleShareEditModal({
   function onSubmit(values: EditShareInput) {
     startTransition(async () => {
       try {
-        const res = await editShareAction(values);
+        const payload = {
+          ...values,
+          share_id: share.id
+        }
+        const res = await editShareAction(payload);
         unwrapActionResult(res);
         toast.success("Share updated");
         onOpenChange(false);
@@ -52,6 +56,11 @@ export function SingleShareEditModal({
 
   if (!item) return null;
 
+  const onError = (errors: FieldErrors<EditShareFormValues>) => {
+      console.log("Validation failed:", errors);
+    };
+  
+
   return (
     <ShareDialog
       icon={<FaEdit className="size-5" />}
@@ -60,7 +69,7 @@ export function SingleShareEditModal({
       title="Edit Share"
       submitLabel="Save Changes"
       isSubmitting={isPending}
-      onSubmit={form.handleSubmit(onSubmit)}
+      onSubmit={form.handleSubmit(onSubmit, onError)}
     >
       <SingleItemEditFields form={form} />
     </ShareDialog>

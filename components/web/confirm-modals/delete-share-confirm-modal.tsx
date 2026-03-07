@@ -28,7 +28,8 @@ export function DeleteShareConfirmModal({
 }: Props) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-3xl
+          [&>button]:hidden">
         <DialogHeader>
           <div className="flex items-center gap-3">
             <div className="size-10 rounded-lg bg-red-100 flex items-center justify-center">

@@ -34,7 +34,7 @@ export function ShareItemCard({
   const meta = getShareMeta(item);
   const createdAgo = relativeTimeFromNow(createdAt);
 
-  const showActions = canManage && onEdit && onDelete && onBan;
+  const showActions = canManage && onEdit && onDelete;
 
   if (view === "grid") {
     return (

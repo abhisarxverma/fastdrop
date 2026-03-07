@@ -11,7 +11,7 @@ interface Props {
   canManage: boolean;
   onEdit: () => void;
   onDelete: () => void;
-  onBan: () => void;
+  onBan?: () => void;
 }
 
 export function ShareRenderer({ share, view, onOpen, canManage = false, onEdit, onDelete, onBan }: Props) {

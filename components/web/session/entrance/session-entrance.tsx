@@ -95,7 +95,7 @@ export function SessionEntrance({
   }
 
   if (state === "expired") {
-    return <SessionExpiredModal onExit={() => {}} />;
+    return <SessionExpiredModal onExit={() => {}} />
   }
 
   if (state === "requires_code" && sessionDetails) {

@@ -46,4 +46,12 @@ export const backendSessionsService: SessionsService = {
       body: input
     })
   },
+
+  async editSession(input, supabase, user, token) {
+    return fetchBackend("/api/sessions/edit", {
+      method: "PATCH",
+      authorization: `Bearer ${token}`,
+      body: input
+    })
+  }
 };

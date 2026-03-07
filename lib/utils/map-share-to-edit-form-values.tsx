@@ -1,9 +1,9 @@
 import { ShareWithItems } from "@/types/shares";
-import { EditShareFormValues } from "@/schemas/share/edit-share";
+import { EditShareInput } from "@/schemas/share/edit-share";
 
 export function mapShareToEditFormValues(
   share: ShareWithItems
-): EditShareFormValues {
+): EditShareInput {
   return {
     title: share.title,
     items: share.items.map((item) => {
@@ -48,5 +48,6 @@ export function mapShareToEditFormValues(
           throw new Error("Unknown item type");
       }
     }),
+    share_id: share.id
   };
 }

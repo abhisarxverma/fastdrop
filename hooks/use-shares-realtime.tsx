@@ -132,6 +132,7 @@ export function useSharesRealtime(
             filter: `session_id=eq.${sessionId}`,
           },
           (payload) => {
+            console.log("Shares delete realtime ran.")
             setShares((prev) =>
               prev.filter((s) => s.id !== payload.old.id)
             );
@@ -164,31 +165,6 @@ export function useSharesRealtime(
               })
             );
           }
-        )
-
-         .on(
-          "postgres_changes",
-          {
-            event: "DELETE",
-            schema: "public",
-            table: "share_items",
-          },
-          (payload) => {
-            const deletedItem = payload.old;
-
-            setShares((prev) =>
-              prev.map((share) => {
-                if (share.id !== deletedItem.share_id) return share;
-
-                return {
-                  ...share,
-                  items: share.items.filter(
-                    (item) => item.id !== deletedItem.id,
-                  ),
-                };
-              }),
-            );
-          },
         )
 
         .on(

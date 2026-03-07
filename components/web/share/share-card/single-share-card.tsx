@@ -10,8 +10,9 @@ interface Props {
   onOpen: () => void;
   canManage: boolean;
   onEdit: () => void;
-  onBan: () => void;
+  onBan?: () => void;
   onDelete: () => void;
+  
 }
 
 export function SingleShareCard({ share, view, onOpen, onBan, canManage, onEdit, onDelete }: Props) {

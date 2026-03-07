@@ -8,23 +8,30 @@ import {
     Hourglass,
     MapPin,
     LogOut,
+    Settings,
 } from "lucide-react";
-import { NearbySession } from "@/types/sessions";
+import { NearbySession, SessionsRow } from "@/types/sessions";
 import { relativeTimeFromNow } from "@/lib/utils/formatters";
 import Container from "@/components/layouts/container";
 import Ping from "../reusables/ping";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useState } from "react";
+import { EditSessionDialog } from "../sessions/edit-session-dialog";
 
 interface SessionHeaderProps {
     sessionDetails: NearbySession;
     isHost: boolean;
     onLeave: () => void;
+    onUpdate: (updated: SessionsRow) => void;
 }
 
 export function SessionHeader({
     sessionDetails,
     isHost,
     onLeave,
+    onUpdate
 }: SessionHeaderProps) {
+    const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
     return (
         <section className="w-full border-b bg-card/60">
             <Container>
@@ -87,6 +94,23 @@ export function SessionHeader({
                                 Expires {relativeTimeFromNow(sessionDetails.expires_at)}
                             </div>
 
+                            {isHost && <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <Button
+                                        variant="outline"
+                                        size="icon"
+                                        className="h-9 w-9"
+                                        onClick={() => setSettingsOpen(true)}
+                                    >
+                                        <Settings className="size-4" />
+                                    </Button>
+                                </TooltipTrigger>
+
+                                <TooltipContent>
+                                    Edit session settings
+                                </TooltipContent>
+                            </Tooltip>}
+
                             <Button
                                 onClick={onLeave}
                                 size="sm"
@@ -109,12 +133,28 @@ export function SessionHeader({
 
                     </div>
 
-                    <div className="sm:hidden">
+                    <div className="sm:hidden flex items-center gap-2">
+                        {isHost && <Tooltip>
+                            <TooltipTrigger asChild>
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    className="h-9 w-9"
+                                    onClick={() => setSettingsOpen(true)}
+                                >
+                                    <Settings className="size-4" />
+                                </Button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                Edit session settings
+                            </TooltipContent>
+                        </Tooltip>}
+
                         <Button
                             onClick={onLeave}
                             size="sm"
                             className="
-                w-full
+                flex-1
                 gap-2
                 rounded-lg
                 bg-destructive/10
@@ -131,6 +171,13 @@ export function SessionHeader({
 
                 </div>
             </Container>
+
+            <EditSessionDialog
+                open={settingsOpen}
+                onOpenChange={setSettingsOpen}
+                session={sessionDetails}
+                onUpdate={onUpdate}
+            />
         </section>
     );
 }

@@ -13,7 +13,7 @@ export async function banUserFromSharingRpc(
     const { session_id } = input;
 
     const { data, error } = await supabase.rpc(
-        "edit_share",
+        "ban_user_from_sharing",
         {
             p_session_id: session_id,
             p_user_id: user.id

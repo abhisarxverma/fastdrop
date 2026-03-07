@@ -91,15 +91,10 @@ export function EditItemModal({ index, open, onOpenChange }: Props) {
 
   if (!item) return null;
 
-  const titleError = getFieldState(
-    `items.${index}.title`,
-    formState
-  ).error?.message;
+  const titleError = getFieldState(`items.${index}.title`, formState).error
+    ?.message;
 
-  const contentState = getFieldState(
-    `items.${index}.content`,
-    formState
-  );
+  const contentState = getFieldState(`items.${index}.content`, formState);
 
   const fileError =
     getFieldState(`items.${index}.file`, formState).error?.message ||
@@ -170,10 +165,13 @@ export function EditItemModal({ index, open, onOpenChange }: Props) {
               control={control}
               name={`items.${index}.language`}
               render={({ field }) => (
-                <LanguageSelector
-                  value={field.value}
-                  onChange={field.onChange}
-                />
+                <Field>
+                  <FieldLabel>Language</FieldLabel>
+                  <LanguageSelector
+                    value={field.value ?? "plaintext"}
+                    onChange={field.onChange}
+                  />
+                </Field>
               )}
             />
 
@@ -197,8 +195,7 @@ export function EditItemModal({ index, open, onOpenChange }: Props) {
             name={`items.${index}.content`}
             render={({ field }) => {
               const isInvalid = contentState.invalid;
-              const isValid =
-                !isInvalid && field.value && !isValidating;
+              const isValid = !isInvalid && field.value && !isValidating;
 
               return (
                 <Field>
@@ -233,8 +230,7 @@ export function EditItemModal({ index, open, onOpenChange }: Props) {
 
                   {!isValidating && isInvalid && (
                     <p className="text-xs font-bold text-red-600">
-                      {contentState.error?.message ??
-                        "Invalid or unsafe link"}
+                      {contentState.error?.message ?? "Invalid or unsafe link"}
                     </p>
                   )}
 
@@ -260,8 +256,7 @@ export function EditItemModal({ index, open, onOpenChange }: Props) {
                     const file = files[0];
                     if (!file) return;
 
-                    const ext =
-                      file.name.split(".").pop()?.toLowerCase() ?? "";
+                    const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
 
                     setValue(`items.${index}.file`, file, {
                       shouldValidate: true,

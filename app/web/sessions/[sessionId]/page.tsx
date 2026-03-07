@@ -7,7 +7,6 @@ import { useParams } from "next/navigation";
 export default function SessionPage() {
   const { sessionId } = useParams<{ sessionId: string }>();
 
-
   return (
     <div className="h-full flex-1 flex flex-col">
       <SessionEntrance sessionId={sessionId}>

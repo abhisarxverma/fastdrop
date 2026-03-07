@@ -1,6 +1,6 @@
 import { mapSupabaseError } from "@/lib/errors/supabase-error";
 import { SessionsService } from "./sessions.service";
-import { SessionsRow, NearbySession } from "@/types/sessions"
+import { SessionsRow, NearbySession } from "@/types/sessions";
 import { ServiceResponse } from "@/lib/types/service-response";
 import { logLocalError } from "@/lib/logging/logger";
 import { getNearbySessionByIdRpc } from "@/lib/supabase/rpc/get-nearby-session-by-id";
@@ -9,11 +9,14 @@ import { getNearbySessionsRpc } from "@/lib/supabase/rpc/get-nearby-sessions";
 import { getSessionContentByIdRpc } from "@/lib/supabase/rpc/get-session-content-by-id";
 
 export const localSessionsService: SessionsService = {
-  async createSession(input, user, supabase): Promise<ServiceResponse<SessionsRow>> {
+  async createSession(
+    input,
+    user,
+    supabase,
+  ): Promise<ServiceResponse<SessionsRow>> {
     const { title, lat, lng, requires_code, radius_meters, expires_at } = input;
 
     for (let attempt = 1; attempt <= 3; attempt++) {
-
       const { data, error } = await supabase
         .from("sessions")
         .insert({
@@ -31,7 +34,7 @@ export const localSessionsService: SessionsService = {
         return {
           success: true,
           data,
-          message: "Session created"
+          message: "Session created",
         };
       }
 
@@ -39,27 +42,38 @@ export const localSessionsService: SessionsService = {
         return {
           success: false,
           message: mapSupabaseError(error),
-          data: null
+          data: null,
         };
       }
     }
 
-    logLocalError("create-session", { input }, new Error("Session creation failed after 3 attempts."));
+    logLocalError(
+      "create-session",
+      { input },
+      new Error("Session creation failed after 3 attempts."),
+    );
 
     return {
       success: false,
       message: "Failed to generate unique join code",
-      data: null
+      data: null,
     };
   },
 
-  async getNearbySessions(input, supabase): Promise<ServiceResponse<NearbySession[]>> {
+  async getNearbySessions(
+    input,
+    supabase,
+  ): Promise<ServiceResponse<NearbySession[]>> {
     const { lat, lng } = input;
 
     const { data, error } = await getNearbySessionsRpc(supabase, lat, lng);
 
     if (error) {
-      logLocalError("get-nearby-sessions", { input, rpc: "get_nearby_sessions" }, error);
+      logLocalError(
+        "get-nearby-sessions",
+        { input, rpc: "get_nearby_sessions" },
+        error,
+      );
       return {
         success: false,
         message: mapSupabaseError(error),
@@ -67,7 +81,8 @@ export const localSessionsService: SessionsService = {
       };
     }
 
-    const sessions: NearbySession[] = (data ?? []) as unknown as NearbySession[];
+    const sessions: NearbySession[] = (data ??
+      []) as unknown as NearbySession[];
 
     return {
       success: true,
@@ -76,7 +91,10 @@ export const localSessionsService: SessionsService = {
     };
   },
 
-  async getActiveSessionOfUser(user, supabase): Promise<ServiceResponse<SessionsRow>> {
+  async getActiveSessionOfUser(
+    user,
+    supabase,
+  ): Promise<ServiceResponse<SessionsRow>> {
     const { data, error } = await supabase
       .from("sessions")
       .select("*")
@@ -87,69 +105,79 @@ export const localSessionsService: SessionsService = {
       .limit(1)
       .maybeSingle();
 
-
     if (error) {
       logLocalError("get active session of user", { user }, error);
       return {
         success: false,
         message: mapSupabaseError(error),
-        data: null
-      }
+        data: null,
+      };
     }
 
     return {
       success: true,
       message: "Active session check successful",
-      data: data ?? null
-    }
+      data: data ?? null,
+    };
   },
 
-  async getNearbySessionById(input, supabase): Promise<ServiceResponse<NearbySession | null>> {
-
+  async getNearbySessionById(
+    input,
+    supabase,
+  ): Promise<ServiceResponse<NearbySession | null>> {
     const { sessionId, lat, lng } = input;
 
-    const { data, error } = await getNearbySessionByIdRpc(supabase, sessionId, lat, lng);
+    const { data, error } = await getNearbySessionByIdRpc(
+      supabase,
+      sessionId,
+      lat,
+      lng,
+    );
 
     if (error) {
       logLocalError("get nearby session by id", { input }, error);
       return {
         success: false,
         message: mapSupabaseError(error),
-        data: null
-      }
+        data: null,
+      };
     }
 
     return {
       success: true,
       message: "Get nearby session by id successfull.",
-      data: data ?? null
-    }
-
+      data: data ?? null,
+    };
   },
 
-  async validateSessionCode(input, supabase): Promise<ServiceResponse<boolean>> {
-
+  async validateSessionCode(
+    input,
+    supabase,
+  ): Promise<ServiceResponse<boolean>> {
     const { sessionId, code } = input;
-    const { data, error } =  await validateSessionCodeRpc(supabase, sessionId, code);
+    const { data, error } = await validateSessionCodeRpc(
+      supabase,
+      sessionId,
+      code,
+    );
 
     if (error) {
       logLocalError("validate session code", { input }, error);
       return {
         success: false,
         message: mapSupabaseError(error),
-        data: false
-      }
+        data: false,
+      };
     }
 
     return {
       success: true,
       message: "Session code validation successfull.",
-      data: data === true
-    }
+      data: data === true,
+    };
   },
 
   async getSessionContentById(input, supabase) {
-
     const { sessionId } = input;
 
     const { data, error } = await getSessionContentByIdRpc(supabase, sessionId);
@@ -159,16 +187,54 @@ export const localSessionsService: SessionsService = {
       return {
         success: false,
         message: mapSupabaseError(error),
-        data: null
-      }
+        data: null,
+      };
     }
 
     return {
       success: true,
       message: "Session content successfully fetched.",
-      data: data ?? null
-    }
-
+      data: data ?? null,
+    };
   },
 
-}
+  async editSession(input, supabase) {
+    const {
+      session_id,
+      title,
+      requires_code,
+      sharing_enabled,
+      expires_at,
+      radius_meters,
+    } = input;
+
+    const { data, error } = await supabase
+      .from("sessions")
+      .update({
+        title,
+        radius_meters,
+        requires_code,
+        sharing_enabled,
+        expires_at,
+      })
+      .eq("id", session_id)
+      .select("*")
+      .single();
+
+    if (error) {
+      logLocalError("edit-session", { input }, error);
+
+      return {
+        success: false,
+        data: null,
+        message: "Session update failed",
+      };
+    }
+
+    return {
+      success: true,
+      message: "Session updated successfully",
+      data,
+    };
+  },
+};

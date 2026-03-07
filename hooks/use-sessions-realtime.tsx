@@ -13,6 +13,7 @@ interface UseSessionsRealtimeProps {
   lat: number;
   lng: number;
   onInsert: (session: NearbySession) => void;
+  onUpdate: (session: NearbySession) => void;
   onDelete: (sessionId: SessionsRow["id"]) => void;
 }
 
@@ -22,6 +23,7 @@ export function useSessionsRealtime({
   lat,
   lng,
   onInsert,
+  onUpdate,
   onDelete,
 }: UseSessionsRealtimeProps): void {
   const { user } = useAuth();
@@ -74,13 +76,61 @@ export function useSessionsRealtime({
     [lat, lng, user, onInsert]
   );
 
+  const handleUpdate = useCallback(
+    async (session: SessionsRow) => {
+      if (!user) return;
+
+      const { data: isVisible, error: visibilityError } =
+        await isSessionVisibleToUserRpc(
+          supabase,
+          session.id,
+          lat,
+          lng
+        );
+
+      if (visibilityError) {
+        logError({
+          source: "local",
+          scope: "Sessions realtime - visibility check RPC (update)",
+          error: visibilityError,
+        });
+        return;
+      }
+
+      // If session is no longer visible remove it
+      if (!isVisible) {
+        onDelete(session.id);
+        return;
+      }
+
+      const { data, error } = await getNearbySessionByIdRpc(
+        supabase,
+        session.id,
+        lat,
+        lng
+      );
+
+      if (error) {
+        logError({
+          source: "local",
+          scope: "Sessions realtime - get nearby session RPC (update)",
+          error,
+        });
+        return;
+      }
+
+      if (data) onUpdate(data as NearbySession);
+    },
+    [lat, lng, user, onUpdate, onDelete]
+  );
+
   useEffect(() => {
     if (!lat || !lng || !user) return;
 
     let isCancelled = false;
 
     async function setupRealtime() {
-      if (mountedRef.current) return; 
+      if (mountedRef.current) return;
       mountedRef.current = true;
 
       if (channelRef.current) {
@@ -91,6 +141,7 @@ export function useSessionsRealtime({
       const channel = supabase
         .channel("sessions-realtime-global")
 
+        // INSERT
         .on(
           "postgres_changes",
           {
@@ -104,6 +155,21 @@ export function useSessionsRealtime({
           }
         )
 
+        // UPDATE
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "sessions",
+          },
+          async (payload) => {
+            if (isCancelled) return;
+            await handleUpdate(payload.new as SessionsRow);
+          }
+        )
+
+        // DELETE
         .on(
           "postgres_changes",
           {
@@ -139,5 +205,5 @@ export function useSessionsRealtime({
         channelRef.current = null;
       }
     };
-  }, [lat, lng, user, handleInsert, onDelete]);
+  }, [lat, lng, user, handleInsert, handleUpdate, onDelete]);
 }

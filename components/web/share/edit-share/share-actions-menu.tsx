@@ -13,7 +13,7 @@ import { MdCancel } from "react-icons/md";
 interface Props {
   onEdit: () => void;
   onDelete: () => void;
-  onBan: () => void;
+  onBan?: () => void;
 }
 
 export function ShareActionsMenu({ onEdit, onDelete, onBan }: Props) {
@@ -44,13 +44,13 @@ export function ShareActionsMenu({ onEdit, onDelete, onBan }: Props) {
           Delete
         </DropdownMenuItem>
 
-        <DropdownMenuItem
+        {onBan && <DropdownMenuItem
           onClick={onBan}
           className="text-red-600 focus:text-red-600"
         >
           <MdCancel className="size-4 mr-2" />
           Ban user
-        </DropdownMenuItem>
+        </DropdownMenuItem>}
       </DropdownMenuContent>
     </DropdownMenu>
   );
