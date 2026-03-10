@@ -3,11 +3,11 @@
 import { Controller, Control } from "react-hook-form";
 import { Input } from "@/components/ui/input";
 import { Field, FieldLabel, FieldError } from "@/components/ui/field";
-import { TextShareFormSchema } from "@/schemas/share/text-share";
+import { textShareFormSchema } from "@/schemas/share/text-share";
 import z from "zod";
 
 interface ShareTitleFieldProps {
-    control: Control<z.infer<typeof TextShareFormSchema>>;
+    control: Control<z.infer<typeof textShareFormSchema>>;
     name?: string;
     placeholder?: string;
 }
@@ -19,7 +19,7 @@ export function ShareTitleField({
 }: ShareTitleFieldProps) {
     return (
         <Controller
-            name={name}
+            name={name as keyof z.infer<typeof textShareFormSchema>}
             control={control}
             render={({ field, fieldState }) => (
                 <Field>

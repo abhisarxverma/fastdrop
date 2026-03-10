@@ -5,6 +5,7 @@ import { withAuth } from "@/lib/actions/with-auth";
 import { withSupabase } from "@/lib/actions/with-supabase";
 import { createSessionSchema } from "@/schemas/sessions/create-session.schema";
 import { editSessionActionSchema } from "@/schemas/sessions/edit-session";
+import { endSessionActionSchema } from "@/schemas/sessions/end-session";
 import { getNearbySessionByIdSchema } from "@/schemas/sessions/get-nearby-session-by-id";
 import { getNearbySessionsSchema } from "@/schemas/sessions/get-nearby-sessions.schema";
 import { getSessionContentByIdSchema } from "@/schemas/sessions/get-session-content-by-id";
@@ -63,5 +64,13 @@ export const editSessionAction = actionClient
   .action(async ({ parsedInput }) => {
     return withAuth(({ user, supabase, token }) => {
       return sessionsService.editSession(parsedInput, supabase, user, token);
+    })
+  })
+
+export const endSessionAction = actionClient
+  .inputSchema(endSessionActionSchema)
+  .action(async ({ parsedInput }) => {
+    return withAuth(({ user, supabase, token }) => {
+      return sessionsService.endSession(parsedInput, supabase, user, token);
     })
   })

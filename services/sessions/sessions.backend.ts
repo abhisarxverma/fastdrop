@@ -53,5 +53,13 @@ export const backendSessionsService: SessionsService = {
       authorization: `Bearer ${token}`,
       body: input
     })
+  },
+
+  async endSession(input, supabase, user, token){
+    return fetchBackend("/api/sessions/end", {
+      method: "POST",
+      authorization: `Bearer ${token}`,
+      body: input
+    })
   }
 };

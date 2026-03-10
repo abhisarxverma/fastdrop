@@ -1,7 +1,6 @@
 "use client";
 
 import { useTransition } from "react";
-import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
@@ -29,6 +28,7 @@ import { getExpiryLimits } from "@/lib/utils/date-limits";
 import { createSessionAction } from "@/actions/sessions.actions";
 import { unwrapActionResult } from "@/lib/actions/unwrap-result";
 import { SessionsRow } from "@/types/sessions";
+import { useRouter } from "next/navigation";
 
 export type RadiusSelectType = 10 | 30 | 60 | 100 | 150;
 
@@ -47,6 +47,8 @@ export function StartSessionDialog({
   const { location } = useGeo();
 
   const { min, max } = getExpiryLimits();
+
+  const router = useRouter()
 
   const form = useForm<z.infer<typeof createSessionFormSchema>>({
     resolver: zodResolver(createSessionFormSchema),
@@ -71,10 +73,10 @@ export function StartSessionDialog({
           toast.success("Session created successfully");
           onCreated(unwrappedResult);
           handleCancel();
+          router.push(`/web/sessions/${unwrappedResult.id}`)
         } catch (err) {
           toast.error((err as Error).message);
         } 
-     
     });
   });
 

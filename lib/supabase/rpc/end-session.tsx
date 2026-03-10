@@ -2,28 +2,27 @@ import { SupabaseClient, User } from "@supabase/supabase-js";
 import { ShareCreationRpcResult } from "../types";
 import { logError } from "@/lib/logging/logger";
 import { mapSupabaseError } from "@/lib/errors/supabase-error";
-import { BanUserInput } from "@/schemas/user/ban-user";
+import { EndSessionInput } from "@/schemas/sessions/end-session";
 
-export async function banUserFromSharingRpc(
+export async function endSessionRpc(
     supabase: SupabaseClient,
     user: User,
-    input: BanUserInput,
-): Promise<ShareCreationRpcResult<{ user_id: string }>> {
+    input: EndSessionInput
+): Promise<ShareCreationRpcResult<{ session_id: string }>> {
 
-    const { session_id, user_id } = input;
+    const { session_id } = input;
 
     const { data, error } = await supabase.rpc(
-        "ban_user_from_sharing",
+        "end_session",
         {
-            p_session_id: session_id,
-            p_user_id: user_id
+            p_session_id: session_id
         }
     );
 
     if (error) {
         logError({
             source: "local",
-            scope: "ban user from sharing rpc",
+            scope: "end session rpc",
             error,
             meta: input
         });

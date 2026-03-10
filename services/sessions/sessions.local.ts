@@ -7,6 +7,7 @@ import { getNearbySessionByIdRpc } from "@/lib/supabase/rpc/get-nearby-session-b
 import { validateSessionCodeRpc } from "@/lib/supabase/rpc/validate-session-code";
 import { getNearbySessionsRpc } from "@/lib/supabase/rpc/get-nearby-sessions";
 import { getSessionContentByIdRpc } from "@/lib/supabase/rpc/get-session-content-by-id";
+import { endSessionRpc } from "@/lib/supabase/rpc/end-session";
 
 export const localSessionsService: SessionsService = {
   async createSession(
@@ -237,4 +238,9 @@ export const localSessionsService: SessionsService = {
       data,
     };
   },
+
+  async endSession(input, supabase, user) {
+    const data = await endSessionRpc(supabase, user, input);
+    return data;
+  }
 };

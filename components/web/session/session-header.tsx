@@ -9,6 +9,7 @@ import {
     MapPin,
     LogOut,
     Settings,
+    Loader,
 } from "lucide-react";
 import { NearbySession, SessionsRow } from "@/types/sessions";
 import { relativeTimeFromNow } from "@/lib/utils/formatters";
@@ -23,13 +24,15 @@ interface SessionHeaderProps {
     isHost: boolean;
     onLeave: () => void;
     onUpdate: (updated: SessionsRow) => void;
+    endingSession: boolean;
 }
 
 export function SessionHeader({
     sessionDetails,
     isHost,
     onLeave,
-    onUpdate
+    onUpdate,
+    endingSession
 }: SessionHeaderProps) {
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
     return (
@@ -127,7 +130,7 @@ export function SessionHeader({
                 "
                             >
                                 <LogOut className="size-4" />
-                                Leave
+                                {endingSession ? <Loader className="animate-spin" /> : isHost ? "End" : "Leave"}
                             </Button>
                         </div>
 
@@ -165,7 +168,7 @@ export function SessionHeader({
               "
                         >
                             <LogOut className="size-4" />
-                            Leave Session
+                            {endingSession ? <Loader className="animate-spin" /> : isHost ? "End Session" : "Leave session"}
                         </Button>
                     </div>
 

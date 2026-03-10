@@ -1,6 +1,7 @@
 import { ServiceResponse } from "@/lib/types/service-response";
 import { CreateSessionInput } from "@/schemas/sessions/create-session.schema";
 import { EditSessionInput } from "@/schemas/sessions/edit-session";
+import { EndSessionInput } from "@/schemas/sessions/end-session";
 import { GetNearbySessionByIdInput } from "@/schemas/sessions/get-nearby-session-by-id";
 import { GetNearbySessionsInput } from "@/schemas/sessions/get-nearby-sessions.schema";
 import { GetSessionContentByIdInput } from "@/schemas/sessions/get-session-content-by-id";
@@ -16,4 +17,5 @@ export interface SessionsService {
   validateSessionCode(input: ValidateSessionCodeInput, supabase: SupabaseClient) : Promise<ServiceResponse<boolean>>;
   getSessionContentById(input: GetSessionContentByIdInput, supabase: SupabaseClient) : Promise<ServiceResponse<SessionWithShares>>;
   editSession(input: EditSessionInput, supabase: SupabaseClient, user: User, token: string): Promise<ServiceResponse<SessionsRow>>;
+  endSession(input: EndSessionInput, supabase: SupabaseClient, user: User, token: string): Promise<ServiceResponse<{session_id: string}>>;
 }

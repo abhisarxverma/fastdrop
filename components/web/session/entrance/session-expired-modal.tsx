@@ -8,7 +8,7 @@ export function SessionExpiredModal({ onExit }: { onExit: () => void }) {
         <p className="text-sm text-muted-foreground">
           This session has ended or expired.
         </p>
-        <Button onClick={onExit}>Go back</Button>
+        <Button onClick={onExit}>Go to nearby sessions</Button>
       </DialogContent>
     </Dialog>
   );

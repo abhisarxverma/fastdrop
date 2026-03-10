@@ -10,13 +10,11 @@ import Ping from "../reusables/ping";
 interface ActiveSessionOfUserProps {
   session: Session;
   onEnter: () => void;
-  onEnd?: () => void;
 }
 
 export function ActiveSessionOfUserBanner({
   session,
   onEnter,
-  onEnd,
 }: ActiveSessionOfUserProps) {
   return (
     <section className="w-full bg-muted/30">
@@ -58,15 +56,6 @@ export function ActiveSessionOfUserBanner({
               onClick={onEnter}
             >
               Enter Session
-            </Button>
-          </div>
-          <div className="shrink-0">
-            <Button
-              variant="outline"
-              className="border-destructive/40 text-destructive hover:bg-destructive/10"
-              onClick={onEnd}
-            >
-              End Session
             </Button>
           </div>
           </div>

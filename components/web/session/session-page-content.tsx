@@ -1,7 +1,7 @@
 "use client";
 
 import { NearbySession, SessionsRow } from "@/types/sessions";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { SessionHeader } from "./session-header";
 import { ListSkeleton } from "../reusables/list-skeletons";
 import Container from "@/components/layouts/container";
@@ -33,6 +33,10 @@ import { useUserSessionBanRealtime } from "@/hooks/use-session-bans-realtime";
 import { deriveSharePermission } from "@/lib/utils/derive-share-permission";
 import { UserBannedBanner } from "./user-banned-banner";
 import { SharingDisabledBanner } from "./sharing-disabled-banner";
+import { endSessionAction } from "@/actions/sessions.actions";
+import { unwrapActionResult } from "@/lib/actions/unwrap-result";
+import { useRouter } from "next/navigation"
+import { getStoragePathFromPublicUrl } from "@/lib/supabase/utils";
 
 interface SessionPageContentProps {
   sessionId: string;
@@ -48,6 +52,7 @@ export function SessionPageContent({
   const { user } = useAuth();
 
   const isHost = user?.id === sessionDetails.host_id;
+  const router = useRouter();
 
   const [view, setView] = useState<"rows" | "grid">("rows");
   const [searchInput, setSearchInput] = useState("");
@@ -73,8 +78,15 @@ export function SessionPageContent({
 
   const [isDeleting, setIsDeleting] = useState(false);
   const [isBanning, setIsBanning] = useState(false);
+  const [isEndingSession, setIsEndingSession] = useState(false);
 
-  const { isBanned, loading: isBannedLoading, bannedUsers } = useUserSessionBanRealtime(sessionId)
+  const { isBanned, loading: isBannedLoading, bannedUsers } = useUserSessionBanRealtime(sessionId);
+
+  console.log("Banned users: ", bannedUsers);
+
+  useEffect(() => {
+    setSessionMeta(sessionDetails);
+  }, [sessionDetails]);
 
   function handleEdit(share: ShareWithItems) {
     setShareToEdit(share);
@@ -87,16 +99,21 @@ export function SessionPageContent({
       setIsDeleting(true);
       const supabase = createClient();
 
-      const files: string[] = shareToDelete.items.filter((item) => item.item_type === "file").map((item) => item.file_path as string);
+      const paths = shareToDelete.items
+        .filter((item) => item.item_type === "file")
+        .map((item) => getStoragePathFromPublicUrl(item.file_path as string));
 
-      if (files.length > 0) {
-        const paths = files.map((url) => {
-          return url.split("/object/public/fastdrop/")[1];
-        });
 
-        await supabase.storage
+      if (paths.length > 0) {
+        const { error } = await supabase.storage
           .from("fastdrop")
           .remove(paths);
+
+        if (error) {
+          console.error("Delete error:", error);
+          toast.error("Failed to delete files from storage");
+          return;
+        }
       }
 
       await deleteShareAction({
@@ -104,13 +121,15 @@ export function SessionPageContent({
       });
 
       toast.success("Share deleted successfully");
-    } catch {
+    } catch (err) {
+      console.error("Delete error:", err);
       toast.error("Failed to delete share");
     } finally {
       setIsDeleting(false);
       setShareToDelete(null);
     }
   }
+
 
   async function handleBanConfirm() {
     if (!shareToBan) return;
@@ -120,6 +139,7 @@ export function SessionPageContent({
 
       await banUserFromSharingAction({
         session_id: sessionId,
+        user_id: shareToBan.created_by
       });
 
       toast.success("User banned successfully");
@@ -132,17 +152,44 @@ export function SessionPageContent({
     }
   }
 
+  async function handleSessionEnd() {
+
+    if (!isHost) {
+      router.push("/web");
+      return;
+    }
+
+    try {
+      setIsEndingSession(true);
+
+      const data = await endSessionAction({
+        session_id: sessionId
+      });
+
+      unwrapActionResult(data);
+
+      console.log("End session res : ", data);
+      toast.success("Session ended successfully");
+
+      router.push("/web");
+    }
+    catch (error) {
+      console.log("Error occured in ending session: ", (error as Error));
+      toast.error((error as Error).message);
+    }
+  }
+
   const filteredShares = useMemo(() => {
     let result = shares
       .filter((share: ShareWithItems) => !bannedUsers.has(share.created_by))
       .map((share: ShareWithItems) => {
-      const isFolder = share.share_type === "folder";
+        const isFolder = share.share_type === "folder";
 
-      return {
-        ...share,
-        kind: isFolder ? "folder" : share.items[0]?.item_type,
-      };
-    });
+        return {
+          ...share,
+          kind: isFolder ? "folder" : share.items[0]?.item_type,
+        };
+      });
 
     if (typeFilter !== "all") {
       result = result.filter((share) => share.kind === typeFilter);
@@ -180,7 +227,7 @@ export function SessionPageContent({
             new Date(a.created_at).getTime()
         );
 
-    return result; 
+    return result;
   }, [shares, typeFilter, searchInput, sortFilter, bannedUsers]);
 
   const permission = deriveSharePermission(
@@ -193,7 +240,8 @@ export function SessionPageContent({
     <div className="flex flex-col">
       <SessionHeader
         sessionDetails={sessionMeta}
-        onLeave={() => { }}
+        onLeave={handleSessionEnd}
+        endingSession={isEndingSession}
         isHost={isHost}
         onUpdate={(updatedSessionRow: SessionsRow) => {
           setSessionMeta((prev: NearbySession) => ({
@@ -213,7 +261,7 @@ export function SessionPageContent({
         <SharingDisabledBanner />
       ) : null}
 
-      <Container className="flex flex-col flex-1 pt-6 pb-16 space-y-6">
+      <Container className="flex flex-col flex-1 py-6 space-y-6">
         <SessionFilters
           view={view}
           onViewChange={setView}

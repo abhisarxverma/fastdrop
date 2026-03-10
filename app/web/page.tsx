@@ -59,6 +59,14 @@ export default function NearbySessionsPage() {
     onDelete: (sessionId) => {
       setSessions((prev) => prev.filter((s) => s.id !== sessionId));
     },
+    onUpdate: (session) => {
+      setSessions((prev) => {
+        return prev.map((s) => {
+          if (s.id === session.id) return session;
+          return s;
+        })
+      })
+    }
   });
 
   return (
@@ -75,7 +83,6 @@ export default function NearbySessionsPage() {
         <ActiveSessionOfUserBanner
           session={runningSession}
           onEnter={() => router.push(`/web/sessions/${runningSession.id}`)}
-          onEnd={() => { }}
         />
       )}
 
