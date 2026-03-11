@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Copy } from "lucide-react";
 import { ReactNode } from "react";
 import { BsFileEarmarkText } from "react-icons/bs";
+import { toast } from "sonner";
 
 interface ViewTextModalProps {
   open: boolean;
@@ -13,7 +14,7 @@ interface ViewTextModalProps {
   description?: string;
   createdAt?: string;
   children: ReactNode;
-  onCopy?: () => void;
+  onCopy: () => void;
 }
 
 export function ViewTextModal({
@@ -25,6 +26,17 @@ export function ViewTextModal({
   children,
   onCopy,
 }: ViewTextModalProps) {
+
+  function handleCopy() {
+    try {
+      onCopy();
+      toast.success("Text copied successfully");
+    } catch (e) {
+      toast.error((e as Error).message);
+      console.log("Text copy failed: ", e);
+    }
+  }
+
   return (
     <ShareViewModal
       open={open}
@@ -39,7 +51,7 @@ export function ViewTextModal({
             Close
           </Button>
 
-          <Button onClick={onCopy}>
+          <Button onClick={handleCopy}>
             <Copy className="size-4 mr-2" />
             Copy Text
           </Button>

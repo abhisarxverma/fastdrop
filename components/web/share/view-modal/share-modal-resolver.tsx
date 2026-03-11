@@ -14,6 +14,7 @@ import {
 } from "@/types/share-items";
 import { ViewLinkModal } from "./view-link-modal";
 import { ShareItemsModal } from "../share-card/share-items-modal";
+import { copy, downloadFile, htmlToText, openInNewTab } from "@/lib/utils";
 
 export function ShareModalResolver({
   share,
@@ -36,6 +37,7 @@ export function ShareModalResolver({
           title={share.title}
           description="Rich Text"
           createdAt={item.created_at}
+          onCopy={() => copy(htmlToText(textShareItem.content_text))}
         >
           <RichTextEditor value={textShareItem.content_text} readOnly />
         </ViewTextModal>
@@ -53,6 +55,7 @@ export function ShareModalResolver({
           description={`${languageMeta.name} Code`}
           createdAt={codeShareItem.created_at}
           LanguageIcon={languageMeta.icon}
+          onCopy={() => copy(codeShareItem.content_text)}
         >
           <CodeEditor
             value={codeShareItem.content_text}
@@ -72,6 +75,7 @@ export function ShareModalResolver({
           title={share.title}
           url={linkShareItem.content_text}
           createdAt={linkShareItem.created_at}
+          onOpen={() => openInNewTab(linkShareItem.content_text)}
         />
       );
 
@@ -87,6 +91,7 @@ export function ShareModalResolver({
           fileName={fileShareItem.file_name}
           createdAt={fileShareItem.created_at}
           FileIcon={fileInfo.icon}
+          onDownload={() => downloadFile(fileShareItem.file_path, fileShareItem.file_name)}
         />
       );
 

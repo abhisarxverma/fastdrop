@@ -6,6 +6,10 @@ import { Button } from "@/components/ui/button";
 import { relativeTimeFromNow } from "@/lib/utils/formatters";
 import { getShareMeta } from "./lib/share-meta";
 import { ShareActionsMenu } from "../edit-share/share-actions-menu";
+import { useState } from "react";
+import { copy, downloadFile, htmlToText, openInNewTab } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface Props {
   item: ShareItem;
@@ -31,10 +35,36 @@ export function ShareItemCard({
   onDelete,
   onBan,
 }: Props) {
+  const [ quickActionRunning, setQuickActionRunning ] = useState<boolean>(false);
   const meta = getShareMeta(item);
   const createdAgo = relativeTimeFromNow(createdAt);
 
   const showActions = canManage && onEdit && onDelete;
+
+  async function handleQuickAction() {
+    setQuickActionRunning(true);
+
+    try {
+      if (item.item_type === "file") {
+        downloadFile(item.file_path, item.file_name);
+        toast.success("File downloaded successfully")
+      }
+      else if (item.item_type === "text") {
+        await copy(htmlToText(item.content_text))
+        toast.success("Text copied successfully")
+      }
+      else if (item.item_type === "code") {
+        await copy(item.content_text)
+        toast.success("Code copied successfully");
+      }
+      else openInNewTab(item.content_text);
+    } catch (error) {
+      console.log("Error in quick action: ", error);
+      toast.error((error as Error).message)
+    } finally {
+      setQuickActionRunning(false);
+    }
+  }
 
   if (view === "grid") {
     return (
@@ -84,10 +114,16 @@ export function ShareItemCard({
             className="w-full h-9 text-xs font-semibold"
             onClick={(e) => {
               e.stopPropagation();
-              onClick();
+              handleQuickAction();
             }}
           >
-            <meta.ActionIcon className="size-4 mr-2" />
+            {quickActionRunning ? (
+              <Loader2 className="animate-spin size-2 mr-1.5" />
+            ) : (
+              <>
+                <meta.ActionIcon className="size-4 mr-1.5" />
+              </>
+            )}
             {meta.actionLabel}
           </Button>
         </div>
@@ -137,14 +173,20 @@ export function ShareItemCard({
             className="h-8 text-xs font-medium"
             onClick={(e) => {
               e.stopPropagation();
-              onClick();
+              handleQuickAction();
             }}
           >
-            <meta.ActionIcon className="size-4 mr-1.5" />
+            {quickActionRunning ? (
+              <Loader2 className="animate-spin size-2 mr-1.5" />
+            ) : (
+              <>
+                <meta.ActionIcon className="size-4 mr-1.5" />
+              </>
+            )}
             {meta.actionShortLabel}
           </Button>
         </div>
       </div>
-    </Card>
+    </Card >
   );
 }

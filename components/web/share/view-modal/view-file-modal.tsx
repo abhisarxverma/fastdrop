@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { relativeTimeFromNow } from "@/lib/utils/formatters";
 import { IconType } from "react-icons";
+import { toast } from "sonner";
 
 interface ViewFileModalProps {
   open: boolean;
@@ -12,7 +13,7 @@ interface ViewFileModalProps {
   title: string;
   fileName: string;
   createdAt?: string;
-  onDownload?: () => void;
+  onDownload: () => void;
   FileIcon: IconType;
   description: string;
 }
@@ -27,6 +28,17 @@ export function ViewFileModal({
   FileIcon,
   description,
 }: ViewFileModalProps) {
+
+  function handleDownload() {
+    try {
+      onDownload();
+      toast.success("File downloaded successfully");
+    } catch (e) {
+      toast.error((e as Error).message);
+      console.log("Download Failed: ", e);
+    }
+  }
+
   return (
     <ShareViewModal
       open={open}
@@ -40,7 +52,7 @@ export function ViewFileModal({
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
             Close
           </Button>
-          <Button className="" onClick={onDownload}>
+          <Button className="" onClick={handleDownload}>
             <Download className="size-4 mr-2" />
             Download File
           </Button>

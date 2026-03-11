@@ -16,7 +16,7 @@ import { StartSessionDialog } from "@/components/web/sessions/start-session-dial
 import { useSessionsRealtime } from "@/hooks/use-sessions-realtime";
 
 export default function NearbySessionsPage() {
-  const [view, setView] = useState<"rows" | "grid">("grid");
+  const [view, setView] = useState<"rows" | "grid">("rows");
   const [searchInput, setSearchInput] = useState("");
   const [runningSession, setRunningSession] = useState<Session | null>(null);
   const [sessions, setSessions] = useState<NearbySession[]>([]);

@@ -28,7 +28,7 @@ export function MultipleShareCard({
 }: Props) {
   const createdAgo = relativeTimeFromNow(share.created_at);
 
-  const showActions = canManage && onEdit && onDelete && onBan;
+  const showActions = canManage && onEdit && onDelete;
 
   if (view === "grid") {
     return (

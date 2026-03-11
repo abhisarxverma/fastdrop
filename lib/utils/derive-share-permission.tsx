@@ -6,8 +6,15 @@ export type SharePermission = {
 export function deriveSharePermission(
   sharingEnabled: boolean,
   isBanned: boolean,
-  ended: boolean
+  ended: boolean,
+  isHost: boolean
 ): SharePermission {
+
+  if (isHost) {
+    return {
+      canShare: true
+    }
+  }
 
   if (ended) {
     return {

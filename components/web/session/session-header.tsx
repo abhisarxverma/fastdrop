@@ -42,10 +42,10 @@ export function SessionHeader({
 
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
 
-                        <div className="flex flex-col gap-3 lg:max-w-[50%]">
+                        <div className="flex flex-col gap-3 lg:max-w-[40%]">
 
                             <div className="flex flex-wrap items-center gap-3">
-                                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold leading-tight wrap-break-words">
+                                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold leading-tight wrap-break-words truncate">
                                     {sessionDetails.title}
                                 </h1>
 
@@ -117,6 +117,7 @@ export function SessionHeader({
                             <Button
                                 onClick={onLeave}
                                 size="sm"
+                                disabled={endingSession}
                                 className="
                   ml-2
                   gap-2
@@ -156,6 +157,7 @@ export function SessionHeader({
                         <Button
                             onClick={onLeave}
                             size="sm"
+                            disabled={endingSession}
                             className="
                 flex-1
                 gap-2

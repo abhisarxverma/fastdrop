@@ -130,7 +130,6 @@ export function SessionPageContent({
     }
   }
 
-
   async function handleBanConfirm() {
     if (!shareToBan) return;
 
@@ -233,7 +232,8 @@ export function SessionPageContent({
   const permission = deriveSharePermission(
     sessionMeta.sharing_enabled,
     isBanned,
-    sessionMeta.ended_by_host
+    sessionMeta.ended_by_host,
+    isHost
   )
 
   return (
@@ -257,7 +257,7 @@ export function SessionPageContent({
 
       {isBanned && !isBannedLoading ? (
         <UserBannedBanner />
-      ) : !sessionMeta.sharing_enabled ? (
+      ) : !sessionMeta.sharing_enabled && !isHost ? (
         <SharingDisabledBanner />
       ) : null}
 

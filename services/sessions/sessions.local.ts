@@ -7,7 +7,6 @@ import { getNearbySessionByIdRpc } from "@/lib/supabase/rpc/get-nearby-session-b
 import { validateSessionCodeRpc } from "@/lib/supabase/rpc/validate-session-code";
 import { getNearbySessionsRpc } from "@/lib/supabase/rpc/get-nearby-sessions";
 import { getSessionContentByIdRpc } from "@/lib/supabase/rpc/get-session-content-by-id";
-import { endSessionRpc } from "@/lib/supabase/rpc/end-session";
 
 export const localSessionsService: SessionsService = {
   async createSession(
@@ -239,8 +238,35 @@ export const localSessionsService: SessionsService = {
     };
   },
 
-  async endSession(input, supabase, user) {
-    const data = await endSessionRpc(supabase, user, input);
-    return data;
+  async endSession(input, supabase) {
+    const {
+      session_id,
+    } = input;
+
+    const { data, error } = await supabase
+      .from("sessions")
+      .update({
+        ended_by_host: true,
+        expires_at: new Date().toISOString()
+      })
+      .eq("id", session_id)
+      .select("*")
+      .single();
+
+    if (error) {
+      logLocalError("end-session", { input }, error);
+
+      return {
+        success: false,
+        data: null,
+        message: "end session failed",
+      };
+    }
+
+    return {
+      success: true,
+      message: "Session ended successfully",
+      data,
+    };
   }
 };

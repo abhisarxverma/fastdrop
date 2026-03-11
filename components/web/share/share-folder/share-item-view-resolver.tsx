@@ -10,6 +10,7 @@ import { ViewTextModal } from "../view-modal/view-text-modal";
 import { ViewCodeModal } from "../view-modal/view-code-modal";
 import { ViewLinkModal } from "../view-modal/view-link-modal";
 import { ViewFileModal } from "../view-modal/view-file-modal";
+import { copy, downloadFile, htmlToText, openInNewTab } from "@/lib/utils";
 
 interface Props {
   item: ShareItem | null;
@@ -35,6 +36,8 @@ export function ShareItemViewResolver({
           title={shareTitle}
           description="Rich Text"
           createdAt={item.created_at}
+          onCopy={() => copy(htmlToText(item.content_text))}
+          
         >
           <RichTextEditor value={item.content_text} readOnly />
         </ViewTextModal>
@@ -51,6 +54,7 @@ export function ShareItemViewResolver({
           description={`${languageMeta.name} Code`}
           createdAt={item.created_at}
           LanguageIcon={languageMeta.icon}
+          onCopy={() => copy(item.content_text)}
         >
           <CodeEditor
             value={item.content_text}
@@ -69,6 +73,7 @@ export function ShareItemViewResolver({
           title={shareTitle}
           url={item.content_text}
           createdAt={item.created_at}
+          onOpen={() => openInNewTab(item.content_text)}
         />
       );
 
@@ -84,6 +89,7 @@ export function ShareItemViewResolver({
           fileName={item.file_name}
           createdAt={item.created_at}
           FileIcon={fileInfo.icon}
+          onDownload={() => downloadFile(item.file_path, item.file_name)}
         />
       );
     }

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Copy } from "lucide-react";
 import { ReactNode } from "react";
 import { IconType } from "react-icons";
+import { toast } from "sonner";
 
 interface ViewCodeModalProps {
   open: boolean;
@@ -13,7 +14,7 @@ interface ViewCodeModalProps {
   description?: string;
   createdAt?: string;
   children: ReactNode;
-  onCopy?: () => void;
+  onCopy: () => void;
   LanguageIcon: IconType;
 }
 
@@ -27,6 +28,17 @@ export function ViewCodeModal({
   onCopy,
   LanguageIcon,
 }: ViewCodeModalProps) {
+
+  function handleCopy() {
+    try {
+      onCopy();
+      toast.success("Code copied successfully");
+    } catch (e) {
+      toast.error((e as Error).message);
+      console.log("Code copy failed: ", e);
+    }
+  }
+
   return (
     <ShareViewModal
       open={open}
@@ -41,7 +53,7 @@ export function ViewCodeModal({
             Close
           </Button>
 
-          <Button onClick={onCopy}>
+          <Button onClick={handleCopy}>
             <Copy className="size-4 mr-2" />
             Copy Code
           </Button>

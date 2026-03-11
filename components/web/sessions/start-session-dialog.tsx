@@ -56,7 +56,7 @@ export function StartSessionDialog({
       title: "",
       expires_at: formatDateForInput(new Date(getDefaultExpiry())),
       requires_code: false,
-      radius_meters: 30,
+      radius_meters: 100,
     },
   });
 

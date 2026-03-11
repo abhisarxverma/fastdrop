@@ -216,7 +216,7 @@ export function ShareLinkModal({
 
               {visualStatus === "validating" && (
                 <p className="text-xs font-bold text-blue-600 flex items-center gap-1">
-                  <Loader2 className="size-1 animate-spin" /> Validating link
+                  <Loader2 className="size-2 animate-spin" /> Validating link
                 </p>
               )}
 
