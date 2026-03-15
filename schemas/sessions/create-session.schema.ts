@@ -9,6 +9,7 @@ export const createSessionSchema = z.object({
   lat: z.number(),
   lng: z.number(),
   requires_code: z.boolean(),
+  sharing_enabled: z.boolean(),
   radius_meters: z.number(),
   expires_at: z.string().refine((val) => { 
     const date = new Date(val); 

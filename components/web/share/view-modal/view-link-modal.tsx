@@ -2,6 +2,7 @@
 
 import { ShareViewModal } from "./share-view-modal";
 import { Button } from "@/components/ui/button";
+import { copy } from "@/lib/utils";
 import { Link as LinkIcon, Copy, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 
@@ -32,6 +33,16 @@ export function ViewLinkModal({
     }
   }
 
+  async function handleCopy() {
+    try {
+      await copy(url)
+      toast.success("Link copied successfully");
+    } catch (e) {
+      toast.error((e as Error).message);
+      console.log("Code copy failed: ", e);
+    }
+  }
+
   return (
     <ShareViewModal
       open={open}
@@ -45,7 +56,7 @@ export function ViewLinkModal({
             Close
           </Button>
 
-          <Button onClick={() => window.open(url, "_blank")}>
+          <Button onClick={handleOpen}>
             Open Link
             <ExternalLink className="size-4 ml-2" />
           </Button>
@@ -55,7 +66,7 @@ export function ViewLinkModal({
       <div className="rounded-xl border p-4 bg-background flex items-center justify-between gap-4">
         <p className="text-sm text-muted-foreground break-all">{url}</p>
 
-        <Button size="icon" variant="ghost" onClick={handleOpen}>
+        <Button size="icon" variant="ghost" onClick={handleCopy}>
           <Copy className="size-4" />
         </Button>
       </div>

@@ -14,7 +14,7 @@ export const localSessionsService: SessionsService = {
     user,
     supabase,
   ): Promise<ServiceResponse<SessionsRow>> {
-    const { title, lat, lng, requires_code, radius_meters, expires_at } = input;
+    const { title, lat, lng, requires_code, radius_meters, expires_at, sharing_enabled } = input;
 
     for (let attempt = 1; attempt <= 3; attempt++) {
       const { data, error } = await supabase
@@ -26,6 +26,7 @@ export const localSessionsService: SessionsService = {
           radius_meters,
           host_id: user.id,
           expires_at,
+          sharing_enabled
         })
         .select("*")
         .single();

@@ -60,8 +60,6 @@ export function ShareViewModal({
           overflow-hidden
           [&>button]:hidden
         "
-         onInteractOutside={(e) => e.preventDefault()}
-        onEscapeKeyDown={(e) => e.preventDefault()}
       >
         <DialogHeader className="px-6 py-5 border-b bg-background">
           <div className="flex items-start justify-between gap-4">

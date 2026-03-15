@@ -8,7 +8,8 @@ export async function testCreateSession(lat: number, lng: number, requires_code:
         lng,
         requires_code,
         radius_meters: 30,
-        expires_at: getDefaultExpiry()
+        expires_at: getDefaultExpiry(),
+        sharing_enabled: true
     })
     console.log("Created session : ", createdSession);
     return createdSession;

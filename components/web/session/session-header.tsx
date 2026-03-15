@@ -66,10 +66,10 @@ export function SessionHeader({
                                     Created {relativeTimeFromNow(sessionDetails.created_at)}
                                 </div>
 
-                                <div className="flex items-center gap-2">
+                                {!isHost && <div className="flex items-center gap-2">
                                     <MapPin className="size-4 opacity-70" />
                                     {sessionDetails.distance_meters}m away
-                                </div>
+                                </div>}
 
                                 <div className="flex items-center gap-2">
                                     <Hourglass className="size-4 opacity-70" />

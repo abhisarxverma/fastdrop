@@ -29,6 +29,7 @@ import { createSessionAction } from "@/actions/sessions.actions";
 import { unwrapActionResult } from "@/lib/actions/unwrap-result";
 import { SessionsRow } from "@/types/sessions";
 import { useRouter } from "next/navigation";
+import { Toggle } from "@/components/ui/toggle";
 
 export type RadiusSelectType = 10 | 30 | 60 | 100 | 150;
 
@@ -57,26 +58,27 @@ export function StartSessionDialog({
       expires_at: formatDateForInput(new Date(getDefaultExpiry())),
       requires_code: false,
       radius_meters: 100,
+      sharing_enabled: true
     },
   });
 
   const onSubmit = form.handleSubmit((values: z.infer<typeof createSessionFormSchema>) => {
     startTransition(async () => {
-        try {
-          const response = await createSessionAction({
-            ...values,
-            lat: location.lat,
-            lng: location.lng
-          });
+      try {
+        const response = await createSessionAction({
+          ...values,
+          lat: location.lat,
+          lng: location.lng
+        });
 
-          const unwrappedResult = unwrapActionResult(response);
-          toast.success("Session created successfully");
-          onCreated(unwrappedResult);
-          handleCancel();
-          router.push(`/web/sessions/${unwrappedResult.id}`)
-        } catch (err) {
-          toast.error((err as Error).message);
-        } 
+        const unwrappedResult = unwrapActionResult(response);
+        toast.success("Session created successfully");
+        onCreated(unwrappedResult);
+        handleCancel();
+        router.push(`/web/sessions/${unwrappedResult.id}`)
+      } catch (err) {
+        toast.error((err as Error).message);
+      }
     });
   });
 
@@ -145,6 +147,29 @@ export function StartSessionDialog({
                         ? "Requires a secure entry code for participants to join."
                         : "Anyone nearby can join and view content instantly."}
                     </p>
+                  </Field>
+                )}
+              />
+
+              <Controller
+                name="sharing_enabled"
+                control={form.control}
+                render={({ field }) => (
+                  <Field>
+                    <FieldLabel>Participant sharing</FieldLabel>
+
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm text-muted-foreground">
+                        Allow participants to upload files to this session.
+                      </p>
+
+                      <Toggle
+                        pressed={field.value}
+                        onPressedChange={field.onChange}
+                      >
+                        {field.value ? "Enabled" : "Disabled"}
+                      </Toggle>
+                    </div>
                   </Field>
                 )}
               />

@@ -3,7 +3,6 @@
 import ProximityIndicator from "../indicators/proximity-indicator";
 import Container from "../../layouts/container";
 import Logo from "../reusables/logo";
-import MobileMenu from "../mobile-menu";
 import Link from "next/link";
 import { FaGithub } from "react-icons/fa";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
@@ -53,7 +52,6 @@ export function AppHeader() {
 
           <div className="sm:hidden flex items-center gap-2">
             <ThemeToggle />
-            <MobileMenu />
           </div>
 
         </div>

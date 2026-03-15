@@ -88,7 +88,7 @@ export default function ShareFab({ onSelect }: ShareFabProps) {
                         className={`${itemClass} group`}
                     >
                         <FaFolder className={iconClass} />
-                        <span className="text-sm font-medium">Folder (Multiple items)</span>
+                        <span className="text-sm font-medium">Multiple items</span>
                     </DropdownMenuItem>
                 </DropdownMenuContent>
 
