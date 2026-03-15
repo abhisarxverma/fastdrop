@@ -4,7 +4,7 @@ import { ReactNode, useEffect, useState, useRef } from "react";
 import CheckingSessionLoader from "./checking-session-loader";
 import { NearbySession, SessionsRow } from "@/types/sessions";
 import { SessionExpiredModal } from "./session-expired-modal";
-import { getNearbySessionByIdRpc } from "@/lib/supabase/rpc/get-nearby-session-by-id";
+import { getSessionDetailsByIdRpc } from "@/lib/supabase/rpc/get-session-details-by-id";
 import { useGeo } from "@/providers/geo-provider";
 import { useAuth } from "@/providers/auth-provider";
 import { toast } from "sonner";
@@ -61,7 +61,7 @@ export function SessionEntrance({
 
     async function runEntranceFlow() {
       try {
-        const res = await getNearbySessionByIdRpc(
+        const res = await getSessionDetailsByIdRpc(
           supabase,
           sessionId,
           location.lat,
@@ -76,6 +76,8 @@ export function SessionEntrance({
         }
 
         const fetchedSessionDetails = res.data;
+
+        console.log("Fetched session details : ", fetchedSessionDetails);
 
         setSessionDetails({
           ...fetchedSessionDetails,

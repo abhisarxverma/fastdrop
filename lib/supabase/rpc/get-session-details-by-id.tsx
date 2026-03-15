@@ -2,14 +2,14 @@ import { SupabaseClient } from "@supabase/supabase-js";
 import { NearbySession } from "@/types/sessions";
 import { RpcResult } from "../types";
 
-export async function getNearbySessionByIdRpc(
+export async function getSessionDetailsByIdRpc(
     supabase: SupabaseClient,
     sessionId: string,
     lat: number,
     lng: number
 ): Promise<RpcResult<NearbySession | null>> {
     const { data, error } = await supabase.rpc(
-        "get_nearby_session_by_id",
+        "get_session_by_id",
         {
             p_session_id: sessionId,
             p_lat: lat,

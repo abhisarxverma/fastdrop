@@ -14,7 +14,7 @@ export default function LandingPage() {
             <section className="flex-1 flex items-center">
                 <div className="max-w-5xl mx-auto px-6 py-24 text-center">
                     <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight">
-                        No more WhatsApp
+                        No more <span className="text-green-500 font-semibold">WhatsApp</span>
                         <span className="block text-primary">
                             for sharing to nearby systems
                         </span>
@@ -28,7 +28,6 @@ export default function LandingPage() {
                             </span>
                         </div>
                     </div>
-
 
                     <div className="mt-8 max-w-2xl mx-auto text-center">
                         <p className="text-muted-foreground text-lg">

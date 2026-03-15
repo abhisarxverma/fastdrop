@@ -3,7 +3,7 @@ import { SessionsService } from "./sessions.service";
 import { SessionsRow, NearbySession } from "@/types/sessions";
 import { ServiceResponse } from "@/lib/types/service-response";
 import { logLocalError } from "@/lib/logging/logger";
-import { getNearbySessionByIdRpc } from "@/lib/supabase/rpc/get-nearby-session-by-id";
+import { getSessionDetailsByIdRpc } from "@/lib/supabase/rpc/get-session-details-by-id";
 import { validateSessionCodeRpc } from "@/lib/supabase/rpc/validate-session-code";
 import { getNearbySessionsRpc } from "@/lib/supabase/rpc/get-nearby-sessions";
 import { getSessionContentByIdRpc } from "@/lib/supabase/rpc/get-session-content-by-id";
@@ -121,13 +121,13 @@ export const localSessionsService: SessionsService = {
     };
   },
 
-  async getNearbySessionById(
+  async getSessionDetailsById(
     input,
     supabase,
   ): Promise<ServiceResponse<NearbySession | null>> {
     const { sessionId, lat, lng } = input;
 
-    const { data, error } = await getNearbySessionByIdRpc(
+    const { data, error } = await getSessionDetailsByIdRpc(
       supabase,
       sessionId,
       lat,

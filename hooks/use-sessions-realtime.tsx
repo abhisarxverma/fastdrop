@@ -5,7 +5,7 @@ import { RealtimeChannel } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/client";
 import { NearbySession, SessionsRow } from "@/types/sessions";
 import { isSessionVisibleToUserRpc } from "@/lib/supabase/rpc/is-session-visible";
-import { getNearbySessionByIdRpc } from "@/lib/supabase/rpc/get-nearby-session-by-id";
+import { getSessionDetailsByIdRpc } from "@/lib/supabase/rpc/get-session-details-by-id";
 import { logError } from "@/lib/logging/logger";
 import { useAuth } from "@/providers/auth-provider";
 
@@ -55,7 +55,7 @@ export function useSessionsRealtime({
 
       if (!isVisible) return;
 
-      const { data, error } = await getNearbySessionByIdRpc(
+      const { data, error } = await getSessionDetailsByIdRpc(
         supabase,
         session.id,
         lat,
@@ -65,7 +65,7 @@ export function useSessionsRealtime({
       if (error) {
         logError({
           source: "local",
-          scope: "Sessions realtime - get nearby session RPC",
+          scope: "Sessions realtime - get session details by id RPC",
           error,
         });
         return;
@@ -97,13 +97,12 @@ export function useSessionsRealtime({
         return;
       }
 
-      // If session is no longer visible remove it
       if (!isVisible) {
         onDelete(session.id);
         return;
       }
 
-      const { data, error } = await getNearbySessionByIdRpc(
+      const { data, error } = await getSessionDetailsByIdRpc(
         supabase,
         session.id,
         lat,

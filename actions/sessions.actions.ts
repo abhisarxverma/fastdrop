@@ -6,7 +6,7 @@ import { withSupabase } from "@/lib/actions/with-supabase";
 import { createSessionSchema } from "@/schemas/sessions/create-session.schema";
 import { editSessionActionSchema } from "@/schemas/sessions/edit-session";
 import { endSessionActionSchema } from "@/schemas/sessions/end-session";
-import { getNearbySessionByIdSchema } from "@/schemas/sessions/get-nearby-session-by-id";
+import { getSessionDetailsByIdSchema } from "@/schemas/sessions/get-session-details-by-id";
 import { getNearbySessionsSchema } from "@/schemas/sessions/get-nearby-sessions.schema";
 import { getSessionCodeActionSchema } from "@/schemas/sessions/get-session-code";
 import { getSessionContentByIdSchema } from "@/schemas/sessions/get-session-content-by-id";
@@ -36,11 +36,11 @@ export const getActiveSessionOfUserAction = actionClient
     });
   });
 
-export const getNearbySessionByIdAction = actionClient
-  .inputSchema(getNearbySessionByIdSchema)
+export const getSessionDetailsByIdAction = actionClient
+  .inputSchema(getSessionDetailsByIdSchema)
   .action(async ({ parsedInput }) => {
     return withSupabase(({ supabase }) => {
-      return sessionsService.getNearbySessionById(parsedInput, supabase);
+      return sessionsService.getSessionDetailsById(parsedInput, supabase);
     })
   })
 

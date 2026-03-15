@@ -26,7 +26,7 @@ export const backendSessionsService: SessionsService = {
     });
   },
 
-  async getNearbySessionById(input) {
+  async getSessionDetailsById(input) {
     return fetchBackend("/api/sessions/nearby/"+input.sessionId, {
       method: 'POST',
       body: input
