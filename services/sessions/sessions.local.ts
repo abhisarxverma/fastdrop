@@ -268,5 +268,33 @@ export const localSessionsService: SessionsService = {
       message: "Session ended successfully",
       data,
     };
+  },
+
+  async getSessionCode(input, supabase) {
+    const { sessionId } = input;
+
+    const { data, error } = await supabase
+      .from("sessions")
+      .select("join_code")
+      .eq("id", sessionId)
+      .single()
+
+    if (error) {
+      logLocalError("get-session-code", { input }, error);
+
+      return {
+        success: false,
+        data: null,
+        message: "get session failed",
+      };
+    }
+
+    return {
+      success: true,
+      message: "Session code fetched successfully",
+      data: {
+        join_code: data.join_code
+      },
+    };
   }
 };

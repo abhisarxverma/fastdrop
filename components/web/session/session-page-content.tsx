@@ -33,7 +33,7 @@ import { useUserSessionBanRealtime } from "@/hooks/use-session-bans-realtime";
 import { deriveSharePermission } from "@/lib/utils/derive-share-permission";
 import { UserBannedBanner } from "./user-banned-banner";
 import { SharingDisabledBanner } from "./sharing-disabled-banner";
-import { endSessionAction } from "@/actions/sessions.actions";
+import { endSessionAction, getSessionCodeAction } from "@/actions/sessions.actions";
 import { unwrapActionResult } from "@/lib/actions/unwrap-result";
 import { useRouter } from "next/navigation"
 import { getStoragePathFromPublicUrl } from "@/lib/supabase/utils";
@@ -80,9 +80,9 @@ export function SessionPageContent({
   const [isBanning, setIsBanning] = useState(false);
   const [isEndingSession, setIsEndingSession] = useState(false);
 
-  const { isBanned, loading: isBannedLoading, bannedUsers } = useUserSessionBanRealtime(sessionId);
+  const [sessionCode, setSessionCode] = useState<null| string>(null);
 
-  console.log("Banned users: ", bannedUsers);
+  const { isBanned, loading: isBannedLoading, bannedUsers } = useUserSessionBanRealtime(sessionId);
 
   useEffect(() => {
     setSessionMeta(sessionDetails);
@@ -229,6 +229,26 @@ export function SessionPageContent({
     return result;
   }, [shares, typeFilter, searchInput, sortFilter, bannedUsers]);
 
+  useEffect(() => {
+    if (!isHost) {
+      setSessionCode(null);
+      return;
+    };
+
+    async function fetchSessionCode() {
+      try {
+        const res = unwrapActionResult(await getSessionCodeAction({
+          sessionId
+        }))
+        console.log("get session code res: ", res);
+        setSessionCode(res.join_code);
+      } catch (error) {
+        console.log("Error in getting session code:  ", error);
+      }
+    }
+    fetchSessionCode()
+  }, [isHost, sessionId])
+
   const permission = deriveSharePermission(
     sessionMeta.sharing_enabled,
     isBanned,
@@ -243,6 +263,7 @@ export function SessionPageContent({
         onLeave={handleSessionEnd}
         endingSession={isEndingSession}
         isHost={isHost}
+        sessionCode={sessionCode ?? undefined}
         onUpdate={(updatedSessionRow: SessionsRow) => {
           setSessionMeta((prev: NearbySession) => ({
             ...prev,

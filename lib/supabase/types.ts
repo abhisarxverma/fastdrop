@@ -3,7 +3,7 @@ import { ServiceResponse } from "../types/service-response";
 
 export type RpcResult<T> = {
   data: T;
-  error: PostgrestError | null;
+  error: PostgrestError | Error | null;
 };
  
 

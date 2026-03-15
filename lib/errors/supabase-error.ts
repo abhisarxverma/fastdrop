@@ -1,10 +1,11 @@
 
 import type { PostgrestError } from "@supabase/supabase-js";
 
-export function mapSupabaseError(error: PostgrestError | null): string {
+export function mapSupabaseError(error: PostgrestError | Error | null): string {
   if (!error) return "Something went wrong.";
+  if (error instanceof Error) return error.message;
 
-  switch (error.code) {
+  switch ((error as PostgrestError).code) {
     case "23P01": 
       return "You already have an active session. End it before creating a new one.";
     case "42501":

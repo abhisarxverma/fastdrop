@@ -2,7 +2,6 @@
 
 import { ReactNode, useEffect, useState, useRef } from "react";
 import CheckingSessionLoader from "./checking-session-loader";
-import { SessionCodeGate } from "./session-code-gate";
 import { NearbySession, SessionsRow } from "@/types/sessions";
 import { SessionExpiredModal } from "./session-expired-modal";
 import { getNearbySessionByIdRpc } from "@/lib/supabase/rpc/get-nearby-session-by-id";
@@ -12,6 +11,9 @@ import { toast } from "sonner";
 import { createClient } from "@/lib/supabase/client";
 import { RealtimeChannel } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
+import { validateSessionCodeAction } from "@/actions/sessions.actions";
+import { unwrapActionResult } from "@/lib/actions/unwrap-result";
+import { EnterSessionCodeModal } from "./enter-session-code-modal";
 
 type EntranceState =
   | "checking"
@@ -31,6 +33,7 @@ export function SessionEntrance({
   const [sessionDetails, setSessionDetails] =
     useState<NearbySession | null>(null);
 
+  const fetchedOnceRef = useRef<boolean>(false);
   const [state, setState] =
     useState<EntranceState>("checking");
 
@@ -39,12 +42,18 @@ export function SessionEntrance({
 
   const channelRef = useRef<RealtimeChannel | null>(null);
 
+  const codeValidatedRef = useRef<boolean>(false);
+
+
   const router = useRouter();
 
   useEffect(() => {
     if (authLoading) return;
     if (!user) return;
     if (!location) return;
+    if (fetchedOnceRef.current) {
+      return;
+    };
 
     let cancelled = false;
 
@@ -84,11 +93,12 @@ export function SessionEntrance({
           return;
         }
 
-        if (fetchedSessionDetails.requires_code && !isHost) {
+        if (fetchedSessionDetails.requires_code && !isHost && !codeValidatedRef.current) {
           setState("requires_code");
           return;
         }
 
+        fetchedOnceRef.current = true;
         setState("ready");
 
       } catch (err) {
@@ -178,6 +188,30 @@ export function SessionEntrance({
 
   }, [sessionDetails, sessionId]);
 
+  async function handleCodeValidation({ code }: { code: string }) {
+    if (!code) return;
+
+    try {
+      const isValid = unwrapActionResult(await validateSessionCodeAction({
+        sessionId,
+        code,
+      }))
+
+      if (isValid) {
+        codeValidatedRef.current = true;
+        setState("ready");
+        toast.success("Session code is valid");
+        return;
+      }
+
+      toast.error("Invalid session code");
+
+    } catch (error) {
+      console.log("Error in validating session code: ", error);
+      toast.error("Session code validation failed")
+    }
+  }
+
   if (authLoading || state === "checking") {
     return <CheckingSessionLoader />;
   }
@@ -189,7 +223,7 @@ export function SessionEntrance({
   }
 
   if (state === "requires_code" && sessionDetails) {
-    return <SessionCodeGate sessionData={sessionDetails} />;
+    return <EnterSessionCodeModal onSubmit={handleCodeValidation} />;
   }
 
   if (!sessionDetails) return null;

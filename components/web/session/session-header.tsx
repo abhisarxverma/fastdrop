@@ -25,6 +25,7 @@ interface SessionHeaderProps {
     onLeave: () => void;
     onUpdate: (updated: SessionsRow) => void;
     endingSession: boolean;
+    sessionCode?: string;
 }
 
 export function SessionHeader({
@@ -32,7 +33,8 @@ export function SessionHeader({
     isHost,
     onLeave,
     onUpdate,
-    endingSession
+    endingSession,
+    sessionCode
 }: SessionHeaderProps) {
     const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
     return (
@@ -182,6 +184,7 @@ export function SessionHeader({
                 onOpenChange={setSettingsOpen}
                 session={sessionDetails}
                 onUpdate={onUpdate}
+                sessionCode={sessionCode}
             />
         </section>
     );

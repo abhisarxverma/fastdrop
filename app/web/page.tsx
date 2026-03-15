@@ -14,6 +14,9 @@ import { AppFooter } from "@/components/web/layout/app-footer";
 import Container from "@/components/layouts/container";
 import { StartSessionDialog } from "@/components/web/sessions/start-session-dialog";
 import { useSessionsRealtime } from "@/hooks/use-sessions-realtime";
+import { EnterSessionCodeModal } from "@/components/web/session/entrance/enter-session-code-modal";
+import { createClient } from "@/lib/supabase/client";
+import { getSessionByJoincodeRpc } from "@/lib/supabase/rpc/get-session-by-joincode";
 
 export default function NearbySessionsPage() {
   const [view, setView] = useState<"rows" | "grid">("rows");
@@ -22,7 +25,9 @@ export default function NearbySessionsPage() {
   const [sessions, setSessions] = useState<NearbySession[]>([]);
   const [startDialogOpen, setStartDialogOpen] = useState<boolean>(false);
   const [loading, setLoading] = useState(true);
-  const router = useRouter()
+  const [codeModalOpen, setCodeModalOpen] = useState<boolean>(false);
+  const router = useRouter();
+  const supabase = createClient();
 
   const { location } = useGeo();
 
@@ -69,6 +74,12 @@ export default function NearbySessionsPage() {
     }
   });
 
+  async function handleCodeSubmit({ code }: {code: string}) {
+      const res = await getSessionByJoincodeRpc(supabase, code);
+      if (res.error) throw res.error;
+      router.push(`/web/sessions/${res.data}`);
+  }
+
   return (
     <div className="h-full flex-1 flex flex-col gap-3">
 
@@ -85,6 +96,8 @@ export default function NearbySessionsPage() {
           onEnter={() => router.push(`/web/sessions/${runningSession.id}`)}
         />
       )}
+
+      <EnterSessionCodeModal open={codeModalOpen} onOpenChange={() => setCodeModalOpen(false)} onSubmit={handleCodeSubmit} />
 
       <Container className="flex-1 h-full flex flex-col">
 
@@ -106,6 +119,7 @@ export default function NearbySessionsPage() {
               onViewChange={setView}
               disableStart={loading || !!runningSession}
               onStartClick={setStartDialogOpen}
+              onJoin={() => setCodeModalOpen(true)}
             />
 
             <SessionList

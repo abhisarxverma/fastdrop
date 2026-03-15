@@ -8,6 +8,7 @@ import { editSessionActionSchema } from "@/schemas/sessions/edit-session";
 import { endSessionActionSchema } from "@/schemas/sessions/end-session";
 import { getNearbySessionByIdSchema } from "@/schemas/sessions/get-nearby-session-by-id";
 import { getNearbySessionsSchema } from "@/schemas/sessions/get-nearby-sessions.schema";
+import { getSessionCodeActionSchema } from "@/schemas/sessions/get-session-code";
 import { getSessionContentByIdSchema } from "@/schemas/sessions/get-session-content-by-id";
 import { validateSessionCodeSchema } from "@/schemas/sessions/validate-session-code";
 import { sessionsService } from "@/services";
@@ -72,5 +73,13 @@ export const endSessionAction = actionClient
   .action(async ({ parsedInput }) => {
     return withAuth(({ user, supabase, token }) => {
       return sessionsService.endSession(parsedInput, supabase, user, token);
+    })
+  })
+
+export const getSessionCodeAction = actionClient
+  .inputSchema(getSessionCodeActionSchema)
+  .action(async ({ parsedInput }) => {
+    return withAuth(({ user, supabase, token }) => {
+      return sessionsService.getSessionCode(parsedInput, supabase, user, token);
     })
   })

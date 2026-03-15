@@ -3,7 +3,7 @@
 import { useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2 } from "lucide-react";
+import { Copy, Loader2 } from "lucide-react";
 import z from "zod";
 
 import {
@@ -31,6 +31,7 @@ import { getExpiryLimits } from "@/lib/utils/date-limits";
 
 import { editSessionFormSchema } from "@/schemas/sessions/edit-session";
 import { NearbySession, SessionsRow } from "@/types/sessions";
+import { copy } from "@/lib/utils";
 
 export type RadiusSelectType = 10 | 30 | 60 | 100 | 150;
 
@@ -39,13 +40,15 @@ interface EditSessionDialogProps {
   onOpenChange: (open: boolean) => void;
   session: NearbySession;
   onUpdate: (updated: SessionsRow) => void;
+  sessionCode?: string;
 }
 
 export function EditSessionDialog({
   open,
   onOpenChange,
   session,
-  onUpdate
+  onUpdate,
+  sessionCode
 }: EditSessionDialogProps) {
   const [isPending, startTransition] = useTransition();
 
@@ -88,6 +91,16 @@ export function EditSessionDialog({
     onOpenChange(false);
   };
 
+  const handleCopy = async () => {
+    try {
+      await copy(sessionCode as string);
+      toast.success("Session join code copied successfully ");
+    } catch (error) {
+      console.log("Error in copying : ", error)
+      toast.error("Couldn't copy session join code");
+    }
+  }
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
@@ -95,6 +108,33 @@ export function EditSessionDialog({
         className="w-full max-w-[480px] p-0"
       >
         <ScrollArea className="max-h-[calc(100vh-4rem)]">
+          {sessionCode && (
+            <div className="px-4 md:px-8 mt-4">
+              <div className="flex items-center justify-between rounded-md border bg-muted/30 p-4">
+                <div className="flex gap-2">
+                  {sessionCode.split("").map((char, idx) => (
+                    <span
+                      key={idx}
+                      className="w-10 h-12 flex items-center justify-center rounded-md bg-background text-2xl font-mono font-bold tracking-widest"
+                    >
+                      {char}
+                    </span>
+                  ))}
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleCopy()}
+                  aria-label="Copy session code"
+                >
+                  <Copy className="h-5 w-5" />
+                </Button>
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                Share this code with participants to let them join quickly.
+              </p>
+            </div>
+          )}
           <form onSubmit={onSubmit}>
             <DialogHeader className="px-4 md:px-8 pt-4 md:pt-8">
               <DialogTitle className="text-2xl font-bold tracking-tight">

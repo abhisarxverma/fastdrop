@@ -6,3 +6,7 @@ export const validateSessionCodeSchema = z.object({
 })
 
 export type ValidateSessionCodeInput = z.infer<typeof validateSessionCodeSchema>;
+
+export const ValidateSessionCodeFormSchema = validateSessionCodeSchema.omit({
+    sessionId: true
+})
