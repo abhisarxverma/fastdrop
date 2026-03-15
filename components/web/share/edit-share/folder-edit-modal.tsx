@@ -27,6 +27,7 @@ import { createClient } from "@/lib/supabase/client";
 import { mapShareToEditFormValues } from "@/lib/utils/map-share-to-edit-form-values";
 import { Button } from "@/components/ui/button";
 import { LuDelete } from "react-icons/lu";
+import { getStoragePathFromPublicUrl } from "@/lib/supabase/utils";
 
 interface Props {
   share: ShareWithItems;
@@ -112,10 +113,8 @@ export function FolderShareEditModal({
         const transformedItems: EditShareFormValues["items"] = [];
 
         for (const item of data.items) {
-          /* ---------------- FILE ---------------- */
 
           if (item.item_type === "file") {
-            // New file uploaded
             if (item.file instanceof File) {
               if (item.file.size > MAX_FILE_SIZE_BYTES) {
                 throw new Error("File exceeds maximum size");
@@ -135,9 +134,8 @@ export function FolderShareEditModal({
                 .from("fastdrop")
                 .getPublicUrl(storagePath);
 
-              // If replacing existing file → delete old
               if (item.file_path) {
-                oldFilesToDelete.push(item.file_path);
+                oldFilesToDelete.push(getStoragePathFromPublicUrl(item.file_path));
               }
 
               transformedItems.push({
@@ -149,7 +147,6 @@ export function FolderShareEditModal({
               continue;
             }
 
-            // No new file → keep existing
             if (item.file_path) {
               transformedItems.push(item);
               continue;
@@ -158,7 +155,6 @@ export function FolderShareEditModal({
             throw new Error("Missing file");
           }
 
-          /* ---------------- NON FILE ---------------- */
 
           transformedItems.push(item);
         }
@@ -169,7 +165,6 @@ export function FolderShareEditModal({
           items: transformedItems,
         });
 
-        // Delete old replaced files AFTER success
         if (oldFilesToDelete.length > 0) {
           await supabase.storage
             .from("fastdrop")
@@ -179,7 +174,6 @@ export function FolderShareEditModal({
         toast.success("Folder updated successfully");
         onOpenChange(false);
       } catch (error) {
-        // Rollback newly uploaded files
         if (uploadedPaths.length > 0) {
           await supabase.storage
             .from("fastdrop")

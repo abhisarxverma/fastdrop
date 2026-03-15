@@ -103,7 +103,6 @@ export function SessionPageContent({
         .filter((item) => item.item_type === "file")
         .map((item) => getStoragePathFromPublicUrl(item.file_path as string));
 
-
       if (paths.length > 0) {
         const { error } = await supabase.storage
           .from("fastdrop")

@@ -3,6 +3,7 @@
 import { useDropzone } from "react-dropzone";
 import { useCallback } from "react";
 import { Upload } from "lucide-react";
+import { MAX_FILE_SIZE_MB } from "@/lib/env";
 
 type FileDropzoneProps = {
   onChange: (files: File[]) => void;
@@ -60,7 +61,7 @@ export function FileDropzone({
           <span className="text-primary">click to browse</span>
         </p>
         <p className="text-xs text-muted-foreground">
-          Maximum file size: 200 MB
+          Maximum file size: {MAX_FILE_SIZE_MB} MB
         </p>
       </div>
     </div>

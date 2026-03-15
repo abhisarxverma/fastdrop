@@ -1,5 +1,4 @@
 import { AppHeader } from "@/components/web/layout/app-header"
-import Container from "@/components/layouts/container"
 import AuthProvider from "@/providers/auth-provider"
 import { GeoProvider } from "@/providers/geo-provider"
 

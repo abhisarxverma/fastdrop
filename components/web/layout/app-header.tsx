@@ -16,7 +16,7 @@ export function AppHeader() {
         "sticky top-0 z-50 w-full",
         "border-b",
         "bg-background/70 backdrop-blur-xl",
-        "supports-[backdrop-filter]:bg-background/60"
+        "supports-backdrop-filter:bg-background/60"
       )}
     >
       <Container>
