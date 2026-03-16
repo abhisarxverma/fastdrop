@@ -1,15 +1,22 @@
-export const getDefaultExpiry = () => {
-  const date = new Date();
-  date.setHours(date.getHours() + 1);
+export const getDefaultExpiryInput = () => {
+  const date = new Date()
+  date.setHours(date.getHours() + 1)
 
-  // Format directly for datetime-local
-  return date.toISOString();
-};
+  const tzOffset = date.getTimezoneOffset() * 60000
+
+  return new Date(date.getTime() - tzOffset)
+    .toISOString()
+    .slice(0, 16)
+}
 
 export const formatDateForInput = (date: Date) => {
     const tzOffset = date.getTimezoneOffset() * 60000;
     return new Date(date.getTime() - tzOffset).toISOString().slice(0, 16);
 };
+
+export const datetimeLocalToUTC = (value: string) : string => {
+  return new Date(value).toISOString()
+}
 
 export function relativeTimeFromNow(timestamp: string) {
   const now = new Date();

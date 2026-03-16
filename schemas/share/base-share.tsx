@@ -2,7 +2,7 @@ import z from "zod";
 import { stringValidator } from "../utils";
 
 export const baseShareSchema = z.object({
-  title: stringValidator(5, 100),
+  title: stringValidator(5, 100, "Title"),
   session_id: z.string(),
   share_type: z.string(),
 });

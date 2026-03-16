@@ -21,7 +21,7 @@ import RadiusSelector from "./radius-selector";
 import { VisibilityToggle } from "./visibility-toggle";
 
 import { createSessionFormSchema } from "@/schemas/sessions/create-session.schema";
-import { formatDateForInput, getDefaultExpiry } from "@/lib/utils/formatters";
+import { getDefaultExpiryInput, datetimeLocalToUTC, formatDateForInput } from "@/lib/utils/formatters";
 import { useGeo } from "@/providers/geo-provider";
 import { toast } from "sonner";
 import { getExpiryLimits } from "@/lib/utils/date-limits";
@@ -55,7 +55,7 @@ export function StartSessionDialog({
     resolver: zodResolver(createSessionFormSchema),
     defaultValues: {
       title: "",
-      expires_at: formatDateForInput(new Date(getDefaultExpiry())),
+      expires_at: getDefaultExpiryInput(),
       requires_code: false,
       radius_meters: 100,
       sharing_enabled: true
@@ -65,10 +65,14 @@ export function StartSessionDialog({
   const onSubmit = form.handleSubmit((values: z.infer<typeof createSessionFormSchema>) => {
     startTransition(async () => {
       try {
-        const response = await createSessionAction({
+        const payload = {
           ...values,
+          expires_at: datetimeLocalToUTC(values.expires_at)
+        }
+        const response = await createSessionAction({
+          ...payload,
           lat: location.lat,
-          lng: location.lng
+          lng: location.lng,
         });
 
         const unwrappedResult = unwrapActionResult(response);

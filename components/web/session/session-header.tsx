@@ -87,10 +87,10 @@ export function SessionHeader({
 
                             <Separator orientation="vertical" className="h-4" />
 
-                            <div className="flex items-center gap-2">
+                            {!isHost && <div className="flex items-center gap-2">
                                 <MapPin className="size-4 opacity-70" />
                                 {sessionDetails.distance_meters}m away
-                            </div>
+                            </div>}
 
                             <Separator orientation="vertical" className="h-4" />
 

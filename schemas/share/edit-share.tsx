@@ -1,12 +1,13 @@
 import { z } from "zod";
+import { contentValidator, stringValidator } from "../utils";
 
 /* ---------------- TEXT ---------------- */
 
 const textItemSchema = z.object({
   id: z.string().optional().nullable(),
   item_type: z.literal("text"),
-  title: z.string().min(1),
-  content: z.string(),
+  title: stringValidator(5, 40, "Item title"),
+  content: contentValidator,
 });
 
 /* ---------------- CODE ---------------- */
@@ -14,8 +15,8 @@ const textItemSchema = z.object({
 const codeItemSchema = z.object({
   id: z.string().optional().nullable(),
   item_type: z.literal("code"),
-  title: z.string().min(1),
-  content: z.string(),
+  title: stringValidator(5, 40, "Item title"),
+  content: contentValidator,
   language: z.string().min(1),
 });
 
@@ -24,8 +25,8 @@ const codeItemSchema = z.object({
 const linkItemSchema = z.object({
   id: z.string().optional().nullable(),
   item_type: z.literal("link"),
-  title: z.string().min(1),
-  content: z.string().url(),
+  title: stringValidator(5, 40, "Item title"),
+  content: contentValidator,
 });
 
 /* ---------------- FILE ---------------- */
@@ -34,8 +35,8 @@ const fileItemSchema = z
   .object({
     id: z.string().optional().nullable(),
     item_type: z.literal("file"),
-    title: z.string().min(1),
-    file_name: z.string().min(1),
+    title: stringValidator(5, 40, "Item title"),
+    file_name: stringValidator(5, 40, "File name"),
     file_type: z.string().min(1),
     file_path: z.string().optional(),
     file: z.instanceof(File).optional().nullable(),
@@ -58,7 +59,7 @@ export const editShareItemSchema = z.discriminatedUnion("item_type", [
 ]);
 
 export const editShareFormSchema = z.object({
-  title: z.string().min(1),
+  title: stringValidator(5, 50, "Title"),
   items: z.array(editShareItemSchema),
 });
 

@@ -1,5 +1,5 @@
 import { fileTypes } from "@/constants/file-type-info";
-import { codeLanguageInfo } from "@/constants/monaco-languages";
+import { extensionToLanguage } from "@/constants/monaco-languages";
 
 export type AllowedItemType = "code" | "text" | "file";
 
@@ -12,10 +12,10 @@ export function resolveItemTypeFromExtension(
   extension: string
 ): ResolveResult {
 
-  if (extension in codeLanguageInfo) {
+  if (extension in extensionToLanguage) {
     return {
       type: "code",
-      language: extension,
+      language: extensionToLanguage[extension],
     };
   }
 

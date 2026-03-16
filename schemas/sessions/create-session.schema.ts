@@ -5,7 +5,7 @@ import { getExpiryLimits } from "@/lib/utils/date-limits";
 const {min, max} = getExpiryLimits();
 
 export const createSessionSchema = z.object({
-  title: stringValidator(10, 200),
+  title: stringValidator(5, 200, "title"),
   lat: z.number(),
   lng: z.number(),
   requires_code: z.boolean(),

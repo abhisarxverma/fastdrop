@@ -6,7 +6,7 @@ const { min, max } = getExpiryLimits();
 
 export const editSessionActionSchema = z.object({
   session_id: z.string(),
-  title: stringValidator(10, 200),
+  title: stringValidator(5, 200, "title"),
   requires_code: z.boolean(),
   sharing_enabled: z.boolean(),
   expires_at: z.string().refine(

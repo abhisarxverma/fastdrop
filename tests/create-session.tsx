@@ -1,5 +1,5 @@
 import { createSessionAction } from "@/actions/sessions.actions";
-import { getDefaultExpiry } from "@/lib/utils/formatters";
+import { getDefaultExpiryInput } from "@/lib/utils/formatters";
 
 export async function testCreateSession(lat: number, lng: number, requires_code: boolean = false) {
     const createdSession = await createSessionAction({
@@ -8,7 +8,7 @@ export async function testCreateSession(lat: number, lng: number, requires_code:
         lng,
         requires_code,
         radius_meters: 30,
-        expires_at: getDefaultExpiry(),
+        expires_at: getDefaultExpiryInput(),
         sharing_enabled: true
     })
     console.log("Created session : ", createdSession);

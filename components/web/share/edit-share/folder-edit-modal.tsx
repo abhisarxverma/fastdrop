@@ -28,6 +28,7 @@ import { mapShareToEditFormValues } from "@/lib/utils/map-share-to-edit-form-val
 import { Button } from "@/components/ui/button";
 import { LuDelete } from "react-icons/lu";
 import { getStoragePathFromPublicUrl } from "@/lib/supabase/utils";
+import { FolderItemsErrorSummary } from "../share-folder/folder-items-errors-summary";
 
 interface Props {
   share: ShareWithItems;
@@ -208,6 +209,10 @@ export function FolderShareEditModal({
           </Field>
 
           <AddItemDropdown onAdd={handleAdd} />
+
+          <FolderItemsErrorSummary
+            onOpenItem={(index) => setEditingIndex(index)}
+          />
 
           <div className="space-y-3">
             {fields.map((field, index) => (

@@ -29,6 +29,7 @@ import { folderShareAction } from "@/actions/share.actions";
 import { unwrapActionResult } from "@/lib/actions/unwrap-result";
 import { MAX_FILE_SIZE_BYTES } from "@/lib/env";
 import { createClient } from "@/lib/supabase/client";
+import { FolderItemsErrorSummary } from "./folder-items-errors-summary";
 
 interface Props {
   open: boolean;
@@ -103,7 +104,7 @@ export function ShareFolderModal({ open, onOpenChange, session_id }: Props) {
       const uploadedPaths: string[] = [];
 
       try {
-        const currentValues = form.getValues(); 
+        const currentValues = form.getValues();
         const transformedItems: FolderShareInput["items"] = [];
 
         for (const item of currentValues.items) {
@@ -172,11 +173,16 @@ export function ShareFolderModal({ open, onOpenChange, session_id }: Props) {
     console.log("Validation failed:", errors);
   };
 
+  const onCancel = (val: boolean) => {
+    onOpenChange(val);
+    form.reset();
+  }
+
   return (
     <ShareDialog
       icon={<FaFolder className="size-5" />}
       open={open}
-      onOpenChange={onOpenChange}
+      onOpenChange={onCancel}
       title="Share Folder"
       description="Add and manage items before sharing"
       submitLabel="Share folder"
@@ -193,6 +199,10 @@ export function ShareFolderModal({ open, onOpenChange, session_id }: Props) {
             </Field>
 
             <AddItemDropdown onAdd={handleAdd} />
+
+            <FolderItemsErrorSummary
+              onOpenItem={(index) => setEditingIndex(index)}
+            />
 
             {fields.length === 0 ? (
               <FileDropzone
