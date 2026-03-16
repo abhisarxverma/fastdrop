@@ -168,6 +168,20 @@ export function SessionEntrance({
           }
         )
 
+        .on(
+          "postgres_changes",
+          {
+            event: "DELETE",
+            schema: "public",
+            table: "sessions",
+            filter: `id=eq.${sessionId}`,
+          },
+          (payload) => {
+            console.log("Session deleted by edge function : ", payload.new);
+            setState("expired");
+          }
+        )
+
         .subscribe((status, err) => {
           console.log("Single session realtime:", status, err);
 
