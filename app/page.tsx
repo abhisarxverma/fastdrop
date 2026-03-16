@@ -11,7 +11,7 @@ export default function LandingPage() {
         <div className="flex flex-col min-h-screen">
             <AppHeader />
 
-            <section className="flex-1 flex items-center">
+            <section className="flex-1 flex items-center bg-linear-to-b from-gray-200 via-white to-gray-200 dark:from-gray-900 dark:via-black dark:to-gray-800">
                 <div className="max-w-5xl mx-auto px-6 py-24 text-center">
                     <h1 className="text-4xl sm:text-5xl font-semibold tracking-tight">
                         No more <span className="text-green-500 font-semibold">WhatsApp</span>
@@ -33,7 +33,7 @@ export default function LandingPage() {
                         <p className="text-muted-foreground text-lg">
                             Fastdrop creates quick, ephemeral sessions that nearby systems can
                             instantly discover and join. Within these sessions you can share
-                            four essentials — keeping collaboration fast and simple.
+                            four essentials files, code, texts, and links — keeping sharing to nearby systems very fast and simple.
                         </p>
 
                     </div>
@@ -47,14 +47,16 @@ export default function LandingPage() {
                             </Link>
                         </Button>
 
-                        <Link
-                            href="https://github.com/abhisarxverma/fastdrop"
-                            target="_blank"
-                            className="inline-flex items-center gap-2 rounded-md border px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition"
-                        >
-                            <FaGithub className="size-4" />
-                            Proudly Open Source
-                        </Link>
+                        <Button asChild variant="secondary" size="lg">
+                            <Link
+                                href="https://github.com/abhisarxverma/fastdrop"
+                                target="_blank"
+                                className="inline-flex items-center gap-2"
+                            >
+                                <FaGithub className="size-4" />
+                                Github open sourced
+                            </Link>
+                        </Button>
                     </div>
                 </div>
             </section>
@@ -93,7 +95,7 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            <footer className="border-t">
+            <footer className="border-t bg-linear-to-b from-gray-200 via-white to-gray-200 dark:from-gray-900 dark:via-black dark:to-gray-800">
                 <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between text-sm text-muted-foreground">
                     <p>© {new Date().getFullYear()} Fastdrop</p>
                     <div className="flex items-center gap-4">

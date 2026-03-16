@@ -4,3 +4,4 @@ export function getStoragePathFromPublicUrl(url: string) {
   if (idx === -1) throw new Error("Invalid file_path format: " + url);
   return decodeURIComponent(url.substring(idx + prefix.length));
 }
+

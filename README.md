@@ -1,9 +1,11 @@
 <img src="public/fastdrop-logo.png" width="100" height="100" style="border-radius: 100px">
 
-# Fastdrop [ In Development ]
+# Fastdrop 
 
 Fastdrop is a lightweight web app for instant file sharing in classrooms and computer labs.  
 Instead of relying on WhatsApp, email, or other login-heavy platforms, Fastdrop lets you **drop a file once and make it instantly visible to everyone nearby**.
+
+### [👉🏼 Try Fastdrop quickly](https://fastdrop-ebon.vercel.app)
 
 ## Concept
 A frictionless, browser-based hub where any student or professor can share content files in real time without authentication barriers.

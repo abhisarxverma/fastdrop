@@ -45,7 +45,7 @@ export function AppHeader() {
                   transition-colors
                 "
               >
-                <FaGithub className="size-4 opacity-80 hover:opacity-100 transition-opacity" />
+                <FaGithub className="size-6 opacity-80 hover:opacity-100 transition-opacity" />
               </Link>
             </div>
           </div>
