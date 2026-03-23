@@ -24,7 +24,7 @@ export default function DashboardToolbar({
   onJoin,
 }: DashboardToolbarProps) {
   return (
-    <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <section className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
       <div className="flex gap-6">
         <SearchInput
           value={searchInput}

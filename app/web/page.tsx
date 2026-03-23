@@ -17,6 +17,7 @@ import { useSessionsRealtime } from "@/hooks/use-sessions-realtime";
 import { EnterSessionCodeModal } from "@/components/web/session/entrance/enter-session-code-modal";
 import { createClient } from "@/lib/supabase/client";
 import { getSessionByJoincodeRpc } from "@/lib/supabase/rpc/get-session-by-joincode";
+import IntroDialog from "../../components/web/onboarding/intro-dialog";
 
 export default function NearbySessionsPage() {
   const [view, setView] = useState<"rows" | "grid">("rows");
@@ -96,6 +97,8 @@ export default function NearbySessionsPage() {
           onEnter={() => router.push(`/web/sessions/${runningSession.id}`)}
         />
       )}
+
+      <IntroDialog />
 
       <EnterSessionCodeModal open={codeModalOpen} onOpenChange={() => setCodeModalOpen(false)} onSubmit={handleCodeSubmit} />
 
