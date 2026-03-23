@@ -106,6 +106,21 @@ export default function LandingPage() {
                     </div>
                 </div>
             </footer>
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{
+                    __html: JSON.stringify({
+                        "@context": "https://schema.org",
+                        "@type": "WebApplication",
+                        name: "Fastdrop",
+                        url: "https://fastdrop-ebon.vercel.app",
+                        description:
+                            "Instant file sharing for classrooms and labs without login.",
+                        applicationCategory: "UtilitiesApplication",
+                        operatingSystem: "Web",
+                    }),
+                }}
+            />
         </div>
     );
 }

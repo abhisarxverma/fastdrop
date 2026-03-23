@@ -19,9 +19,57 @@ const geistMono = Geist_Mono({
 const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-dm-sans" });
 
 export const metadata: Metadata = {
-  title: "Fastdrop - Share nearby",
-  description: "Share anything quickly to nearby systems",
-};
+  metadataBase: new URL("https://fastdrop-ebon.vercel.app"),
+
+  title: {
+    default: "Fastdrop - Instant File Sharing for Classrooms",
+    template: "%s | Fastdrop",
+  },
+
+  description:
+    "Fastdrop is a fast, login-free file sharing tool for classrooms and labs. Instantly share files, code, and notes with nearby users.",
+
+  keywords: [
+    "file sharing",
+    "classroom file sharing",
+    "fast file sharing",
+    "share files without login",
+    "lab file sharing",
+    "student file sharing",
+    "nearby file sharing",
+  ],
+
+  authors: [{ name: "Fastdrop" }],
+
+  openGraph: {
+    title: "Fastdrop - Instant Nearby Sharing",
+    description:
+      "Share files to nearby systems instantly.",
+    url: "https://fastdrop-ebon.vercel.app",
+    siteName: "Fastdrop",
+    images: [
+      {
+        url: "/og.png",
+        width: 1200,
+        height: 630,
+      },
+    ],
+    type: "website",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Fastdrop - Instant File Sharing",
+    description:
+      "Drop files instantly. No login. Built for classrooms.",
+    images: ["/og.png"],
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
+}
 
 export default function RootLayout({
   children,
@@ -30,6 +78,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <meta name="google-site-verification" content="PpVh76uWydI2XZPrunLXbuDOzddRYcYpo6x-1tybI8o" />
+      </head>
       <body
         className={`${geistMono.variable} ${geistSans.variable} ${dmSans.className} ${dmSans.variable} antialiased`}
       >
