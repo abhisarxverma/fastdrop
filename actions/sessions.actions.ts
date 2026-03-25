@@ -14,6 +14,7 @@ import { validateSessionCodeSchema } from "@/schemas/sessions/validate-session-c
 import { sessionsService } from "@/services";
 
 export const getNearbySessionsAction = actionClient
+  .metadata({})
   .inputSchema(getNearbySessionsSchema)
   .action(async ({ parsedInput }) => {
     return withSupabase(({ supabase }) => {
@@ -23,6 +24,7 @@ export const getNearbySessionsAction = actionClient
 
 export const createSessionAction = actionClient
   .inputSchema(createSessionSchema)
+  .metadata({ rateLimitKey: "create-session" })
   .action(async ({ parsedInput }) => {
     return withAuth(({ user, supabase, token }) => {
       return sessionsService.createSession(parsedInput, user, supabase, token);
@@ -30,6 +32,7 @@ export const createSessionAction = actionClient
   })
 
 export const getActiveSessionOfUserAction = actionClient
+  .metadata({})
   .action(async () => {
     return withAuth(({ user, supabase }) => {
       return sessionsService.getActiveSessionOfUser(user, supabase);
@@ -37,6 +40,7 @@ export const getActiveSessionOfUserAction = actionClient
   });
 
 export const getSessionDetailsByIdAction = actionClient
+  .metadata({})
   .inputSchema(getSessionDetailsByIdSchema)
   .action(async ({ parsedInput }) => {
     return withSupabase(({ supabase }) => {
@@ -45,6 +49,7 @@ export const getSessionDetailsByIdAction = actionClient
   })
 
 export const validateSessionCodeAction = actionClient
+  .metadata({ rateLimitKey: "validate-code" })
   .inputSchema(validateSessionCodeSchema)
   .action(async ({ parsedInput }) => {
     return withSupabase(({ supabase }) => {
@@ -53,6 +58,7 @@ export const validateSessionCodeAction = actionClient
   })
 
 export const getSessionContentByIdAction = actionClient
+  .metadata({})
   .inputSchema(getSessionContentByIdSchema)
   .action(async ({ parsedInput }) => {
     return withSupabase(({ supabase }) => {
@@ -61,6 +67,7 @@ export const getSessionContentByIdAction = actionClient
   })
 
 export const editSessionAction = actionClient
+  .metadata({ rateLimitKey: "edit-session" })
   .inputSchema(editSessionActionSchema)
   .action(async ({ parsedInput }) => {
     return withAuth(({ user, supabase, token }) => {
@@ -69,6 +76,7 @@ export const editSessionAction = actionClient
   })
 
 export const endSessionAction = actionClient
+  .metadata({ rateLimitKey: "end-session" })
   .inputSchema(endSessionActionSchema)
   .action(async ({ parsedInput }) => {
     return withAuth(({ user, supabase, token }) => {
@@ -77,6 +85,7 @@ export const endSessionAction = actionClient
   })
 
 export const getSessionCodeAction = actionClient
+  .metadata({})
   .inputSchema(getSessionCodeActionSchema)
   .action(async ({ parsedInput }) => {
     return withAuth(({ user, supabase, token }) => {

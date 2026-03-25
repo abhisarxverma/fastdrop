@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://fastdrop-ebon.vercel.app"),
 
   title: {
-    default: "Fastdrop - Instant File Sharing for Classrooms",
+    default: "Fastdrop - Instant File Sharing to Nearby Systems",
     template: "%s | Fastdrop",
   },
 
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Fastdrop - Instant File Sharing",
     description:
-      "Drop files instantly. No login. Built for classrooms.",
+      "Drop files instantly. No login. Built for quick public sharing.",
     images: ["/og.png"],
   },
 

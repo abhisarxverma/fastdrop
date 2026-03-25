@@ -6,6 +6,7 @@ import { withAuth } from "@/lib/actions/with-auth";
 import { usersService } from "@/services";
 
 export const banUserFromSharingAction = actionClient
+    .metadata({ rateLimitKey: "ban-user" })
     .inputSchema(banUserActionSchema)
     .action(async ({ parsedInput }) => {
         return withAuth(async ({ supabase, user, token }) => {

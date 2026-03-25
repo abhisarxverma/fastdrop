@@ -1,9 +1,26 @@
-import { type NextRequest } from 'next/server'
-import { updateSession } from '@/lib/supabase/proxy'
+import { type NextRequest, NextResponse } from "next/server"
+import { updateSession } from "@/lib/supabase/proxy"
+import { globalLimiter } from "@/lib/rate-limit"
 
 export async function proxy(request: NextRequest) {
-  // update user's auth session
-  return await updateSession(request)
+  const pathname = request.nextUrl.pathname
+
+  if (pathname === "/") {
+    return updateSession(request)
+  }
+
+  const ip =
+    request.headers.get("x-forwarded-for") ??
+    request.headers.get("x-real-ip") ??
+    "anonymous"
+
+  const { success } = await globalLimiter.limit(ip)
+
+  if (!success) {
+    return NextResponse.redirect(new URL("/429", request.url))
+  }
+
+  return updateSession(request)
 }
 
 export const config = {

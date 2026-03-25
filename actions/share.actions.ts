@@ -17,6 +17,7 @@ import { deleteShareActionSchema } from "@/schemas/share/delete-share";
 import { withAuth } from "@/lib/actions/with-auth";
 
 export const textShareAction = actionClient
+    .metadata({ rateLimitKey: "text-share" })
     .inputSchema(textShareActionSchema)
     .action(async ({ parsedInput }) => {
         return withAuth(async ({ supabase, user, token }) => {
@@ -25,6 +26,7 @@ export const textShareAction = actionClient
     })
 
 export const codeShareAction = actionClient
+    .metadata({ rateLimitKey: "code-share" })
     .inputSchema(codeShareActionSchema)
     .action(async ({ parsedInput }) => {
         return withAuth(async ({ supabase, user, token }) => {
@@ -33,6 +35,7 @@ export const codeShareAction = actionClient
     })
 
 export const fileShareAction = actionClient
+    .metadata({ rateLimitKey: "file-share" })
     .inputSchema(fileShareActionSchema)
     .action(async ({ parsedInput }) => {
         return withAuth(async ({ supabase, user, token }) => {
@@ -41,6 +44,7 @@ export const fileShareAction = actionClient
     })
 
 export const linkShareAction = actionClient
+    .metadata({ rateLimitKey: "link-share" })
     .inputSchema(linkShareActionSchema)
     .action(async ({ parsedInput }) => {
         return withAuth(async ({ supabase, user, token }) => {
@@ -49,6 +53,7 @@ export const linkShareAction = actionClient
     })
 
 export const folderShareAction = actionClient
+    .metadata({ rateLimitKey: "folder-share" })
     .inputSchema(folderShareActionSchema)
     .action(async ({ parsedInput }) => {
       return withAuth(async ({ supabase, user, token }) => {
@@ -57,6 +62,7 @@ export const folderShareAction = actionClient
     })
 
 export const editShareAction = actionClient
+    .metadata({ rateLimitKey: "edit-share" })
     .inputSchema(editShareActionSchema)
     .action(async ({ parsedInput }) => {
       return withAuth(async ({ supabase, user, token }) => {
@@ -65,6 +71,7 @@ export const editShareAction = actionClient
     })
 
 export const deleteShareAction = actionClient
+    .metadata({ rateLimitKey: "delete-share" })
     .inputSchema(deleteShareActionSchema)
     .action(async ({ parsedInput }) => {
       return withAuth(async ({ supabase, user, token }) => {
