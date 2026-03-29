@@ -32,7 +32,7 @@ export default function DashboardToolbar({
           addClass="sm:w-75"
           placeholder="Search sessions...."
         />
-        <div className="flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-3">
           <span className="text-xs sm:text-sm md:text-md font-semibold uppercase text-muted-foreground">
             View
           </span>

@@ -31,7 +31,7 @@ import { SessionsRow } from "@/types/sessions";
 import { useRouter } from "next/navigation";
 import { Toggle } from "@/components/ui/toggle";
 
-export type RadiusSelectType = 10 | 30 | 60 | 100 | 150;
+export type RadiusSelectType = 60 | 100 | 150;
 
 interface StartSessionDialogProps {
   open: boolean;

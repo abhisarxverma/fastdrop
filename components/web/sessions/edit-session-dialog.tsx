@@ -33,7 +33,7 @@ import { editSessionFormSchema } from "@/schemas/sessions/edit-session";
 import { NearbySession, SessionsRow } from "@/types/sessions";
 import { copy } from "@/lib/utils";
 
-export type RadiusSelectType = 10 | 30 | 60 | 100 | 150;
+export type RadiusSelectType = 60 | 100 | 150;
 
 interface EditSessionDialogProps {
   open: boolean;

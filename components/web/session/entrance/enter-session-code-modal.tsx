@@ -69,7 +69,6 @@ export function EnterSessionCodeModal({
             <FieldLabel>Session Code</FieldLabel>
             <Input
               {...form.register("code")}
-              inputMode="numeric"
               maxLength={6}
               placeholder="••••••"
               className="text-center tracking-widest text-2xl font-mono font-bold h-14 bg-muted/40 focus-visible:ring-primary/20"
